@@ -1,0 +1,13 @@
+<div class="cl-loader" *ngIf="isLoading">
+  <div class="cl-loader__backdrop"></div>
+  <div class="cl-loader__box">
+    <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#00478D"/>
+      <path d="M16 7v18M7 16h18" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="cl-loader__dots">
+      <span></span><span></span><span></span>
+    </div>
+    <p class="cl-loader__text">{{ message }}</p>
+  </div>
+</div>

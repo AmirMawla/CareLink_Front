@@ -1,0 +1,26 @@
+.cl-loader {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.cl-loader__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(248,249,251,0.72);
+  backdrop-filter: blur(4px);
+}
+.cl-loader__box {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface-lowest);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-float);
+}
+.cl-loader__dots { display: flex; gap: 6px; }
+.cl-loader__dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--primary);
+  animation: bounce 1s ease-in-out infinite;
+}
+.cl-loader__dots span:nth-child(2) { animation-delay: 0.15s; }
+.cl-loader__dots span:nth-child(3) { animation-delay: 0.30s; }
+.cl-loader__text { font-size: var(--t-xs); color: var(--on-surface-3); font-weight: 500; margin: 0; }

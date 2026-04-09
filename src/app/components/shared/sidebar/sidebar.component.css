@@ -1,0 +1,56 @@
+.cl-sidebar {
+  position: fixed; top: var(--topbar-h); left: 0; bottom: 0;
+  width: var(--sidebar-w); z-index: 100;
+  background: var(--surface-lowest);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+}
+.cl-sidebar__status {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px var(--sp-3);
+  font-size: var(--t-tiny); font-weight: 500;
+  color: var(--on-surface-3);
+  letter-spacing: var(--ls-caps); text-transform: uppercase;
+  background: var(--surface-low);
+}
+.cl-sidebar__status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 2px var(--success-container);
+  flex-shrink: 0;
+}
+.cl-sidebar__nav {
+  flex: 1; padding: var(--sp-2);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.cl-sidebar__footer {
+  padding: var(--sp-2);
+  display: flex; flex-direction: column; gap: 4px;
+  border-top: 4px solid var(--surface-low);
+}
+.cl-sidebar__book-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  color: var(--on-primary);
+  border: none; border-radius: var(--r-lg);
+  padding: 11px 16px;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: var(--t-xs); cursor: pointer;
+  transition: all var(--ease); margin-bottom: 6px;
+}
+.cl-sidebar__book-btn:hover {
+  background: linear-gradient(135deg, var(--primary-container), var(--primary-fixed));
+}
+.cl-sidebar__footer-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--r-md);
+  font-size: var(--t-xs); color: var(--on-surface-3);
+  cursor: pointer; border: none; background: transparent;
+  font-family: var(--font-body); text-decoration: none;
+  transition: background var(--ease), color var(--ease);
+  width: 100%;
+}
+.cl-sidebar__footer-link:hover { background: var(--surface-low); color: var(--on-surface); }
+.cl-sidebar__logout:hover { background: var(--error-container); color: var(--error); }
