@@ -1,0 +1,69 @@
+<div class="queue-page">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading queue...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div>
+        <h1>Today's Queue</h1>
+        <p>{{ appointments.length }} PATIENT{{ appointments.length !== 1 ? 'S' : '' }} WAITING</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Today</div>
+        <div class="value">{{ appointments.length }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Status</div>
+        <div class="value green">Checked In</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Date</div>
+        <div class="value small">{{ today | date:'MMM d, y' }}</div>
+      </div>
+    </div>
+
+    <!-- Queue List -->
+    <div class="queue-section">
+      <h2>Patient Queue</h2>
+
+      <div *ngIf="appointments.length === 0" class="empty-state">
+        <div class="icon">🏥</div>
+        <h3>No Patients in Queue</h3>
+        <p>All checked-in patients will appear here</p>
+      </div>
+
+      <div *ngFor="let appointment of appointments; let i = index" class="patient-card">
+        <div class="queue-number">{{ i + 1 }}</div>
+        <div class="patient-info">
+          <div class="name">
+            {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}
+          </div>
+          <div class="meta">CHECKED IN AT {{ appointment.check_in_time | date:'HH:mm' }}</div>
+        </div>
+        <div class="waiting-chip">
+          ⏱ {{ getWaitingTime(appointment.check_in_time) }}
+        </div>
+        <a [routerLink]="['/doctor/consultation', appointment.id]" class="btn-primary">
+          Start Consultation
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>

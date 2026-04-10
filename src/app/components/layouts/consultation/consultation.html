@@ -1,0 +1,251 @@
+<!-- <p>consultation works!</p>
+{% extends "base.html" %}
+
+{% block title %}Consultation — {{ appointment.patient.user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #00478D;
+        --primary-container: #005EB8;
+        --surface: #F8F9FB;
+        --surface-low: #F3F4F6;
+        --surface-lowest: #FFFFFF;
+        --on-surface: #191C1E;
+        --secondary-container: #E8F1FB;
+        --medical-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+    }
+
+    body { background: var(--surface); font-family: 'Inter', sans-serif; color: var(--on-surface); }
+
+    .page-hero {
+        background: linear-gradient(135deg, var(--primary), var(--primary-container));
+        padding: 2.5rem 4rem;
+        border-radius: 0 0 2rem 2rem;
+        margin-bottom: 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-hero h1 {
+        font-family: 'Manrope', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: white;
+    }
+
+    .page-hero .patient-chip {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 9999px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .content { padding: 0 4rem 4rem; }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .form-card {
+        background: var(--surface-lowest);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: var(--medical-shadow);
+    }
+
+    .form-card.full-width { grid-column: 1 / -1; }
+
+    .form-card h3 {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+    }
+
+    label {
+        display: block;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6B7280;
+        margin-bottom: 0.5rem;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--surface-low);
+        border: none;
+        outline: 2px solid transparent;
+        border-radius: 0.75rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        color: var(--on-surface);
+        transition: all 0.2s;
+        margin-bottom: 1rem;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        outline: 2px solid var(--primary);
+        box-shadow: 0 0 0 4px rgba(0, 71, 141, 0.08);
+        background: var(--surface-lowest);
+    }
+
+    textarea { resize: vertical; min-height: 120px; }
+
+    .prescription-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 0.75rem;
+        align-items: start;
+        background: var(--surface-low);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .prescription-row input { margin-bottom: 0; }
+
+    .btn-add {
+        background: var(--secondary-container);
+        color: var(--primary);
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-add:hover { background: var(--primary); color: white; }
+
+    .btn-remove {
+        background: #FEE2E2;
+        color: #DC2626;
+        border: none;
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        margin-top: 0.25rem;
+    }
+
+    .btn-remove:hover { background: #DC2626; color: white; }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-container));
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 0.75rem;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1>Consultation</h1>
+    <div class="patient-chip">
+        👤 {{ appointment.patient.user.get_full_name }}
+    </div>
+</div>
+
+<div class="content">
+    <form method="POST" id="consultation-form">
+        {% csrf_token %}
+        <input type="hidden" name="appointment" value="{{ appointment.id }}">
+
+        <div class="form-grid">
+            <div class="form-card full-width">
+                <h3>🩺 Diagnosis & Notes</h3>
+                <label>Diagnosis</label>
+                <input type="text" name="diagnosis" value="{{ consultation.diagnosis|default:'' }}" placeholder="Primary diagnosis...">
+                <label>Clinical Notes</label>
+                <textarea name="clinical_notes" placeholder="Detailed clinical notes...">{{ consultation.clinical_notes|default:'' }}</textarea>
+            </div>
+
+            <div class="form-card">
+                <h3>💊 Prescriptions</h3>
+                <div id="prescriptions-container">
+                    {% if consultation %}
+                        {% for rx in consultation.prescriptions.all %}
+                        <div class="prescription-row">
+                            <input type="text" name="drug_name[]" value="{{ rx.drug_name }}" placeholder="Drug name">
+                            <input type="text" name="dose[]" value="{{ rx.dose }}" placeholder="Dose">
+                            <input type="number" name="duration_days[]" value="{{ rx.duration_days }}" placeholder="Days">
+                            <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <button type="button" class="btn-add" onclick="addPrescription()">+ Add Drug</button>
+            </div>
+
+            <div class="form-card">
+                <h3>🔬 Requested Tests</h3>
+                <div id="tests-container">
+                    {% if consultation %}
+                        {% for test in consultation.tests.all %}
+                        <div style="display:flex; gap:0.75rem; margin-bottom:0.75rem;">
+                            <input type="text" name="test_name[]" value="{{ test.test_name }}" placeholder="Test name" style="margin-bottom:0;">
+                            <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <button type="button" class="btn-add" onclick="addTest()">+ Add Test</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">✓ Save & Complete Consultation</button>
+    </form>
+</div>
+
+<script>
+function addPrescription() {
+    const container = document.getElementById('prescriptions-container');
+    const row = document.createElement('div');
+    row.className = 'prescription-row';
+    row.innerHTML = `
+        <input type="text" name="drug_name[]" placeholder="Drug name">
+        <input type="text" name="dose[]" placeholder="Dose">
+        <input type="number" name="duration_days[]" placeholder="Days">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(row);
+}
+
+function addTest() {
+    const container = document.getElementById('tests-container');
+    const row = document.createElement('div');
+    row.style = 'display:flex; gap:0.75rem; margin-bottom:0.75rem;';
+    row.innerHTML = `
+        <input type="text" name="test_name[]" placeholder="Test name" style="margin-bottom:0;">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(row);
+}
+</script>
+{% endblock %} -->
