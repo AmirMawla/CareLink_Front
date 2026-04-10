@@ -1,0 +1,56 @@
+<header class="cl-mainnav">
+  <div class="cl-mainnav__inner">
+    <a class="cl-mainnav__brand" routerLink="/" (click)="closeMobileMenu()">
+      <span class="cl-mainnav__logo" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="10" fill="currentColor" />
+          <path d="M16 7v18M7 16h18" stroke="white" stroke-width="3" stroke-linecap="round" />
+        </svg>
+      </span>
+      <span class="cl-mainnav__brand-text">
+        <span class="cl-mainnav__name">CareLink</span>
+        <span class="cl-mainnav__tagline">Care, connected</span>  
+      </span>
+    </a>
+
+    <nav class="cl-mainnav__links" aria-label="Primary navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/doctors" routerLinkActive="active">Doctors</a>
+      <a routerLink="/services" routerLinkActive="active">Services</a>
+      <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+
+    <div class="cl-mainnav__actions">
+      <a class="btn btn-tertiary cl-mainnav__action-link" routerLink="/auth/login">Sign in</a>
+      <a class="btn btn-primary" routerLink="/auth/register">Create account</a>
+
+      <button
+        class="cl-mainnav__menu-btn"
+        type="button"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="isMobileMenuOpen"
+        aria-controls="cl-mainnav-mobile"
+        aria-label="Open menu"
+      >
+        <span class="cl-mainnav__menu-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="cl-mainnav-mobile" class="cl-mainnav__mobile" [class.open]="isMobileMenuOpen">
+    <div class="cl-mainnav__mobile-inner">
+      <a routerLink="/" (click)="closeMobileMenu()">Home</a>
+      <a routerLink="/doctors" (click)="closeMobileMenu()">Doctors</a>
+      <a routerLink="/services" (click)="closeMobileMenu()">Services</a>
+      <a routerLink="/appointments" (click)="closeMobileMenu()">Appointments</a>
+      <a routerLink="/contact" (click)="closeMobileMenu()">Contact</a>
+
+      <div class="cl-mainnav__mobile-cta">
+        <a class="btn btn-secondary w-full justify-center" routerLink="/auth/login" (click)="closeMobileMenu()">Sign in</a>
+        <a class="btn btn-primary w-full justify-center" routerLink="/auth/register" (click)="closeMobileMenu()">Create account</a>
+      </div>
+    </div>
+  </div>
+</header>
+

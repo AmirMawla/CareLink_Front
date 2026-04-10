@@ -23,7 +23,7 @@ describe('FooterComponent', () => {
   });
 
   it('should render the current year in the template', () => {
-    const text = fixture.nativeElement.querySelector('.cl-footer__brand').textContent;
+    const text = fixture.nativeElement.querySelector('.cl-footer__bottom')?.textContent ?? '';
     expect(text).toContain(String(new Date().getFullYear()));
   });
 });

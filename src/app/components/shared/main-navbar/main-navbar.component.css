@@ -1,0 +1,209 @@
+.cl-mainnav {
+  position: sticky;
+  top: 0;
+  z-index: 250;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--outline);
+}
+
+.cl-mainnav__inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 12px var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.cl-mainnav__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--on-surface);
+  text-decoration: none;
+  min-width: 220px;
+}
+
+.cl-mainnav__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary-light), rgba(232, 241, 251, 0.35));
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.cl-mainnav__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cl-mainnav__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: var(--ls-headline);
+  line-height: 1.1;
+}
+
+.cl-mainnav__tagline {
+  font-size: var(--t-tiny);
+  color: var(--on-surface-3);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.cl-mainnav__links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.cl-mainnav__links a {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--on-surface-2);
+  padding: 8px 12px;
+  border-radius: var(--r-full);
+  transition: background var(--ease), color var(--ease);
+}
+
+.cl-mainnav__links a:hover {
+  background: var(--surface-low);
+  color: var(--on-surface);
+}
+
+.cl-mainnav__links a.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.cl-mainnav__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cl-mainnav__action-link {
+  padding: 9px 14px;
+}
+
+.cl-mainnav__menu-btn {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--outline);
+  background: var(--surface-lowest);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--ease), border-color var(--ease);
+}
+
+.cl-mainnav__menu-btn:hover {
+  border-color: var(--outline-hover);
+}
+
+.cl-mainnav__menu-btn:active {
+  transform: scale(0.98);
+}
+
+.cl-mainnav__menu-icon {
+  width: 18px;
+  height: 12px;
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(var(--on-surface), var(--on-surface));
+  background-size: 18px 2px;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+
+.cl-mainnav__menu-icon::before,
+.cl-mainnav__menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: var(--on-surface);
+  border-radius: 2px;
+}
+
+.cl-mainnav__menu-icon::before {
+  top: 5px;
+}
+
+.cl-mainnav__menu-icon::after {
+  top: 10px;
+}
+
+.cl-mainnav__mobile {
+  display: none;
+  border-top: 1px solid var(--outline);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+}
+
+.cl-mainnav__mobile.open {
+  display: block;
+}
+
+.cl-mainnav__mobile-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 12px var(--sp-3) var(--sp-3);
+  display: grid;
+  gap: 8px;
+}
+
+.cl-mainnav__mobile a {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-lowest);
+  border: 1px solid var(--outline);
+  color: var(--on-surface);
+  font-weight: 600;
+  font-size: var(--t-xs);
+  transition: background var(--ease), border-color var(--ease);
+}
+
+.cl-mainnav__mobile a:hover {
+  border-color: var(--outline-hover);
+  background: var(--surface-low);
+}
+
+.cl-mainnav__mobile-cta {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .cl-mainnav__links {
+    display: none;
+  }
+
+  .cl-mainnav__action-link {
+    display: none;
+  }
+
+  .cl-mainnav__menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cl-mainnav__brand {
+    min-width: unset;
+    flex: 1;
+  }
+}
+

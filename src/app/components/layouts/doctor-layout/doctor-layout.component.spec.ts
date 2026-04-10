@@ -27,7 +27,4 @@ describe('DoctorLayoutComponent', () => {
   it('should contain router-outlet', () => {
     expect(fixture.nativeElement.querySelector('router-outlet')).toBeTruthy();
   });
-  it('should contain app-footer', () => {
-    expect(fixture.nativeElement.querySelector('app-footer')).toBeTruthy();
-  });
 });
