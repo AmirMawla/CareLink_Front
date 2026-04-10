@@ -1,0 +1,160 @@
+.queue-page {
+  background: #F8F9FB;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: #191C1E;
+}
+
+.page-hero {
+  background: linear-gradient(135deg, #00478D, #005EB8);
+  padding: 3rem 4rem;
+  border-radius: 0 0 2rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.page-hero h1 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.page-hero p {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 0 4rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+}
+
+.stat-card .label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6B7280;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00478D;
+}
+
+.stat-card .value.green { color: #059669; font-size: 1.2rem; }
+.stat-card .value.small { font-size: 1.2rem; }
+
+.queue-section { padding: 0 4rem 4rem; }
+
+.queue-section h2 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.patient-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s;
+  text-decoration: none;
+}
+
+.patient-card:hover { transform: translateY(-2px); background: #F3F4F6; }
+
+.queue-number {
+  width: 2.5rem; height: 2.5rem;
+  background: #E8F1FB;
+  color: #00478D;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700; font-size: 0.9rem;
+}
+
+.patient-info .name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600; font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.patient-info .meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #6B7280;
+}
+
+.waiting-chip {
+  background: #E8F1FB;
+  color: #00478D;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00478D, #005EB8);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover { opacity: 0.9; color: white; }
+
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+}
+
+.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-state h3 { font-family: 'Manrope', sans-serif; font-size: 1.3rem; font-weight: 700; }
+.empty-state p { color: #6B7280; margin-top: 0.5rem; }
+
+.loading-state, .error-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 50vh; gap: 1rem;
+  color: #6B7280;
+}
+
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #E8F1FB;
+  border-top-color: #00478D;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
