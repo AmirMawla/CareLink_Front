@@ -3,16 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-interface Prescription {
-  drug_name: string;
-  dose: string;
-  duration_days: number;
-}
-
-interface Test {
-  test_name: string;
-}
+import { PrescriptionItem, TestRequest } from '../../../../models/consultation';
 @Component({
   selector: 'app-consultation',
   imports: [CommonModule, RouterModule, FormsModule],
@@ -23,8 +14,8 @@ export class Consultation implements OnInit {
   appointmentId!: number;
   diagnosis = '';
   clinicalNotes = '';
-  prescriptions: Prescription[] = [{ drug_name: '', dose: '', duration_days: 1 }];
-  tests: Test[] = [{ test_name: '' }];
+  prescriptions: PrescriptionItem[] = [{ drug_name: '', dose: '', duration_days: 1 }];
+  tests: TestRequest[] = [{ test_name: '' }];
   loading = false;
   error = '';
   success = '';
