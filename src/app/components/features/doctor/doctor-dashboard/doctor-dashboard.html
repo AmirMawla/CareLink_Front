@@ -1,0 +1,336 @@
+<div class="dash-root">
+  <header class="page-header d-flex justify-between align-center flex-wrap gap-2">
+    <div>
+      <h1 class="page-title font-display">Dashboard</h1>
+      <p class="page-subtitle">{{ today | date: 'fullDate' }}</p>
+    </div>
+    <a routerLink="/doctor/appointments" class="btn btn-primary">Appointments</a>
+  </header>
+
+  <div class="kpi-grid mb-4">
+    <div class="stat-card">
+      <div class="stat-card-icon stat-card-icon--primary" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">Total Appointments</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.total_appointments }}</div>
+        <div class="stat-label">Total Appointments</div>
+        <div class="stat-secondary">+{{ s.appointments_new_this_month }} this month</div>
+      </ng-container>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-icon stat-card-icon--primary-light" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">Total Patients</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.total_patients }}</div>
+        <div class="stat-label">Total Patients</div>
+        <div class="stat-secondary">+{{ s.patients_new_this_month }} this month</div>
+      </ng-container>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-icon stat-card-icon--success" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.completed_total }}</div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-secondary">{{ s.completed_today }} today</div>
+      </ng-container>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-icon stat-card-icon--warning" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">No-Show Rate</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.no_show_rate | number: '1.1-1' }}%</div>
+        <div class="stat-label">No-Show Rate</div>
+        <div class="stat-secondary">{{ s.no_show_total }} no-shows total</div>
+      </ng-container>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-icon stat-card-icon--info" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">Avg. Wait Time</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.avg_wait_minutes_today | number: '1.0-1' }} min</div>
+        <div class="stat-label">Avg. Wait Time</div>
+        <div class="stat-secondary">{{ s.checked_in_today }} checked-in today</div>
+      </ng-container>
+    </div>
+
+    <div class="stat-card stat-card--highlight">
+      <div class="stat-card-icon stat-card-icon--error" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      </div>
+      <div *ngIf="statsLoading()" class="skeleton skeleton-stat shimmer" aria-hidden="true"></div>
+      <ng-container *ngIf="!statsLoading() && statsError()">
+        <div class="stat-value text-muted">—</div>
+        <div class="stat-label">Pending Requests</div>
+        <div class="stat-secondary text-error">Unable to load</div>
+      </ng-container>
+      <ng-container *ngIf="!statsLoading() && !statsError() && stats() as s">
+        <div class="stat-value">{{ s.pending_requests }}</div>
+        <div class="stat-label">Pending Requests</div>
+        <div class="stat-secondary">awaiting your response</div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="!statsLoading() && !statsError() && stats() as strip" class="summary-strip d-flex flex-wrap align-center justify-between gap-2 mb-4">
+    <div class="summary-item">
+      <span class="summary-value">{{ strip.confirmed_today }}</span>
+      <span class="summary-label">Confirmed today</span>
+    </div>
+    <div class="summary-divider" aria-hidden="true"></div>
+    <div class="summary-item">
+      <span class="summary-value">{{ strip.currently_waiting }}</span>
+      <span class="summary-label">Currently waiting</span>
+    </div>
+    <div class="summary-divider" aria-hidden="true"></div>
+    <div class="summary-item">
+      <span class="summary-value">{{ strip.completed_today }}</span>
+      <span class="summary-label">Completed today</span>
+    </div>
+    <div class="summary-divider" aria-hidden="true"></div>
+    <div class="summary-item">
+      <span class="summary-value">{{ strip.avg_wait_minutes_today | number: '1.0-1' }} min</span>
+      <span class="summary-label">Avg wait time</span>
+    </div>
+  </div>
+
+  <div class="dash-row-2 d-grid gap-3 mb-4">
+    <section class="card-flat chart-card">
+      <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
+        <h2 class="card-title mb-0">Appointments over time</h2>
+        <div class="tab-pills d-flex gap-1" role="tablist">
+          <button type="button" class="tab-pill" [class.active]="chartPeriod() === '7d'" (click)="setChartPeriod('7d')">7 days</button>
+          <button type="button" class="tab-pill" [class.active]="chartPeriod() === '30d'" (click)="setChartPeriod('30d')">30 days</button>
+          <button type="button" class="tab-pill" [class.active]="chartPeriod() === '90d'" (click)="setChartPeriod('90d')">90 days</button>
+        </div>
+      </div>
+
+      <div *ngIf="chartLoading()" class="bar-chart-skeleton d-flex gap-2 align-end" aria-hidden="true">
+        <div *ngFor="let _ of skeletonChartBars; trackBy: trackBySkeleton" class="skeleton bar-skel shimmer flex-1"></div>
+      </div>
+
+      <div *ngIf="!chartLoading() && chartError()" class="alert alert-error d-flex justify-between align-center flex-wrap gap-2">
+        <span>Could not load chart.</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadChart()">Retry</button>
+      </div>
+
+      <div *ngIf="chartEmpty()" class="empty-hint text-center text-muted py-4">No data for this period</div>
+
+      <div *ngIf="!chartLoading() && !chartError() && !chartEmpty()" class="bar-chart" role="img" aria-label="Appointments bar chart">
+        <div class="bar-chart-inner d-flex align-end gap-1 justify-between">
+          <div *ngFor="let p of chartPoints(); trackBy: trackByPoint" class="bar-col d-flex flex-col align-center flex-1">
+            <span class="bar-value text-muted">{{ p.count }}</span>
+            <div class="bar-track w-full">
+              <div class="bar-fill" [style.height.%]="barHeight(p.count)"></div>
+            </div>
+            <span class="bar-label text-muted">{{ p.label }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card-flat breakdown-card">
+      <h2 class="card-title mb-3">Status breakdown</h2>
+
+      <div *ngIf="breakdownLoading()" class="skeleton skeleton-bar-h shimmer mb-3" aria-hidden="true"></div>
+      <div *ngIf="breakdownLoading()" class="d-flex flex-col gap-2">
+        <div *ngFor="let _ of skeletonRows3; trackBy: trackBySkeleton" class="skeleton skeleton-legend shimmer"></div>
+      </div>
+
+      <div *ngIf="!breakdownLoading() && breakdownError()" class="alert alert-error d-flex justify-between align-center flex-wrap gap-2">
+        <span>Could not load breakdown.</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadBreakdown()">Retry</button>
+      </div>
+
+      <ng-container *ngIf="!breakdownLoading() && !breakdownError()">
+        <div *ngIf="breakdownTotal() === 0" class="empty-hint text-center text-muted py-4">No appointments yet</div>
+        <ng-container *ngIf="breakdownTotal() > 0">
+          <div class="stacked-bar rounded-md overflow-hidden d-flex mb-3" role="img" aria-label="Status distribution">
+            <div
+              *ngFor="let seg of breakdownSegments(); trackBy: trackBySegment"
+              [ngClass]="statusSegmentClass(seg.status)"
+              [style.width.%]="seg.percent"
+              [title]="seg.status + ': ' + seg.count"
+            ></div>
+          </div>
+          <ul class="breakdown-legend list-unstyled d-flex flex-col gap-2 mb-0">
+            <li *ngFor="let seg of breakdownSegments(); trackBy: trackBySegment" class="d-flex align-center gap-2">
+              <span [ngClass]="statusLegendClass(seg.status)"></span>
+              <span class="flex-1">{{ formatStatusLabel(seg.status) }}</span>
+              <span class="text-muted">{{ seg.count }}</span>
+            </li>
+          </ul>
+        </ng-container>
+      </ng-container>
+    </section>
+  </div>
+
+  <div class="dash-row-4 d-grid gap-3">
+    <section class="card-flat panel-card">
+      <div class="d-flex align-center justify-between flex-wrap gap-2 mb-3">
+        <h2 class="card-title mb-0">Pending Requests</h2>
+        <span *ngIf="!pendingLoading() && !pendingError()" class="badge badge-requested">{{ pendingRequests().length }}</span>
+      </div>
+
+      <div *ngIf="pendingLoading()" class="d-flex flex-col gap-1">
+        <div *ngFor="let _ of skeletonRows3; trackBy: trackBySkeleton" class="request-row skeleton-row p-3 rounded-lg">
+          <div class="d-flex align-center gap-2">
+            <div class="skeleton avatar-skel shimmer rounded-full"></div>
+            <div class="flex-1">
+              <div class="skeleton skeleton-line shimmer mb-1"></div>
+              <div class="skeleton skeleton-line short shimmer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!pendingLoading() && pendingError()" class="alert alert-error d-flex justify-between align-center flex-wrap gap-2">
+        <span>Could not load requests.</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadPendingRequests()">Retry</button>
+      </div>
+
+      <div *ngIf="!pendingLoading() && !pendingError() && pendingRequests().length === 0" class="empty-hint text-center text-muted py-5">
+        All clear — no pending requests
+      </div>
+
+      <div *ngIf="!pendingLoading() && !pendingError() && pendingRequests().length > 0" class="request-list d-flex flex-col gap-1">
+        <div
+          *ngFor="let row of pendingRequests(); trackBy: trackByPending"
+          class="request-row p-3 rounded-lg d-flex align-center flex-wrap gap-2 justify-between"
+          [class.is-fading]="isFading(row.id)"
+        >
+          <div class="d-flex align-center gap-2 flex-1 min-w-0">
+            <div class="avatar avatar-md avatar-primary">{{ patientInitials(row) }}</div>
+            <div class="min-w-0">
+              <div class="fw-600 truncate">{{ patientDisplayName(row) }}</div>
+              <div class="text-muted text-tiny">{{ row.scheduled_datetime | date: 'medium' }}</div>
+              <span *ngIf="row.is_telemedicine" class="badge badge-info mt-1">Telemedicine</span>
+            </div>
+          </div>
+          <div class="d-flex gap-1 flex-shrink-0">
+            <button
+              type="button"
+              class="btn btn-success btn-sm"
+              (click)="confirm(row.id)"
+              [disabled]="actionInProgress() !== null"
+            >
+              <span *ngIf="actionInProgress() === row.id" class="spinner spinner-inline" aria-hidden="true"></span>
+              Confirm
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              (click)="reject(row.id)"
+              [disabled]="actionInProgress() !== null"
+            >
+              <span *ngIf="actionInProgress() === row.id" class="spinner spinner-inline" aria-hidden="true"></span>
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card-flat panel-card">
+      <div class="d-flex align-center justify-between flex-wrap gap-2 mb-3">
+        <h2 class="card-title mb-0">Today's Queue</h2>
+        <a routerLink="/doctor/queue" class="btn btn-tertiary btn-sm">Full queue →</a>
+      </div>
+
+      <div *ngIf="queueLoading()" class="d-flex flex-col gap-1">
+        <div *ngFor="let _ of skeletonQueueRows; trackBy: trackBySkeleton" class="queue-row skeleton-row p-3 rounded-lg">
+          <div class="d-flex align-center gap-2">
+            <div class="skeleton avatar-skel shimmer rounded-full"></div>
+            <div class="flex-1">
+              <div class="skeleton skeleton-line shimmer mb-1"></div>
+              <div class="skeleton skeleton-line short shimmer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!queueLoading() && queueError()" class="alert alert-error d-flex justify-between align-center flex-wrap gap-2">
+        <span>Could not load queue.</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadQueue(true)">Retry</button>
+      </div>
+
+      <div *ngIf="!queueLoading() && !queueError() && queuePreview().length === 0" class="empty-hint text-center text-muted py-5">No one in the queue right now</div>
+
+      <div *ngIf="!queueLoading() && !queueError() && queuePreview().length > 0" class="queue-list d-flex flex-col gap-1">
+        <div *ngFor="let q of queuePreview(); trackBy: trackByQueue" class="queue-row p-3 rounded-lg d-flex align-center justify-between flex-wrap gap-2">
+          <div class="d-flex align-center gap-2 flex-1 min-w-0">
+            <div class="avatar avatar-md avatar-primary">{{ q.patient_initials }}</div>
+            <div class="min-w-0">
+              <div class="fw-600 truncate">{{ q.patient_name }}</div>
+              <div class="text-muted text-tiny">Scheduled {{ q.scheduled_datetime | date: 'shortTime' }}</div>
+            </div>
+          </div>
+          <span class="badge queue-wait" [ngClass]="waitClass(q.wait_minutes)">{{ formatWait(q.wait_minutes) }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="dash-toast" *ngIf="toastVisible()" role="status">{{ toastMessage() }}</div>
+</div>

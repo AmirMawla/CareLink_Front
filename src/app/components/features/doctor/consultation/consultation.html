@@ -1,0 +1,66 @@
+<div class="consultation-page">
+
+  <!-- Error -->
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+  <!-- Success -->
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <div class="hero-content">
+      <a routerLink="/doctor/queue" class="back-link">← Back to Queue</a>
+      <h1>Consultation</h1>
+      <p>APPOINTMENT #{{ appointmentId }}</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="form-grid">
+
+      <!-- Diagnosis & Notes -->
+      <div class="form-card full-width">
+        <h3>🩺 Diagnosis & Notes</h3>
+        <div class="form-group">
+          <label>Diagnosis</label>
+          <input type="text" [(ngModel)]="diagnosis" placeholder="Primary diagnosis...">
+        </div>
+        <div class="form-group">
+          <label>Clinical Notes</label>
+          <textarea [(ngModel)]="clinicalNotes" placeholder="Detailed clinical notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Prescriptions -->
+      <div class="form-card">
+        <h3>💊 Prescriptions</h3>
+        <div *ngFor="let rx of prescriptions; let i = index" class="prescription-row">
+          <input type="text" [(ngModel)]="rx.drug_name" placeholder="Drug name">
+          <input type="text" [(ngModel)]="rx.dose" placeholder="Dose">
+          <input type="number" [(ngModel)]="rx.duration_days" placeholder="Days">
+          <button type="button" class="btn-remove" (click)="removePrescription(i)">✕</button>
+        </div>
+        <button type="button" class="btn-add" (click)="addPrescription()">+ Add Drug</button>
+      </div>
+
+      <!-- Tests -->
+      <div class="form-card">
+        <h3>🔬 Requested Tests</h3>
+        <div *ngFor="let test of tests; let i = index" class="test-row">
+          <input type="text" [(ngModel)]="test.test_name" placeholder="Test name">
+          <button type="button" class="btn-remove" (click)="removeTest(i)">✕</button>
+        </div>
+        <button type="button" class="btn-add" (click)="addTest()">+ Add Test</button>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="saveConsultation()"
+      [disabled]="loading">
+      {{ loading ? 'Saving...' : '✓ Save & Complete Consultation' }}
+    </button>
+  </div>
+</div>
