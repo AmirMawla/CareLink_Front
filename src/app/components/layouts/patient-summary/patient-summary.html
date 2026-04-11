@@ -1,172 +1,62 @@
-<!-- <p>patient-summary works!</p>
-{% extends "base.html" %}
+<div class="summary-page">
 
-{% block title %}Consultation Summary{% endblock %}
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading summary...</p>
+  </div>
 
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --primary: #00478D;
-        --primary-container: #005EB8;
-        --surface: #F8F9FB;
-        --surface-low: #F3F4F6;
-        --surface-lowest: #FFFFFF;
-        --on-surface: #191C1E;
-        --secondary-container: #E8F1FB;
-        --medical-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
-    }
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
 
-    body { background: var(--surface); font-family: 'Inter', sans-serif; color: var(--on-surface); }
+  <!-- Content -->
+  <div *ngIf="!loading && !error && consultation">
 
-    .page-hero {
-        background: linear-gradient(135deg, var(--primary), var(--primary-container));
-        padding: 3rem 4rem;
-        border-radius: 0 0 2rem 2rem;
-        margin-bottom: 2.5rem;
-    }
-
-    .page-hero h1 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 2.5rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: white;
-        margin-bottom: 0.5rem;
-    }
-
-    .page-hero p { color: rgba(255,255,255,0.75); font-size: 0.9rem; letter-spacing: 0.05em; }
-
-    .content { padding: 0 4rem 4rem; }
-
-    .summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
-
-    .summary-card {
-        background: var(--surface-lowest);
-        border-radius: 1.5rem;
-        padding: 2rem;
-        box-shadow: var(--medical-shadow);
-    }
-
-    .summary-card.full-width { grid-column: 1 / -1; }
-
-    .summary-card h3 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--primary);
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.02em;
-    }
-
-    .info-row {
-        padding: 0.75rem 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .info-row:hover { background: var(--surface-low); border-radius: 0.75rem; padding: 0.75rem; }
-
-    .info-label {
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #6B7280;
-    }
-
-    .info-value {
-        font-size: 0.95rem;
-        color: var(--on-surface);
-        line-height: 1.6;
-    }
-
-    .drug-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: var(--secondary-container);
-        color: var(--primary);
-        padding: 0.5rem 1rem;
-        border-radius: 9999px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        margin: 0.25rem;
-    }
-
-    .test-chip {
-        display: inline-flex;
-        align-items: center;
-        background: #F0FDF4;
-        color: #059669;
-        padding: 0.5rem 1rem;
-        border-radius: 9999px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        margin: 0.25rem;
-    }
-
-    .readonly-badge {
-        display: inline-block;
-        background: #FEF3C7;
-        color: #D97706;
-        padding: 0.3rem 1rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        letter-spacing: 0.05em;
-        margin-bottom: 2rem;
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="page-hero">
-    <h1>Consultation Summary</h1>
-    <p>{{ appointment.scheduled_datetime|date:"F j, Y" }}</p>
-</div>
-
-<div class="content">
-    <div class="readonly-badge">👁 READ-ONLY VIEW</div>
-
-    <div class="summary-grid">
-        <div class="summary-card full-width">
-            <h3>🩺 Diagnosis & Notes</h3>
-            <div class="info-row">
-                <span class="info-label">Diagnosis</span>
-                <span class="info-value">{{ consultation.diagnosis }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Clinical Notes</span>
-                <span class="info-value">{{ consultation.clinical_notes }}</span>
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <h3>💊 Prescriptions</h3>
-            {% for rx in consultation.prescriptions.all %}
-            <div class="drug-chip">
-                💊 {{ rx.drug_name }} — {{ rx.dose }} — {{ rx.duration_days }} days
-            </div>
-            {% empty %}
-            <p style="color:#6B7280; font-size:0.9rem;">No prescriptions</p>
-            {% endfor %}
-        </div>
-
-        <div class="summary-card">
-            <h3>🔬 Requested Tests</h3>
-            {% for test in consultation.tests.all %}
-            <div class="test-chip">
-                🔬 {{ test.test_name }}
-            </div>
-            {% empty %}
-            <p style="color:#6B7280; font-size:0.9rem;">No tests requested</p>
-            {% endfor %}
-        </div>
+    <!-- Hero -->
+    <div class="page-hero">
+      <a routerLink="/appointments" class="back-link">← Back to Appointments</a>
+      <h1>Consultation Summary</h1>
+      <p>APPOINTMENT #{{ appointmentId }}</p>
+      <span class="readonly-badge">👁 READ-ONLY VIEW</span>
     </div>
-</div>
-{% endblock %} -->
+
+    <div class="content">
+      <div class="summary-grid">
+
+        <!-- Diagnosis & Notes -->
+        <div class="summary-card full-width">
+          <h3>🩺 Diagnosis & Notes</h3>
+          <div class="info-row">
+            <span class="info-label">Diagnosis</span>
+            <span class="info-value">{{ consultation.diagnosis }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Clinical Notes</span>
+            <span class="info-value">{{ consultation.clinical_notes }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Date</span>
+            <span class="info-value">{{ consultation.created_at | date:'MMM d, y' }}</span>
+          </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="summary-card">
+          <h3>💊 Prescriptions</h3>
+          <div *ngIf="consultation.prescriptions.length > 0; else noPrescriptions">
+            <div *ngFor="let rx of consultation.prescriptions" class="drug-chip">
+              💊 {{ rx.drug_name }} — {{ rx.dose }} — {{ rx.duration_days }} days
+            </div>
+          </div>
+          <ng-template #noPrescriptions>
+            <p class="empty-text">No prescriptions</p>
+          </ng-template>
+        </div>
+
+        <!-- Tests -->
+        <div class="summary-card">
+          <h3>🔬 Requested Tests</h3>
+          <div *ngIf="consultation.tests.length > 0; else noTests">
+            <div *ngFor="let test of consultation.tests" class
