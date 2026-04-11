@@ -1,0 +1,351 @@
+import { DatePipe, DecimalPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Subject, interval } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { ChartPeriod, DoctorDashboardStats, PendingAppointmentRow, QueueItem, StatusSegment } from '../../../../models/doctor-dashboard.model';
+import { DoctorDashboardService } from '../../../../services/doctor-dashboard';
+
+@Component({
+  selector: 'app-doctor-dashboard',
+  imports: [NgIf, NgFor, NgClass, DatePipe, DecimalPipe, RouterLink],
+  templateUrl: './doctor-dashboard.html',
+  styleUrl: './doctor-dashboard.css',
+})
+export class DoctorDashboard implements OnInit, OnDestroy {
+  private readonly service = inject(DoctorDashboardService);
+  private readonly destroy$ = new Subject<void>();
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+  readonly today = new Date();
+
+  readonly statsLoading = signal(true);
+  readonly statsError = signal(false);
+  readonly stats = signal<DoctorDashboardStats | null>(null);
+
+  readonly chartLoading = signal(true);
+  readonly chartError = signal(false);
+  readonly chartPeriod = signal<ChartPeriod>('7d');
+  readonly chartPoints = signal<{ date: string; label: string; count: number }[]>([]);
+
+  readonly breakdownLoading = signal(true);
+  readonly breakdownError = signal(false);
+  readonly breakdownSegments = signal<StatusSegment[]>([]);
+  readonly breakdownTotal = signal(0);
+
+  readonly pendingLoading = signal(true);
+  readonly pendingError = signal(false);
+  readonly pendingRequests = signal<PendingAppointmentRow[]>([]);
+  readonly fadingIds = signal<Set<number>>(new Set());
+
+  readonly queueLoading = signal(true);
+  readonly queueError = signal(false);
+  readonly queueItems = signal<QueueItem[]>([]);
+
+  readonly doctorId = signal<number | null>(null);
+
+  readonly actionInProgress = signal<number | null>(null);
+
+  readonly toastVisible = signal(false);
+  readonly toastMessage = signal('');
+
+  readonly chartMax = computed(() => {
+    const pts = this.chartPoints();
+    if (!pts.length) return 0;
+    return Math.max(...pts.map((p) => p.count));
+  });
+
+  readonly queuePreview = computed(() => this.queueItems().slice(0, 5));
+
+  readonly chartEmpty = computed(() => !this.chartLoading() && !this.chartError() && this.chartMax() === 0);
+
+  ngOnInit(): void {
+    this.loadStats();
+    this.loadChart();
+    this.loadBreakdown();
+    this.loadDoctorAndPending();
+    this.loadQueue(true);
+    this.startQueueRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.toastTimer !== null) {
+      clearTimeout(this.toastTimer);
+    }
+  }
+
+  loadStats(): void {
+    this.statsLoading.set(true);
+    this.statsError.set(false);
+    this.service
+      .getStats()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.statsLoading.set(false)),
+      )
+      .subscribe({
+        next: (s) => this.stats.set(s),
+        error: () => {
+          this.statsError.set(true);
+          this.stats.set(null);
+        },
+      });
+  }
+
+  loadChart(): void {
+    this.chartLoading.set(true);
+    this.chartError.set(false);
+    const period = this.chartPeriod();
+    this.service
+      .getAppointmentsOverTime(period)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.chartLoading.set(false)),
+      )
+      .subscribe({
+        next: (r) => this.chartPoints.set(r.points ?? []),
+        error: () => {
+          this.chartError.set(true);
+          this.chartPoints.set([]);
+        },
+      });
+  }
+
+  setChartPeriod(p: ChartPeriod): void {
+    this.chartPeriod.set(p);
+    this.loadChart();
+  }
+
+  loadBreakdown(): void {
+    this.breakdownLoading.set(true);
+    this.breakdownError.set(false);
+    this.service
+      .getStatusBreakdown()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.breakdownLoading.set(false)),
+      )
+      .subscribe({
+        next: (r) => {
+          this.breakdownSegments.set(r.segments ?? []);
+          this.breakdownTotal.set(r.total ?? 0);
+        },
+        error: () => {
+          this.breakdownError.set(true);
+          this.breakdownSegments.set([]);
+          this.breakdownTotal.set(0);
+        },
+      });
+  }
+
+  loadDoctorAndPending(): void {
+    this.pendingLoading.set(true);
+    this.pendingError.set(false);
+    this.service
+      .getLoggedInDoctor()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (d) => {
+          this.doctorId.set(d.id);
+          this.loadPendingRequests();
+        },
+        error: () => {
+          this.pendingError.set(true);
+          this.pendingLoading.set(false);
+          this.pendingRequests.set([]);
+        },
+      });
+  }
+
+  loadPendingRequests(): void {
+    const id = this.doctorId();
+    if (id == null) {
+      return;
+    }
+    this.pendingLoading.set(true);
+    this.pendingError.set(false);
+    this.service
+      .getPendingRequests(id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.pendingLoading.set(false)),
+      )
+      .subscribe({
+        next: (rows) => this.pendingRequests.set(rows),
+        error: () => {
+          this.pendingError.set(true);
+          this.pendingRequests.set([]);
+        },
+      });
+  }
+
+  loadQueue(initial: boolean): void {
+    if (initial) {
+      this.queueLoading.set(true);
+    }
+    this.queueError.set(false);
+    this.service
+      .getQueueToday()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          if (initial) {
+            this.queueLoading.set(false);
+          }
+        }),
+      )
+      .subscribe({
+        next: (r) => this.queueItems.set(r.items ?? []),
+        error: () => {
+          this.queueError.set(true);
+          if (initial) {
+            this.queueItems.set([]);
+          }
+        },
+      });
+  }
+
+  startQueueRefresh(): void {
+    interval(30_000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.loadQueue(false));
+  }
+
+  barHeight(count: number): number {
+    const max = this.chartMax();
+    if (max === 0) {
+      return 0;
+    }
+    return (count / max) * 100;
+  }
+
+  formatWait(minutes: number): string {
+    if (minutes < 1) {
+      return '< 1 min';
+    }
+    return `${minutes} min`;
+  }
+
+  waitClass(minutes: number): string {
+    if (minutes < 15) {
+      return 'wait-ok';
+    }
+    if (minutes <= 30) {
+      return 'wait-warning';
+    }
+    return 'wait-critical';
+  }
+
+  patientDisplayName(row: PendingAppointmentRow): string {
+    const fn = (row.patient_first_name || '').trim();
+    const ln = (row.patient_last_name || '').trim();
+    const combined = `${fn} ${ln}`.trim();
+    return combined || row.patient_username || 'Patient';
+  }
+
+  patientInitials(row: PendingAppointmentRow): string {
+    const fn = (row.patient_first_name || '').trim();
+    const ln = (row.patient_last_name || '').trim();
+    if (fn && ln) {
+      return (fn[0] + ln[0]).toUpperCase();
+    }
+    const name = this.patientDisplayName(row);
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  statusSegmentClass(status: string): string {
+    const map: Record<string, string> = {
+      COMPLETED: 'seg-completed',
+      CONFIRMED: 'seg-confirmed',
+      CHECKED_IN: 'seg-checked-in',
+      REQUESTED: 'seg-requested',
+      NO_SHOW: 'seg-no-show',
+      CANCELLED: 'seg-cancelled',
+    };
+    return map[status] || 'seg-default';
+  }
+
+  statusLegendClass(status: string): string {
+    return `legend-dot ${this.statusSegmentClass(status)}`;
+  }
+
+  trackBySkeleton = (i: number) => i;
+
+  trackByPoint = (_: number, p: { date: string }) => p.date;
+  trackBySegment = (_: number, s: StatusSegment) => s.status;
+  trackByPending = (_: number, r: PendingAppointmentRow) => r.id;
+  trackByQueue = (_: number, q: QueueItem) => q.id;
+
+  confirm(id: number): void {
+    this.actionInProgress.set(id);
+    this.service
+      .confirmAppointment(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.actionInProgress.set(null);
+          this.showToast('Appointment confirmed');
+          this.beginRemovePendingRow(id);
+          this.loadStats();
+        },
+        error: () => this.actionInProgress.set(null),
+      });
+  }
+
+  reject(id: number): void {
+    this.actionInProgress.set(id);
+    this.service
+      .rejectAppointment(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.actionInProgress.set(null);
+          this.showToast('Request declined');
+          this.beginRemovePendingRow(id);
+          this.loadStats();
+        },
+        error: () => this.actionInProgress.set(null),
+      });
+  }
+
+  private beginRemovePendingRow(id: number): void {
+    this.fadingIds.update((s) => new Set(s).add(id));
+    setTimeout(() => {
+      this.pendingRequests.update((list) => list.filter((a) => a.id !== id));
+      this.fadingIds.update((s) => {
+        const n = new Set(s);
+        n.delete(id);
+        return n;
+      });
+    }, 380);
+  }
+
+  private showToast(message: string): void {
+    this.toastMessage.set(message);
+    this.toastVisible.set(true);
+    if (this.toastTimer !== null) {
+      clearTimeout(this.toastTimer);
+    }
+    this.toastTimer = setTimeout(() => {
+      this.toastVisible.set(false);
+      this.toastTimer = null;
+    }, 3500);
+  }
+
+  isFading(id: number): boolean {
+    return this.fadingIds().has(id);
+  }
+
+  formatStatusLabel(status: string): string {
+    return status
+      .split('_')
+      .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  readonly skeletonChartBars = [1, 2, 3, 4, 5, 6, 7];
+  readonly skeletonRows3 = [1, 2, 3];
+  readonly skeletonQueueRows = [1, 2, 3, 4, 5];
+}

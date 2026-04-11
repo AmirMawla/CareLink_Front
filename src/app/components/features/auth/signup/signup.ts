@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

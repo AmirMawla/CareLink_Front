@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component ,inject,Inject} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { LogoutResponse } from '../../layouts/login/login';
+import { LogoutResponse } from '../../features/auth/login/login';
 import { environment } from '../../../../environments/environment';
 
 @Component({
