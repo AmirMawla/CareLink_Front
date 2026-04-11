@@ -55,8 +55,20 @@
           </ng-template>
         </div>
 
-        <!-- Tests -->
+       <!-- Tests -->
         <div class="summary-card">
           <h3>🔬 Requested Tests</h3>
           <div *ngIf="consultation.tests.length > 0; else noTests">
-            <div *ngFor="let test of consultation.tests" class
+            <div *ngFor="let test of consultation.tests" class="test-chip">
+              🔬 {{ test.test_name }}
+            </div>
+          </div>
+          <ng-template #noTests>
+            <p class="empty-text">No tests requested</p>
+          </ng-template>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

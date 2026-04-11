@@ -2,28 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-
-interface PrescriptionItem {
-  id: number;
-  drug_name: string;
-  dose: string;
-  duration_days: number;
-}
-
-interface TestRequest {
-  id: number;
-  test_name: string;
-}
-
-interface Consultation {
-  id: number;
-  appointment: number;
-  diagnosis: string;
-  clinical_notes: string;
-  prescriptions: PrescriptionItem[];
-  tests: TestRequest[];
-  created_at: string;
-}
+import { Consultation,TestRequest,PrescriptionItem } from '../../../../models/consultation';
 
 @Component({
   selector: 'app-patient-summary',
