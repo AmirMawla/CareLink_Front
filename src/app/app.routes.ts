@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 import { Doctorqueue } from './components/layouts/erm&consultation/doctorqueue/doctorqueue';
 import { Consultation } from './components/layouts/erm&consultation/consultation/consultation';
 import { PatientSummary } from './components/layouts/erm&consultation/patient-summary/patient-summary';
+import { Doctorqueue } from './components/layouts/doctorqueue/doctorqueue';
+import { Consultation } from './components/layouts/consultation/consultation';
+import { PatientSummary } from './components/layouts/patient-summary/patient-summary';
+import {Login} from './components/layouts/login/login'
+
 export const routes: Routes = [
  {
     path: 'doctor/queue',
@@ -14,6 +19,11 @@ export const routes: Routes = [
   {     
     path: 'doctor/patient-summary/:id',
     component: PatientSummary
+  },
+  
+  {
+    path : 'auth/login',
+    component: Login
   }
 
 ];
