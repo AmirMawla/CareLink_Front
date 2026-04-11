@@ -1,0 +1,74 @@
+<div class="summary-page">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading summary...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error && consultation">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <a routerLink="/appointments" class="back-link">← Back to Appointments</a>
+      <h1>Consultation Summary</h1>
+      <p>APPOINTMENT #{{ appointmentId }}</p>
+      <span class="readonly-badge">👁 READ-ONLY VIEW</span>
+    </div>
+
+    <div class="content">
+      <div class="summary-grid">
+
+        <!-- Diagnosis & Notes -->
+        <div class="summary-card full-width">
+          <h3>🩺 Diagnosis & Notes</h3>
+          <div class="info-row">
+            <span class="info-label">Diagnosis</span>
+            <span class="info-value">{{ consultation.diagnosis }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Clinical Notes</span>
+            <span class="info-value">{{ consultation.clinical_notes }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Date</span>
+            <span class="info-value">{{ consultation.created_at | date:'MMM d, y' }}</span>
+          </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="summary-card">
+          <h3>💊 Prescriptions</h3>
+          <div *ngIf="consultation.prescriptions.length > 0; else noPrescriptions">
+            <div *ngFor="let rx of consultation.prescriptions" class="drug-chip">
+              💊 {{ rx.drug_name }} — {{ rx.dose }} — {{ rx.duration_days }} days
+            </div>
+          </div>
+          <ng-template #noPrescriptions>
+            <p class="empty-text">No prescriptions</p>
+          </ng-template>
+        </div>
+
+       <!-- Tests -->
+        <div class="summary-card">
+          <h3>🔬 Requested Tests</h3>
+          <div *ngIf="consultation.tests.length > 0; else noTests">
+            <div *ngFor="let test of consultation.tests" class="test-chip">
+              🔬 {{ test.test_name }}
+            </div>
+          </div>
+          <ng-template #noTests>
+            <p class="empty-text">No tests requested</p>
+          </ng-template>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
