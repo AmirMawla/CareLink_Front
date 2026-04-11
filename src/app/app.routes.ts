@@ -3,7 +3,7 @@ import { Doctorqueue } from './components/layouts/doctorqueue/doctorqueue';
 import { Consultation } from './components/layouts/consultation/consultation';
 import { PatientSummary } from './components/layouts/patient-summary/patient-summary';
 import {Login} from './components/layouts/login/login'
-
+import {Signup} from './components/layouts/signup/signup'
 export const routes: Routes = [
  {
     path: 'doctor/queue',
@@ -21,6 +21,10 @@ export const routes: Routes = [
   {
     path : 'auth/login',
     component: Login
+  },
+  {
+    path : 'auth/register',
+    component : Signup
   }
 
 ];
