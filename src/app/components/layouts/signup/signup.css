@@ -1,0 +1,178 @@
+/* الخلفية والتوسيط */
+.signup-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--surface-container);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 40px 20px;
+}
+
+/* بطاقة التسجيل */
+.signup-card {
+  background-color: var(--surface-lowest);
+  width: 100%;
+  max-width: 650px; /* أعرض من اللوجين عشان الحقول أكتر */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 71, 141, 0.08);
+}
+
+/* العنوان */
+.signup-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.signup-header h2 {
+  color: var(--primary);
+  margin: 0 0 8px 0;
+  font-size: 28px;
+}
+
+.signup-header p {
+  color: var(--info);
+  margin: 0;
+  font-size: 15px;
+}
+
+/* رسائل الأخطاء */
+.alerts-container {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alert-info {
+  background-color: var(--error-container);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+/* تقسيم الحقول (Grid) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+  margin-bottom: 20px;
+}
+
+/* تنسيق العناوين للحقول */
+.form-group label {
+  margin-bottom: 8px;
+  color: var(--primary-fixed);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* تنسيق الـ Inputs والـ Selects */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 16px;
+  border: 1px solid var(--surface-high);
+  border-radius: 8px;
+  background-color: var(--surface-low);
+  color: #333;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+/* تحديد لون خاص لـ Select الخاص بالـ Role */
+.role-select {
+  background-color: var(--primary-light) !important;
+  border-color: var(--primary-container) !important;
+  color: var(--primary) !important;
+  font-weight: bold;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  background-color: var(--surface-lowest);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* فاصل بين الحقول الأساسية والحقول الديناميكية */
+.section-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 30px 0 20px 0;
+  color: var(--info);
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--surface-high);
+}
+
+.section-divider span {
+  padding: 0 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+/* زر التسجيل */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background-color: var(--primary);
+  color: var(--surface-lowest);
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-container);
+}
+
+/* تجاوب مع الموبايل (Responsive) */
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr; /* يخلي الحقول تحت بعض في الموبايل */
+    gap: 0;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+}
+
+.form-group input {
+  text-align: left;
+}
+
+.form-group label {
+  text-align: left;
+}
