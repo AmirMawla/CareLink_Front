@@ -61,7 +61,12 @@ export class Login implements OnInit{
 
     this.isLoading = true;
     this.errorMessage = '';
-
+     
+    if(localStorage.getItem('token')){
+      localStorage.removeItem('token');
+      this.cdr.detectChanges();
+    }
+    
     this.httpClient.post<LoginResponse>(`${this.apiurl}/api/accounts/login/`, {
       username: this.username,
       password: this.password
