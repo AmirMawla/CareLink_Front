@@ -68,8 +68,10 @@ export class Signup {
       return false;
     }
 
-    if(!this.email || this.email.length>255 /* || regex*/){
-      this.messages.push("enter valid email");
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!this.email || this.email.length > 255 || !emailRegex.test(this.email)) {
+      this.messages.push("Please enter a valid email address");
       return false;
     }
 
@@ -85,7 +87,7 @@ export class Signup {
         this.messages.push("choose valid speciality");
         return false;
       }
-      if(!this.session_duration || !session_durations.includes(this.session_duration)){
+      if(!this.session_duration || !session_durations.includes(Number(this.session_duration))){
         this.messages.push("choose valid session duration");
         return false;
       }
@@ -102,7 +104,7 @@ export class Signup {
         password:this.password,
         role:this.role,
         specialty:this.specialty,
-        session_duration:this.session_duration,
+        session_duration:(Number(this.session_duration)),
         buffer_time:this.buffer_time
       }
     
@@ -167,6 +169,7 @@ export class Signup {
         console.log("signedUp in successfully");
         this.messages.push("signedUp in successfully")
         this.cdr.detectChanges();
+        this.router.navigate(['/auth/login']);
       },
       error: (error) => {
         console.error(error);
