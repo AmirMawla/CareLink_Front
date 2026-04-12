@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import {
   AppointmentsOverTimeResponse,
   ChartPeriod,
+  DoctorAppointmentsListResponse,
   DoctorDashboardStats,
   DoctorProfileMe,
   PendingAppointmentRow,
@@ -58,5 +59,21 @@ export class DoctorDashboardService {
 
   rejectAppointment(id: number): Observable<unknown> {
     return this.http.patch(this.api.resolve(`/api/appointments/${id}/`), { status: 'CANCELLED' });
+  }
+
+  getDoctorAppointmentsList(params: Record<string, string | number>): Observable<DoctorAppointmentsListResponse> {
+    let httpParams = new HttpParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null || value === '') continue;
+      httpParams = httpParams.set(key, String(value));
+    }
+    return this.http.get<DoctorAppointmentsListResponse>(
+      this.api.resolve('/api/dashboard/doctor/appointments'),
+      { params: httpParams },
+    );
+  }
+
+  patchDashboardAppointmentStatus(id: number, status: string): Observable<unknown> {
+    return this.http.patch(this.api.resolve(`/api/dashboard/doctor/appointments/${id}/status`), { status });
   }
 }
