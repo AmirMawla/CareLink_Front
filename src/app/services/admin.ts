@@ -1,39 +1,46 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment.development';
-import { Observable, finalize } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/api/dashboard/admin/users/`;
+  private baseUrl = `${environment.apiUrl}/api/dashboard/admin`;
 
-  // Global loading state to prevent UI lag
   loading = signal<boolean>(false);
-  error = signal<string | null>(null);
 
+  // --- User Management ---
   getUsers(params: any): Observable<any> {
-    this.loading.set(true);
-    this.error.set(null);
-    
     let httpParams = new HttpParams();
-    Object.keys(params).forEach(key => {
-      if (params[key]) httpParams = httpParams.set(key, params[key]);
-    });
-
-    return this.http.get<any>(this.baseUrl, { params: httpParams }).pipe(
-      finalize(() => this.loading.set(false))
-    );
+    Object.keys(params).forEach(key => { if (params[key]) httpParams = httpParams.set(key, params[key]); });
+    return this.http.get(`${this.baseUrl}/users/`, { params: httpParams });
   }
 
+  // FIXED: Added missing method
   getUserById(id: number): Observable<any> {
-    this.loading.set(true);
-    return this.http.get<any>(`${this.baseUrl}${id}/`).pipe(
-      finalize(() => this.loading.set(false))
-    );
+    return this.http.get(`${this.baseUrl}/users/${id}/`);
   }
 
   toggleUserStatus(id: number, isActive: boolean): Observable<any> {
-    return this.http.patch(`${this.baseUrl}${id}/`, { is_active: isActive });
+    return this.http.patch(`${this.baseUrl}/users/${id}/`, { is_active: isActive });
   }
+
+  // --- Analytics ---
+  getOverview(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/overview/`); }
+  getUserStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/users/`); }
+  getDoctorStats(params?: any): Observable<any> {
+    let p = new HttpParams();
+    if (params?.doctor_id) p = p.set('doctor_id', params.doctor_id);
+    if (params?.specialty) p = p.set('specialty', params.specialty);
+    return this.http.get(`${this.baseUrl}/analytics/doctors/`, { params: p });
+  }
+  getPatientStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/patients/`); }
+  getAppointmentStats(doctor_id?: number): Observable<any> {
+    const params = doctor_id ? { params: new HttpParams().set('doctor_id', doctor_id) } : {};
+    return this.http.get(`${this.baseUrl}/analytics/appointments/`, params);
+  }
+  getConsultationStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/consultations/`); }
+  getSchedulingStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/scheduling/`); }
+  getAuditTrail(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/audit_trail/`); }
 }

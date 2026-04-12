@@ -20,10 +20,11 @@ export class UserDetails implements OnInit {
 
   ngOnInit() {
     this.AdminService.getUserById(this.user.id).subscribe({
-      next: (data) => {
-        this.fullProfile.set(data);
+      next: (res: any) => {
+        this.fullProfile.set(res);
         this.loading.set(false);
-      }
+      },
+      error: () => this.loading.set(false)
     });
   }
 }
