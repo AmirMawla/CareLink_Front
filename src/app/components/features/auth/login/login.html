@@ -39,5 +39,12 @@
         <span *ngIf="isLoading" class="loader-text">loading ...</span>
       </button>
     </form>
+    <a 
+      [class.disabled]="isLoading" 
+      [style.pointer-events]="isLoading ? 'none' : 'auto'"
+      [style.opacity]="isLoading ? '0.5' : '1'"
+      href="/auth/register">
+      Create user
+    </a>  
   </div>
 </div>

@@ -5,6 +5,7 @@ import { DOCTOR_ROUTES } from './components/features/doctor/doctor.routes';
 
 import {Login} from './components/features/auth/login/login'
 import {Signup} from './components/features/auth/signup/signup'
+import {Profile} from './components/features/auth/profile/profile'
 
 export const routes: Routes = [
   {
@@ -14,6 +15,10 @@ export const routes: Routes = [
   {
     path : 'auth/register',
     component : Signup
+  },
+  {
+    path : 'auth/profile',
+    component : Profile
   },
   {
     path: 'doctor',
