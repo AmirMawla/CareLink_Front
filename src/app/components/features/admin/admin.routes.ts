@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { UserList } from './user-list/user-list';
 import { AnalyticsDashboard } from './analytics-dashboard/analytics-dashboard';
 import { ClinicalAnalytics } from './clinical-analytics/clinical-analytics';
+import { PatientAnalytics } from './patient-analytics/patient-analytics';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -23,5 +24,10 @@ export const ADMIN_ROUTES: Routes = [
   path: 'clinical-insights',
   component: ClinicalAnalytics,
   title: 'Clinical Insights'
+},
+{
+  path: 'patients-analytics',
+  component: PatientAnalytics,
+  title: 'Patient Analytics'
 }
 ];
