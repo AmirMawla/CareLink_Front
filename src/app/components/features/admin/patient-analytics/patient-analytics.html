@@ -1,0 +1,126 @@
+<div class="fluid-container" *ngIf="!isLoading(); else loadingTpl">
+    <div class="page-header d-flex justify-between align-end mb-5">
+        <div>
+            <h1 class="page-title">Patient Engagement</h1>
+            <p class="page-subtitle">Tracking the journey from registration to active medical care</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary btn-sm" (click)="loadPatientStats()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    class="mr-1">
+                    <path
+                        d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                </svg>
+                Sync Data
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-grid mb-5">
+        <div class="stat-card primary-stat">
+            <div class="stat-content">
+                <div class="stat-label">Total Patient Base</div>
+                <div class="stat-value">{{patientData()?.total_patients}}</div>
+                <div class="stat-meta">
+                    <span class="badge badge-success">{{patientData()?.active_patients}} Active Now</span>
+                </div>
+            </div>
+            <div class="stat-icon">👥</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Growth (This Month)</div>
+                <div class="stat-value text-primary">+{{patientData()?.new_this_month}}</div>
+                <div class="stat-trend up">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="18 15 12 9 6 15" />
+                    </svg>
+                    {{patientData()?.new_this_week}} this week
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Patient Loyalty</div>
+                <div class="stat-value">{{patientData()?.average_appointments_per_patient}}</div>
+                <div class="stat-meta">Avg. visits per patient</div>
+            </div>
+            <div class="stat-icon opacity-20">⭐</div>
+        </div>
+    </div>
+
+    <div class="main-layout d-grid gap-5">
+        <div class="card glass-card">
+            <div class="card-header mb-4">
+                <h3 class="card-title">Medical Conversion Pathway</h3>
+                <p class="text-xxs text-muted">Analysis of patient progression from booking to consultation</p>
+            </div>
+
+            <div class="chart-wrapper">
+                <apx-chart [series]="funnelChartOptions.series" [chart]="funnelChartOptions.chart"
+                    [plotOptions]="funnelChartOptions.plotOptions" [colors]="funnelChartOptions.colors"
+                    [xaxis]="funnelChartOptions.xaxis" [dataLabels]="funnelChartOptions.dataLabels"
+                    [grid]="{ show: false }"></apx-chart>
+            </div>
+        </div>
+
+        <div class="d-flex flex-col gap-4">
+            <h3 class="card-title px-2">Retention Metrics</h3>
+
+            <div class="metric-row-card">
+                <div class="m-icon bg-info-container">💊</div>
+                <div class="m-info">
+                    <div class="m-label">Prescription Coverage</div>
+                    <div class="m-val">{{patientData()?.patients_with_prescriptions}} <small>patients</small></div>
+                </div>
+                <div class="m-progress">
+                    <div class="m-bar"
+                        [style.width.%]="(patientData()?.patients_with_prescriptions / patientData()?.total_patients) * 100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row-card">
+                <div class="m-icon bg-success-container">🔬</div>
+                <div class="m-info">
+                    <div class="m-label">Diagnostic Adoption</div>
+                    <div class="m-val">{{patientData()?.patients_with_test_requests}} <small>patients</small></div>
+                </div>
+                <div class="m-progress">
+                    <div class="m-bar bg-success"
+                        [style.width.%]="(patientData()?.patients_with_test_requests / patientData()?.total_patients) * 100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row-card">
+                <div class="m-icon bg-primary-light">🩺</div>
+                <div class="m-info">
+                    <div class="m-label">Advanced Consultations</div>
+                    <div class="m-val">{{patientData()?.patients_with_consultations}} <small>patients</small></div>
+                </div>
+                <div class="m-progress">
+                    <div class="m-bar bg-primary"
+                        [style.width.%]="(patientData()?.patients_with_consultations / patientData()?.total_patients) * 100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-alert mt-2">
+                <div class="alert-icon">💡</div>
+                <p><strong>Retention insight:</strong> Your diagnostic adoption rate is at <b>{{
+                        (patientData()?.patients_with_test_requests / patientData()?.total_patients) | percent }}</b>.
+                    Consider streamlining lab bookings to increase this conversion.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTpl>
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p class="font-display fw-600 mt-3">Synthesizing Patient Data...</p>
+    </div>
+</ng-template>

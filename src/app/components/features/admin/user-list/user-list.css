@@ -1,0 +1,127 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+::ng-deep .page-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: var(--sp-4);
+}
+
+/* Inactive Row Styling */
+.inactive-row {
+    background-color: #FDF2F2 !important;
+    /* Very light red */
+    opacity: 0.85;
+}
+
+.inactive-row:hover {
+    background-color: #FEE2E2 !important;
+}
+
+/* Status Toast */
+.status-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: var(--r-md);
+    color: white;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease;
+}
+
+.status-toast.success {
+    background: var(--success);
+}
+
+.status-toast.error {
+    background: var(--error);
+}
+
+/* FIXING BUTTON COLORS (No more white-on-white) */
+.btn-primary:hover {
+    background: var(--primary-fixed) !important;
+    color: white !important;
+}
+
+.btn-secondary {
+    background: var(--surface-container);
+    color: var(--on-surface);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-high) !important;
+    color: var(--on-surface) !important;
+}
+
+.btn-tertiary {
+    color: var(--primary);
+}
+
+.btn-tertiary:hover {
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+
+/* Badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.badge-doctor {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+.badge-patient {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.badge-receptionist {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+.badge-admin {
+    background: #F3E8FF;
+    color: #7E22CE;
+}
+
+/* Layout & Table */
+.table-clean th {
+    padding: 16px 24px;
+    background: var(--surface-low);
+    border-bottom: 2px solid var(--outline);
+}
+
+.table-clean td {
+    padding: 16px 24px;
+}
+
+.pagination-bar {
+    padding: 16px 24px;
+    background: var(--surface-low);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

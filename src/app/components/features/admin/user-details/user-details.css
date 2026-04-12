@@ -1,0 +1,52 @@
+.glass-modal {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    max-width: 500px;
+}
+
+.profile-hero {
+    text-align: center;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.detail-item.full {
+    grid-column: span 2;
+}
+
+.detail-item label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--on-surface-3);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.detail-item p {
+    background: var(--surface-low);
+    padding: 8px 12px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    margin: 0;
+}
+
+.close-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface-low);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-circle:hover {
+    background: var(--error-container);
+    color: var(--error);
+}

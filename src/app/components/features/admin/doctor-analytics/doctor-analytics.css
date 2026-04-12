@@ -1,0 +1,106 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+::ng-deep .page-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: var(--sp-4);
+}
+
+.layout-main {
+    grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 1024px) {
+    .layout-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: var(--r-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--outline);
+}
+
+.stat-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.stat-meta {
+    font-size: 11px;
+    margin-top: 8px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+/* Heatmap/Bar Visualizer */
+.heatmap-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 120px;
+    padding-bottom: 20px;
+    gap: 8px;
+}
+
+.heat-cell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.heat-bar {
+    width: 100%;
+    background: var(--primary-light);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.heat-bar:hover {
+    background: var(--primary);
+}
+
+.heat-label {
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--on-surface-3);
+}
+
+.heat-val {
+    position: absolute;
+    top: -20px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--primary);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.heat-cell:hover .heat-val {
+    opacity: 1;
+}
+
+.loading-state {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

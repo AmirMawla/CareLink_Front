@@ -1,0 +1,95 @@
+<div class="fluid-container">
+    <div class="status-toast" *ngIf="statusMessage()" [ngClass]="statusMessage()?.type">
+        {{ statusMessage()?.text }}
+    </div>
+
+    <div class="page-header d-flex justify-between align-end">
+        <div>
+            <h1 class="page-title">User Management</h1>
+            <p class="page-subtitle">Administrative control for all system accounts</p>
+        </div>
+    </div>
+
+    <div class="card mb-4 filter-container">
+        <div class="d-flex gap-3 flex-wrap align-center">
+            <div class="search-box flex-1">
+                <input type="text" class="form-control" placeholder="Search by name, email..."
+                    [(ngModel)]="filters.search" (keyup.enter)="handleFilterChange()">
+            </div>
+            <select class="form-control w-auto" [(ngModel)]="filters.role" (change)="handleFilterChange()">
+                <option value="">All Roles</option>
+                <option value="DOCTOR">Doctors</option>
+                <option value="PATIENT">Patients</option>
+                <option value="RECEPTIONIST">Receptionists</option>
+            </select>
+            <select class="form-control w-auto" [(ngModel)]="filters.is_active" (change)="handleFilterChange()">
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <button class="btn btn-secondary" (click)="resetFilters()">Reset</button>
+        </div>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>User Info</th>
+                        <th>Role</th>
+                        <th>Member Since</th>
+                        <th>Account Status</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users()" [class.inactive-row]="!user.is_active">
+                        <td>
+                            <div class="d-flex align-center gap-3">
+                                <div class="avatar avatar-md"
+                                    [ngClass]="user.is_active ? 'avatar-primary' : 'avatar-error'">{{user.username[0]}}
+                                </div>
+                                <div>
+                                    <div class="fw-700">{{user.full_name}}</div>
+                                    <div class="text-muted text-xxs">{{user.email}}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge" [ngClass]="getRoleClass(user.role)">{{user.role_display}}</span></td>
+                        <td class="text-muted">{{user.date_joined | date:'mediumDate'}}</td>
+                        <td>
+                            <div class="d-flex align-center gap-2">
+                                <label class="switch">
+                                    <input type="checkbox" [checked]="user.is_active"
+                                        (change)="toggleStatus(user, $event)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="text-tiny fw-600"
+                                    [ngClass]="user.is_active ? 'text-success' : 'text-error'">
+                                    {{user.is_active ? 'ACTIVE' : 'INACTIVE'}}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-right">
+                            <button class="btn btn-tertiary btn-sm action-link" (click)="viewDetails(user)">View
+                                Details</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-bar">
+            <span class="text-muted text-tiny">Total: {{totalCount()}} Users</span>
+            <div class="d-flex gap-2">
+                <button class="btn btn-secondary btn-sm" [disabled]="filters.page === 1"
+                    (click)="filters.page = filters.page - 1; loadUsers()">Prev</button>
+                <button class="btn btn-secondary btn-sm" [disabled]="users().length < 10"
+                    (click)="filters.page = filters.page + 1; loadUsers()">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-user-details *ngIf="selectedUser()" [user]="selectedUser()" (onClose)="closeDetails()"></app-user-details>
