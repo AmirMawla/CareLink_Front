@@ -44,6 +44,7 @@ export class Signup {
   date_of_birth="";
   phone_number="";
   medical_history="";
+  session_price = 0;
 
   //Patient attributes
   doctor_id =-1;
@@ -94,7 +95,12 @@ export class Signup {
       if(!this.buffer_time || this.buffer_time<1){
         this.messages.push("enter valid buffer time");
         return false;
-      }           
+      }    
+      
+      if(!this.session_price || this.session_price<1){
+        this.messages.push("enter valid price");
+        return false;
+      }  
 
       this.payload =
       { first_name:this.first_name,
@@ -105,9 +111,12 @@ export class Signup {
         role:this.role,
         specialty:this.specialty,
         session_duration:(Number(this.session_duration)),
-        buffer_time:this.buffer_time
+        buffer_time:this.buffer_time,
+        session_price : (Number(this.session_price))
       }
-    
+      
+      console.log(this.payload);
+      //console.log(typeof this.payload['session_price']);
 
     }else if(this.role=="PATIENT"){
       if(!this.date_of_birth /*||date_of_birth = serializers.DateField(required=True, input_formats=['%Y-%m-%d'], write_only=True)*/){
