@@ -43,4 +43,17 @@ export class AdminService {
   getConsultationStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/consultations/`); }
   getSchedulingStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/scheduling/`); }
   getAuditTrail(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/audit_trail/`); }
+
+
+  downloadReport(endpoint: string, params: any): Observable<Blob> {
+    let httpParams = new HttpParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) httpParams = httpParams.set(key, params[key]);
+    });
+
+    return this.http.get(`${this.baseUrl}/reports/${endpoint}/`, {
+      params: httpParams,
+      responseType: 'blob'
+    });
+  }
 }
