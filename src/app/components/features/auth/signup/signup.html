@@ -51,7 +51,7 @@
       </div>
 
       <ng-container *ngIf="role === 'DOCTOR'">
-        <div class="section-divider"><span>doctoe data </span></div>
+        <div class="section-divider"><span>doctor data </span></div>
         
         <div class="form-row">
           <div class="form-group">
@@ -70,8 +70,8 @@
             <label>session duration *</label>
             <select name="session_duration" [(ngModel)]="session_duration">
               <option value="-1" disabled selected>-- choose duration  --</option>
-              <option [value]="15">15 minutes</option>
-              <option [value]="30">30 minutes</option>
+              <option [value]=15>15 minutes</option>
+              <option [value]=30>30 minutes</option>
             </select>
           </div>
         </div>
