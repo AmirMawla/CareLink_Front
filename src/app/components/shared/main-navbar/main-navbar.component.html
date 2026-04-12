@@ -22,8 +22,13 @@
     </nav>
 
     <div class="cl-mainnav__actions">
-      <a class="btn btn-tertiary cl-mainnav__action-link" routerLink="/auth/login">Sign in</a>
-      <a class="btn btn-primary" routerLink="/auth/register">Create account</a>
+      @if(token){
+        <a class="btn btn-tertiary cl-mainnav__action-link" (click)="logout()">Logout</a>
+      }@else{
+        <a class="btn btn-tertiary cl-mainnav__action-link" routerLink="/auth/login">Sign in</a>
+        <a class="btn btn-primary" routerLink="/auth/register">Create account</a>
+      }
+      
 
       <button
         class="cl-mainnav__menu-btn"

@@ -1,19 +1,25 @@
 import { Routes } from '@angular/router';
-import { Doctorqueue } from './components/layouts/erm&consultation/doctorqueue/doctorqueue';
-import { Consultation } from './components/layouts/erm&consultation/consultation/consultation';
-import { PatientSummary } from './components/layouts/erm&consultation/patient-summary/patient-summary';
+
+import { DoctorLayoutComponent } from './components/layouts/doctor-layout/doctor-layout.component';
+import { DOCTOR_ROUTES } from './components/features/doctor/doctor.routes';
+
+import {Login} from './components/features/auth/login/login'
+import {Signup} from './components/features/auth/signup/signup'
+
 export const routes: Routes = [
- {
-    path: 'doctor/queue',
-    component: Doctorqueue
+  {
+    path : 'auth/login',
+    component: Login
   },
-  { 
-    path: 'doctor/consultation/:id',
-    component: Consultation
+  {
+    path : 'auth/register',
+    component : Signup
   },
-  {     
-    path: 'doctor/patient-summary/:id',
-    component: PatientSummary
-  }
+  {
+    path: 'doctor',
+    component: DoctorLayoutComponent,
+    children: DOCTOR_ROUTES
+  },
+    
 
 ];
