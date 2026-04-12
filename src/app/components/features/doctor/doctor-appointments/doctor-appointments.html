@@ -1,0 +1,403 @@
+<div class="page-header d-flex justify-between align-center flex-wrap gap-3 mb-4">
+  <div>
+    <h1 class="page-title font-display">My Appointments</h1>
+    <p class="page-subtitle mb-0">
+      Showing {{ totalCount() }} appointment{{ totalCount() === 1 ? '' : 's' }}
+    </p>
+  </div>
+  <a routerLink="/receptionist/appointments/book" class="btn btn-primary">Book Appointment</a>
+</div>
+
+<div class="search-shell card-flat mb-3">
+  <span class="search-icon" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </svg>
+  </span>
+  <input
+    type="search"
+    class="search-input"
+    placeholder="Search by patient name or appointment ID…"
+    [value]="searchInput()"
+    (input)="onSearchInput($any($event.target).value)"
+    aria-label="Search appointments"
+  />
+  <div class="search-trail d-flex align-center gap-2">
+    <span class="search-spinner-wrap" *ngIf="searchSpinner()">
+      <span class="spinner spinner-inline" aria-hidden="true"></span>
+    </span>
+    <button
+      type="button"
+      class="search-clear"
+      *ngIf="searchInput()"
+      (click)="clearSearchInput()"
+      aria-label="Clear search"
+    >
+      ×
+    </button>
+  </div>
+</div>
+
+<button
+  type="button"
+  class="btn btn-secondary filters-mobile-toggle"
+  (click)="toggleFiltersPanel()"
+  [attr.aria-expanded]="filtersPanelOpen()"
+>
+  Filters
+</button>
+
+<div
+  class="filter-panel filters-card card-flat mb-3"
+  [class.filter-panel-open]="filtersPanelOpen()"
+  id="doctor-appts-filters"
+>
+  <div class="filters-card-inner">
+    <div class="filters-section">
+      <span class="filter-label">Status</span>
+      <div class="status-pill-scroll">
+        <div class="segmented status-pill-row">
+          <button
+            type="button"
+            *ngFor="let opt of statusPillOptions; trackBy: trackByStatusPill"
+            [ngClass]="statusPillClass(opt)"
+            [class.appt-pill-active]="statusFilter() === opt"
+            (click)="setStatusFilter(opt)"
+          >
+            {{
+              opt === ''
+                ? 'All'
+                : opt === 'CHECKED_IN'
+                  ? 'Checked In'
+                  : opt === 'NO_SHOW'
+                    ? 'No-Show'
+                    : statusLabel(opt)
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters-section filters-section--controls">
+      <div class="filters-control-group">
+        <span class="filter-label">Visit type</span>
+        <div class="segmented d-flex flex-wrap gap-1">
+          <button
+            type="button"
+            class="appt-pill appt-pill-all"
+            [class.appt-pill-active]="telemedicineFilter() === 'all'"
+            (click)="setTelemedicineFilter('all')"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="appt-pill appt-pill-all"
+            [class.appt-pill-active]="telemedicineFilter() === 'false'"
+            (click)="setTelemedicineFilter('false')"
+          >
+            In-Person
+          </button>
+          <button
+            type="button"
+            class="appt-pill appt-pill-all tel-pill"
+            [class.appt-pill-active]="telemedicineFilter() === 'true'"
+            (click)="setTelemedicineFilter('true')"
+          >
+            <span class="tel-cam" aria-hidden="true">📹</span>
+            Telemedicine
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-dates-sort">
+        <div class="filters-control-group filters-dates">
+          <span class="filter-label">Date range</span>
+          <div class="date-inputs">
+            <label class="date-field">
+              <span class="form-label mb-0">From</span>
+              <input
+                type="date"
+                class="form-control date-input"
+                [value]="dateFrom()"
+                (change)="onDateFromChange($any($event.target).value)"
+              />
+            </label>
+            <label class="date-field">
+              <span class="form-label mb-0">To</span>
+              <input
+                type="date"
+                class="form-control date-input"
+                [value]="dateTo()"
+                [attr.min]="dateFrom() || null"
+                (change)="onDateToChange($any($event.target).value)"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="filters-control-group sort-block">
+          <span class="filter-label">Sort by</span>
+          <select
+            class="form-control sort-select"
+            [ngModel]="sortSelectValue()"
+            (ngModelChange)="onSortPresetChange($event)"
+          >
+            <option value="date_desc">Date (newest first)</option>
+            <option value="date_asc">Date (oldest first)</option>
+            <option value="patient_asc">Patient name A→Z</option>
+            <option value="patient_desc">Patient name Z→A</option>
+            <option value="status">Status</option>
+            <option value="wait">Wait time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-control-group filters-clear-wrap" *ngIf="hasQueryFilters()">
+        <span class="filter-label filter-label--spacer" aria-hidden="true">&nbsp;</span>
+        <button type="button" class="btn btn-tertiary btn-sm w-full-sm" (click)="clearFilters()">
+          Clear all filters
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="active-filters mb-3" *ngIf="activeFilterChips().length">
+  <div class="d-flex flex-wrap gap-2 align-center">
+    <span
+      class="filter-chip"
+      *ngFor="let c of activeFilterChips(); trackBy: trackByChip"
+    >
+      <span class="filter-chip-text">{{ c.label }}</span>
+      <button type="button" class="filter-chip-close" (click)="removeChip(c.id)" aria-label="Remove filter">×</button>
+    </span>
+  </div>
+</div>
+
+<div
+  class="toast-banner"
+  *ngIf="toastVisible()"
+  role="status"
+>
+  {{ toastMessage() }}
+</div>
+
+<div class="card table-card position-relative overflow-hidden" id="doctor-appts-table-anchor">
+  <div class="table-loading-bar" *ngIf="showOverlayBar()" aria-hidden="true"></div>
+
+  <div class="alert alert-error d-flex justify-between align-center gap-2" *ngIf="hasError()">
+    <span>We couldn’t load appointments.</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="retryLoad()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!hasError()">
+    <div class="table-skeleton-wrap" *ngIf="isInitialLoad()">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Date &amp; Time</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Wait Time</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let _ of [1,2,3,4,5,6,7,8,9,10]; trackBy: trackBySkeleton">
+            <td><div class="sk sk-line sk-w-60"></div></td>
+            <td><div class="sk sk-line sk-w-40"></div></td>
+            <td><div class="sk sk-line sk-w-30"></div></td>
+            <td><div class="sk sk-pill"></div></td>
+            <td><div class="sk sk-line sk-w-20"></div></td>
+            <td><div class="sk sk-line sk-w-35 sk-ml-auto"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state text-center py-5" *ngIf="emptyNoAppointments()">
+      <h3 class="font-display fw-700 mb-2">You have no appointments yet.</h3>
+      <p class="text-muted mb-0">When patients book with you, they will appear here.</p>
+    </div>
+
+    <div class="empty-state text-center py-5" *ngIf="emptyFiltered()">
+      <h3 class="font-display fw-700 mb-2">No appointments match your filters.</h3>
+      <button type="button" class="btn btn-primary mt-2" (click)="clearFilters()">Clear filters</button>
+    </div>
+
+    <div class="empty-state text-center py-5" *ngIf="emptySearchOnly()">
+      <h3 class="font-display fw-700 mb-2">No appointments found for &quot;{{ searchInput().trim() }}&quot;.</h3>
+      <button type="button" class="btn btn-secondary mt-2" (click)="clearSearchInput()">Clear search</button>
+    </div>
+
+    <div class="table-data-wrap" *ngIf="!isInitialLoad() && totalCount() > 0">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th
+              scope="col"
+              [ngClass]="thSortClass('patient__user__last_name')"
+              (click)="sortBy('patient__user__last_name')"
+            >
+              Patient {{ sortIndicator('patient__user__last_name') }}
+            </th>
+            <th
+              scope="col"
+              [ngClass]="thSortClass('scheduled_datetime')"
+              (click)="sortBy('scheduled_datetime')"
+            >
+              Date &amp; Time {{ sortIndicator('scheduled_datetime') }}
+            </th>
+            <th scope="col">Type</th>
+            <th
+              scope="col"
+              [ngClass]="thSortClass('status')"
+              (click)="sortBy('status')"
+            >
+              Status {{ sortIndicator('status') }}
+            </th>
+            <th
+              scope="col"
+              [ngClass]="thSortClass('check_in_time')"
+              (click)="sortBy('check_in_time')"
+            >
+              Wait Time {{ sortIndicator('check_in_time') }}
+            </th>
+            <th scope="col" class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let row of appointments(); trackBy: trackByAppt"
+            [ngClass]="rowAccentClass(row)"
+            class="appt-row"
+            (click)="goDetail($event, row.id)"
+          >
+            <td>
+              <div class="d-flex align-center gap-2">
+                <span class="avatar avatar-sm avatar-primary">{{ patientInitials(row) }}</span>
+                <div class="min-w-0">
+                  <div class="fw-600 truncate">{{ patientName(row) }}</div>
+                  <div class="text-muted patient-id-sub">ID {{ row.patient_id }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span [class.text-muted]="isPast(row.scheduled_datetime)">
+                {{ row.scheduled_datetime | date : 'EEE, MMM d' }} · {{ row.scheduled_datetime | date : 'hh:mm a' }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="!row.is_telemedicine" class="badge badge-info">In-Person</span>
+              <span *ngIf="row.is_telemedicine" class="badge badge-info">📹 Telemedicine</span>
+            </td>
+            <td>
+              <span [ngClass]="statusBadgeClass(row.status)">{{ statusLabel(row.status) }}</span>
+            </td>
+            <td>
+              <ng-container *ngIf="row.status === 'CHECKED_IN' && waitMinutes(row) !== null">
+                <span class="badge queue-wait" [ngClass]="waitClass(waitMinutes(row)!)">
+                  {{ waitMinutes(row) }} min
+                </span>
+              </ng-container>
+              <span *ngIf="row.status !== 'CHECKED_IN' || waitMinutes(row) === null" class="text-muted">—</span>
+            </td>
+            <td class="text-right" (click)="$event.stopPropagation()">
+              <div
+                class="d-flex justify-end flex-wrap gap-1"
+                [class.actions-disabled]="actionRowId() === row.id"
+              >
+                <ng-container *ngIf="row.status === 'REQUESTED'">
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    [disabled]="actionRowId() === row.id"
+                    (click)="confirm(row.id)"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    [disabled]="actionRowId() === row.id"
+                    (click)="reject(row.id)"
+                  >
+                    Reject
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="row.status === 'CONFIRMED'">
+                  <a class="btn btn-tertiary btn-sm" [routerLink]="['/doctor/appointments', row.id]">View</a>
+                  <button
+                    type="button"
+                    class="btn btn-danger-ghost btn-sm"
+                    [disabled]="actionRowId() === row.id"
+                    (click)="markNoShow(row.id)"
+                  >
+                    Mark No-Show
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="row.status === 'CHECKED_IN'">
+                  <a class="btn btn-tertiary btn-sm" [routerLink]="['/doctor/appointments', row.id]">View</a>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    [disabled]="actionRowId() === row.id"
+                    (click)="completeAppointment(row.id)"
+                  >
+                    Complete
+                  </button>
+                </ng-container>
+                <ng-container
+                  *ngIf="row.status === 'COMPLETED' || row.status === 'CANCELLED' || row.status === 'NO_SHOW'"
+                >
+                  <a class="btn btn-tertiary btn-sm" [routerLink]="['/doctor/appointments', row.id]">View</a>
+                </ng-container>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
+
+<div class="pagination-card card-flat mt-3" *ngIf="!isInitialLoad() && totalCount() > 0">
+  <div class="pagination-inner d-flex flex-wrap align-center justify-between gap-3">
+    <p class="pagination-summary mb-0">{{ paginationSummary() }}</p>
+    <nav class="pagination-nav d-flex align-center gap-1 flex-wrap" aria-label="Pagination">
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm page-nav-btn"
+        [disabled]="page() <= 1"
+        (click)="goToPage(page() - 1)"
+      >
+        <span class="page-nav-short">‹</span>
+        <span class="page-nav-long">Previous</span>
+      </button>
+      <ng-container *ngFor="let p of pageNumbers(); trackBy: trackByPageBtn">
+        <span class="page-ellipsis text-muted" *ngIf="p === 'ellipsis'">…</span>
+        <button
+          type="button"
+          *ngIf="p !== 'ellipsis'"
+          class="btn btn-sm page-num"
+          [class.page-num-active]="p === page()"
+          (click)="goToPage(p)"
+        >
+          {{ p }}
+        </button>
+      </ng-container>
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm page-nav-btn"
+        [disabled]="page() >= totalPages()"
+        (click)="goToPage(page() + 1)"
+      >
+        <span class="page-nav-short">›</span>
+        <span class="page-nav-long">Next</span>
+      </button>
+    </nav>
+  </div>
+</div>

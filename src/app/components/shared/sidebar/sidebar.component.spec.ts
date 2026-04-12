@@ -23,9 +23,9 @@ describe('SidebarComponent', () => {
     expect(el).toBeTruthy();
   });
 
-  it('should render the Book Appointment button', () => {
-    const btn = fixture.nativeElement.querySelector('.cl-sidebar__book-btn');
-    expect(btn).toBeTruthy();
+  it('should render the footer section', () => {
+    const footer = fixture.nativeElement.querySelector('.cl-sidebar__footer');
+    expect(footer).toBeTruthy();
   });
 
   it('should render the Sign Out button', () => {

@@ -56,6 +56,22 @@ export interface PendingAppointmentRow {
   patient_last_name?: string;
 }
 
+
+export interface DoctorAppointmentListRow extends PendingAppointmentRow {
+  check_in_time?: string | null;
+  patient_email?: string;
+  patient_phone?: string;
+  meeting_link?: string | null;
+}
+
+export interface DoctorAppointmentsListResponse {
+  count: number;
+  page: number;
+  total_pages: number;
+  page_size: number;
+  appointments: DoctorAppointmentListRow[];
+}
+
 export interface PendingRequestsResponse {
   count: number;
   page: number;
