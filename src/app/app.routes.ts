@@ -5,6 +5,8 @@ import { DOCTOR_ROUTES } from './components/features/doctor/doctor.routes';
 
 import {Login} from './components/features/auth/login/login'
 import {Signup} from './components/features/auth/signup/signup'
+import { ADMIN_ROUTES } from './components/features/admin/admin.routes';
+import { AdminLayoutComponent } from './components/layouts/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
   {
@@ -19,6 +21,12 @@ export const routes: Routes = [
     path: 'doctor',
     component: DoctorLayoutComponent,
     children: DOCTOR_ROUTES
+  },
+    
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    children: ADMIN_ROUTES
   },
     
 
