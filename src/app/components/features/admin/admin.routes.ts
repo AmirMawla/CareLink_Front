@@ -4,36 +4,44 @@ import { AnalyticsDashboard } from './analytics-dashboard/analytics-dashboard';
 import { ClinicalAnalytics } from './clinical-analytics/clinical-analytics';
 import { PatientAnalytics } from './patient-analytics/patient-analytics';
 import { DoctorAnalytics } from './doctor-analytics/doctor-analytics';
+import { ReportGenerator } from './report-generator/report-generator';
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'users',
+    redirectTo: 'dashboard',
   },
+  {
+    path: 'dashboard',
+    component: AnalyticsDashboard,
+    title: 'Dashboard | CareLink',
+  },
+  {
+    path: 'reports',
+    component: ReportGenerator,
+    title: 'Report Center | CareLink',
+  },
+  /* Analytics Deep Dives (Nested to match Sidebar) */
+  {
+    path: 'analytics/clinical',
+    component: ClinicalAnalytics,
+    title: 'Clinical Performance | CareLink',
+  },
+  {
+    path: 'analytics/patients',
+    component: PatientAnalytics,
+    title: 'Patient Engagement | CareLink',
+  },
+  {
+    path: 'analytics/staff',
+    component: DoctorAnalytics,
+    title: 'Staff & Resources | CareLink',
+  },
+  /* Management */
   {
     path: 'users',
     component: UserList,
-    title: 'User Management',
+    title: 'User Management | CareLink',
   },
-  {
-    path: 'analytics',
-    component: AnalyticsDashboard,
-    title: 'Hospital Analytics'
-  },
-  {
-    path: 'clinical-insights',
-    component: ClinicalAnalytics,
-    title: 'Clinical Insights'
-  },
-  {
-    path: 'patients-analytics',
-    component: PatientAnalytics,
-    title: 'Patient Analytics'
-  },
-  {
-    path: 'staff-analytics',
-    component: DoctorAnalytics,
-    title: 'Staff Analytics'
-  }
 ];
