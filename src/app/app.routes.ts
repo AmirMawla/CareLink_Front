@@ -17,22 +17,12 @@ import {PatientSummary} from './components/features/doctor/patient-summary/patie
 import {DoctorAppointments} from './components/features/doctor/doctor-appointments/doctor-appointments'
 
 import { PatientAppointments} from './components/features/patient/patient-appointments/patient-appointments';
+import { ResetPassword } from './components/features/auth/reset-password/reset-password';
+import {AUTH_ROUTES} from './components/features/auth/auth.routes'
 export const routes: Routes = [
   {
-    path : 'auth/login',
-    component: Login
-  },
-  {
-    path : 'auth/register',
-    component : Signup
-  },
-  {
-    path : 'auth/ChangePassword',
-    component : ChangePassword
-  },
-  {
-    path : 'auth/profile',
-    component : Profile
+    path: 'auth',
+    children:AUTH_ROUTES
   },
   {
     path: 'doctor',
