@@ -1,0 +1,63 @@
+<div class="list-container">
+  <div class="header">
+    <h2>Appointment Registry</h2>
+  </div>
+
+  <div class="filter-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="filters.search"
+        (input)="onFilterChange()"
+        placeholder="Search patient name..."
+        class="form-control">
+    </div>
+
+    <div class="filter-group">
+      <input
+        type="date"
+        [(ngModel)]="filters.date"
+        (change)="onFilterChange()"
+        class="form-control">
+
+      <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="form-control">
+        <option value="">All Statuses</option>
+        <option value="CONFIRMED">Confirmed</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="CANCELLED">Cancelled</option>
+        <option value="NO_SHOW">No Show</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="luxury-table">
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appt of appointments">
+          <td><strong>{{ appt.patient.full_name }}</strong></td>
+          <td>{{ appt.doctor.full_name }}</td>
+          <td>{{ appt.scheduled_datetime | date:'mediumDate' }}</td>
+          <td>{{ appt.scheduled_datetime | date:'shortTime' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="appt.status.toLowerCase()">
+              {{ appt.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="appointments.length === 0 && !loading" class="empty-msg">
+      No appointments found matching these criteria.
+    </div>
+  </div>
+</div>
