@@ -58,7 +58,7 @@
 //     return `${diff} min`;
 //   }
 // }
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -104,11 +104,13 @@ export class Doctorqueue implements OnInit {
   nextPage: string | null = null;
   prevPage: string | null = null;
   searchQuery = '';
+  cdr=inject(ChangeDetectorRef);
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadQueue();
+    this.cdr.detectChanges();
   }
 
   loadQueue(url?: string) {
@@ -132,10 +134,12 @@ export class Doctorqueue implements OnInit {
           this.nextPage = data.next;
           this.prevPage = data.previous;
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.error = 'Failed to load queue';
           this.loading = false;
+          this.cdr.detectChanges();
         }
       });
   }
@@ -143,6 +147,7 @@ export class Doctorqueue implements OnInit {
   onSearch(event: Event) {
     this.searchQuery = (event.target as HTMLInputElement).value;
     this.loadQueue();
+    this.cdr.detectChanges();
   }
 
   goToNext() {
@@ -157,6 +162,7 @@ export class Doctorqueue implements OnInit {
     const checkIn = new Date(checkInTime);
     const now = new Date();
     const diff = Math.floor((now.getTime() - checkIn.getTime()) / 60000);
+    this.cdr.detectChanges();
     return `${diff} min`;
   }
 }

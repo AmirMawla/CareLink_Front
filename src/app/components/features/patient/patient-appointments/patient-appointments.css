@@ -1,0 +1,180 @@
+.appointments-page {
+  background: #F8F9FB;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: #191C1E;
+}
+
+.page-hero {
+  background: linear-gradient(135deg, #00478D, #005EB8);
+  padding: 3rem 4rem;
+  border-radius: 0 0 2rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.page-hero h1 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.page-hero p {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.content { padding: 0 4rem 4rem; }
+
+.filter-bar {
+  margin-bottom: 2rem;
+}
+
+.filter-bar select {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #191C1E;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+  cursor: pointer;
+  outline: none;
+}
+
+.appointment-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  transition: transform 0.2s;
+}
+
+.appointment-card:hover { transform: translateY(-2px); }
+
+.doctor-name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.specialty {
+  font-size: 0.8rem;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.datetime {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.telemedicine-badge {
+  display: inline-block;
+  background: #E8F1FB;
+  color: #00478D;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.btn-view {
+  background: linear-gradient(135deg, #00478D, #005EB8);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btn-view:hover { opacity: 0.9; color: white; }
+
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+}
+
+.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-state h3 { font-family: 'Manrope', sans-serif; font-size: 1.3rem; font-weight: 700; }
+.empty-state p { color: #6B7280; margin-top: 0.5rem; }
+
+.pagination {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  padding: 0.75rem 2rem;
+  background: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #00478D;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  color: #6B7280;
+}
+
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #E8F1FB;
+  border-top-color: #00478D;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
