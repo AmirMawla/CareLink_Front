@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.patient-appts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.patient-appts-table th,
+.patient-appts-table td {
+  padding: 0.65rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+.patient-appts-table th {
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.patient-appts-row:hover {
+  background: var(--surface-container, rgba(0, 0, 0, 0.03));
+}

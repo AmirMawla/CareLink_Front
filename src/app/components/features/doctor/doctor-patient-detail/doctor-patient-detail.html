@@ -1,0 +1,128 @@
+<div class="detail-page">
+  <a routerLink="/doctor/patients" class="back-link">← Back to patients</a>
+
+  <div *ngIf="loading()" class="detail-skeleton card-flat">
+    <div class="sk sk-line sk-w-40 mb-3"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-50"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="detail-error-shell" role="alert">
+    <div class="detail-error-card card-flat">
+      <div class="detail-error-icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" stroke-linecap="round" />
+        </svg>
+      </div>
+      <h2 class="detail-error-title font-display">Could not load patient</h2>
+      <p class="detail-error-text">{{ error() }}</p>
+      <div class="detail-error-actions">
+        <button type="button" class="btn btn-primary" (click)="retryLoad()">Try again</button>
+        <a routerLink="/doctor/patients" class="btn btn-secondary">Back to patients</a>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && patient() as p">
+    <header class="page-header detail-header">
+      <div class="detail-hero card-flat">
+        <div class="detail-hero-top">
+          <span class="avatar avatar-lg avatar-primary">{{ patientInitials(p) }}</span>
+          <div class="detail-hero-text">
+            <h1 class="page-title font-display detail-title">{{ patientName(p) }}</h1>
+            <p class="page-subtitle mb-0 text-muted">Patient ID {{ p.id }}</p>
+          </div>
+        </div>
+        <div class="detail-hero-meta">
+          <div class="meta-block">
+            <span class="meta-label">Last visit</span>
+            <span *ngIf="p.last_appointment_at" [class.text-muted]="isPast(p.last_appointment_at)" class="meta-value">
+              {{ p.last_appointment_at | date : 'EEE, MMM d, y' }} · {{ p.last_appointment_at | date : 'hh:mm a' }}
+            </span>
+            <span *ngIf="!p.last_appointment_at" class="meta-value text-muted">—</span>
+          </div>
+          <div class="meta-block">
+            <span class="meta-label">Next visit</span>
+            <span *ngIf="p.next_appointment_at" [class.text-muted]="isPast(p.next_appointment_at)" class="meta-value">
+              {{ p.next_appointment_at | date : 'EEE, MMM d, y' }} ·
+              {{ p.next_appointment_at | date : 'hh:mm a' }}
+            </span>
+            <span *ngIf="!p.next_appointment_at" class="meta-value text-muted">—</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="detail-grid">
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Patient</h2>
+        <dl class="detail-dl">
+          <div *ngIf="p.email">
+            <dt>Email</dt>
+            <dd>{{ p.email }}</dd>
+          </div>
+          <div *ngIf="p.phone_number">
+            <dt>Phone</dt>
+            <dd>{{ p.phone_number }}</dd>
+          </div>
+          <div *ngIf="p.date_of_birth">
+            <dt>Date of birth</dt>
+            <dd>{{ p.date_of_birth | date : 'mediumDate' }}</dd>
+          </div>
+          <div *ngIf="p.username">
+            <dt>Username</dt>
+            <dd>{{ p.username }}</dd>
+          </div>
+        </dl>
+        <div *ngIf="p.medical_history" class="history-block">
+          <h3 class="history-title">Medical history</h3>
+          <p class="history-text">{{ p.medical_history }}</p>
+        </div>
+      </section>
+
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Appointments with you</h2>
+        <p *ngIf="p.appointments.length === 0" class="consult-empty text-muted mb-0">No appointments on file.</p>
+
+        <div *ngIf="p.appointments.length > 0" class="table-wrap" style="overflow-x: auto">
+          <table class="patient-appts-table">
+            <thead>
+              <tr>
+                <th>Date &amp; time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Consultation</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ap of p.appointments; trackBy: trackByAppt" class="patient-appts-row">
+                <td>
+                  <span [class.text-muted]="isPast(ap.scheduled_datetime)">
+                    {{ ap.scheduled_datetime | date : 'EEE, MMM d, y' }} ·
+                    {{ ap.scheduled_datetime | date : 'hh:mm a' }}
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="!ap.is_telemedicine" class="badge badge-info">In-Person</span>
+                  <span *ngIf="ap.is_telemedicine" class="badge badge-info">Telemedicine</span>
+                </td>
+                <td>
+                  <span [ngClass]="statusBadgeClass(ap.status)">{{ statusLabel(ap.status) }}</span>
+                </td>
+                <td>
+                  <span *ngIf="hasConsultationSummary(ap)" class="text-muted">On file</span>
+                  <span *ngIf="!hasConsultationSummary(ap)" class="text-muted">—</span>
+                </td>
+                <td class="text-right">
+                  <a class="btn btn-tertiary btn-sm" [routerLink]="['/doctor/appointments', ap.id]">View</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>
