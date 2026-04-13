@@ -1,0 +1,50 @@
+<div class="page-container">
+    <header class="list-header">
+        <div class="header-text">
+            <h1>Find Your Specialist</h1>
+            <p>Consult with our {{ homeService.totalDoctors() }} verified doctors</p>
+        </div>
+
+        <div class="search-box">
+            <span class="material-icons">search</span>
+            <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearch($event)"
+                placeholder="Search by name...">
+        </div>
+    </header>
+
+    <div class="grid-layout" *ngIf="homeService.doctorList().length > 0; else empty">
+        <div class="doc-card" *ngFor="let doc of homeService.doctorList()" (click)="navigateToDoctor(doc.id)">
+            <div class="doc-img-wrapper">
+                <div class="doc-placeholder"><span class="material-icons">person</span></div>
+                <div class="availability-tag">Available</div>
+            </div>
+            <div class="doc-content">
+                <h4>{{ doc.full_name }}</h4>
+                <span class="doc-role">{{ doc.role_display }}</span>
+                <div class="doc-meta">
+                    <span class="material-icons">verified_user</span>
+                    <small>CareLink Verified</small>
+                </div>
+                <button class="btn-book-sm">Book Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #empty>
+        <div class="empty-state" *ngIf="!homeService.loading()">
+            <span class="material-icons">search_off</span>
+            <h3>No specialists found</h3>
+            <p>Try a different search term.</p>
+        </div>
+    </ng-template>
+
+    <footer class="pagination-footer" *ngIf="homeService.totalDoctors() > 0">
+        <button class="btn-page" [disabled]="currentPage() === 1" (click)="changePage(-1)">
+            <span class="material-icons">west</span> Previous
+        </button>
+        <span class="page-info">Page {{ currentPage() }}</span>
+        <button class="btn-page" [disabled]="homeService.doctorList().length < 6" (click)="changePage(1)">
+            Next <span class="material-icons">east</span>
+        </button>
+    </footer>
+</div>

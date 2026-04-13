@@ -1,0 +1,69 @@
+<div class="user-shell">
+  <header class="main-header">
+    <div class="nav-container">
+      <div class="logo" routerLink="/home">
+        <span class="material-icons logo-icon">health_and_safety</span>
+        <span class="logo-text">Care<span class="text-primary-heavy">Link</span></span>
+      </div>
+
+      <nav class="desktop-nav">
+        <a 
+          *ngFor="let link of navLinks" 
+          [routerLink]="link.path" 
+          routerLinkActive="active" 
+          class="nav-link"
+        >
+          {{ link.label }}
+        </a>
+      </nav>
+
+      <div class="auth-actions">
+        <button class="btn-ghost" routerLink="/auth/login">Login</button>
+        <button class="btn-primary-sm" routerLink="/auth/register">Join Now</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="main-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="material-icons logo-icon">health_and_safety</span>
+          <span class="logo-text">CareLink</span>
+        </div>
+        <p class="brand-headline">Healthcare reimagined for the digital age. Professional care at your fingertips.</p>
+        <div class="social-icons">
+          <span class="material-icons">facebook</span>
+          <span class="material-icons">language</span>
+          <span class="material-icons">alternate_email</span>
+        </div>
+      </div>
+
+      <div class="footer-section" *ngFor="let section of footerSections">
+        <h4>{{ section.title }}</h4>
+        <ul>
+          <li *ngFor="let link of section.links">
+            <a [routerLink]="link.path">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Connect</h4>
+        <p>Questions? Reach out to us anytime.</p>
+        <button class="btn-outline-footer">Contact Support</button>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} <strong>Amir Team</strong>. All rights reserved.</p>
+      <div class="legal-links">
+        <span>CareLink v1.0</span>
+      </div>
+    </div>
+  </footer>
+</div>

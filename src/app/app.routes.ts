@@ -14,10 +14,19 @@ import{Doctorqueue} from './components/features/doctor/doctorqueue/doctorqueue'
 import {Consultation} from './components/features/doctor/consultation/consultation'
 import {PatientSummary} from './components/features/doctor/patient-summary/patient-summary'
 import {DoctorAppointments} from './components/features/doctor/doctor-appointments/doctor-appointments'
+import { HOME_ROUTES } from './components/features/home/home.routes';
+import { UserLayout } from './components/layouts/user-layout/user-layout';
 
 import { PatientAppointments} from './components/features/patient/patient-appointments/patient-appointments';
 import {AUTH_ROUTES} from './components/features/auth/auth.routes'
 export const routes: Routes = [
+ 
+  {
+    path : '',
+    component: UserLayout,
+    children: HOME_ROUTES
+  },
+ 
   {
     path: 'auth',
     children:AUTH_ROUTES
