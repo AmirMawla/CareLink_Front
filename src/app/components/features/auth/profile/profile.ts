@@ -96,6 +96,48 @@ export class Profile implements OnInit {
   }
 
   saveProfile() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  const headers = new HttpHeaders({ Authorization: `Token ${token}` });
+
+  const allowedBase = ['first_name', 'last_name', 'username', 'email'];
+  const allowedByRole: Record<string, string[]> = {
+    'DOCTOR': ['specialty', 'session_duration', 'buffer_time', 'session_price'],
+    'PATIENT': ['date_of_birth', 'phone_number', 'medical_history'],
+    'RECEPTIONIST': ['doctor'],
+    'ADMIN': []
+  };
+
+  const role = this.profiledata.role;
+  const allowedFields = [...allowedBase, ...(allowedByRole[role] || [])];
+
+  const payload: any = {};
+  for (const field of allowedFields) {
+    if (this.formData[field] !== undefined) {
+      payload[field] = this.formData[field];
+    }
+  }
+
+  this.httpClient.patch(`${this.apiurl}/api/accounts/profile/`, payload, { headers })
+    .subscribe({
+      next: (updated: any) => {
+        this.profiledata = updated;
+        this.isEditMode = false;
+        this.formData = {};
+        console.log(' Profile updated successfully');
+        this.cdr.detectChanges();
+        alert('تم حفظ التعديلات بنجاح');
+      },
+      error: (err) => {
+        console.error(' Update failed:', err);
+        this.cdr.detectChanges();
+        alert('حدث خطأ أثناء الحفظ');
+      }
+    });
+}
+/*
+  saveProfile() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
@@ -118,7 +160,7 @@ export class Profile implements OnInit {
         }
       });
   }
-
+*/
   // ==================== Type-Safe Getters ====================
   get isDoctor() { return this.profiledata?.role === 'DOCTOR'; }
   get isPatient() { return this.profiledata?.role === 'PATIENT'; }
