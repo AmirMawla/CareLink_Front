@@ -10,50 +10,54 @@ export class HomeService {
 
   loading = signal<boolean>(false);
 
-  // 1. General Analytics (Total users, appointments)
+  // 1. General Stats
   stats = signal<any>(null);
-
-  // 2. Doctor Analytics (Counts by specialty)
   doctorStats = signal<any>(null);
 
-  // 3. Real User Data (For the Carousel)
+  // 2. Home Carousel (Fixed: Dedicated signal)
   homeDoctors = signal<any[]>([]);
+
+  // 3. Search Page List
+  doctorList = signal<any[]>([]);
+  totalDoctors = signal<number>(0);
 
   fetchHomeData() {
     this.loading.set(true);
 
-    // Request 1: Overview
-    this.http
-      .get(`${this.baseUrl}/analytics/overview/`)
-      .pipe(
-        tap((data) => this.stats.set(data)),
-        finalize(() => this.checkLoading()),
-      )
-      .subscribe();
-
-    // Request 2: Doctor Specific Analytics (By Specialty)
+    // Stats
+    this.http.get(`${this.baseUrl}/analytics/overview/`).subscribe((data) => this.stats.set(data));
     this.http
       .get(`${this.baseUrl}/analytics/doctors/`)
-      .pipe(
-        tap((data) => this.doctorStats.set(data)),
-        finalize(() => this.checkLoading()),
-      )
-      .subscribe();
+      .subscribe((data) => this.doctorStats.set(data));
 
-    // Request 3: Active Doctors List (The new one for the carousel)
+    // Homepage Carousel Fetch (Stays at Page 1, No Search)
     const params = new HttpParams().set('role', 'DOCTOR').set('is_active', 'true').set('page', '1');
 
     this.http
       .get(`${this.baseUrl}/users/`, { params })
       .pipe(
         tap((res: any) => this.homeDoctors.set(res.results)),
-        finalize(() => this.checkLoading()),
+        finalize(() => this.loading.set(false)),
       )
       .subscribe();
   }
 
-  private checkLoading() {
-    // Only stop loading if all signals have data or we handle it via counter
-    this.loading.set(false);
+  // Listing Page Fetch (Independent)
+  fetchDoctors(page: number, search: string = '') {
+    this.loading.set(true);
+    let params = new HttpParams()
+      .set('role', 'DOCTOR')
+      .set('is_active', 'true')
+      .set('page', page.toString());
+
+    if (search) params = params.set('search', search);
+
+    return this.http.get(`${this.baseUrl}/users/`, { params }).pipe(
+      tap((res: any) => {
+        this.doctorList.set(res.results);
+        this.totalDoctors.set(res.count);
+      }),
+      finalize(() => this.loading.set(false)),
+    );
   }
 }

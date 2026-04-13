@@ -9,12 +9,13 @@ import {Profile} from './components/features/auth/profile/profile'
 import { ADMIN_ROUTES } from './components/features/admin/admin.routes';
 import { AdminLayoutComponent } from './components/layouts/admin-layout/admin-layout.component';
 import { HOME_ROUTES } from './components/features/home/home.routes';
+import { UserLayout } from './components/layouts/user-layout/user-layout';
 
 export const routes: Routes = [
  
   {
     path : '',
-    // component: ,
+    component: UserLayout,
     children: HOME_ROUTES
   },
  
