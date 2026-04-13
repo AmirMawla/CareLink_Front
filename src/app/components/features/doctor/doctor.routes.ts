@@ -4,6 +4,9 @@ import { Doctorqueue } from './doctorqueue/doctorqueue';
 import { Consultation } from './consultation/consultation';
 import { PatientSummary } from './patient-summary/patient-summary';
 import { DoctorAppointments } from './doctor-appointments/doctor-appointments';
+import { DoctorAppointmentDetail } from './doctor-appointment-detail/doctor-appointment-detail';
+import { DoctorPatients } from './doctor-patients/doctor-patients';
+import { DoctorPatientDetail } from './doctor-patient-detail/doctor-patient-detail';
 
 export const DOCTOR_ROUTES: Routes = [
   {
@@ -23,8 +26,18 @@ export const DOCTOR_ROUTES: Routes = [
   },
   {
     path: 'appointments/:id',
-    component: Consultation,
-    title: 'Appointment',
+    component: DoctorAppointmentDetail,
+    title: 'Appointment details',
+  },
+  {
+    path: 'patients',
+    component: DoctorPatients,
+    title: 'My Patients',
+  },
+  {
+    path: 'patients/:id',
+    component: DoctorPatientDetail,
+    title: 'Patient details',
   },
   {
     path: 'queue',

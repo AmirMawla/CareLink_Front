@@ -39,6 +39,12 @@
   letter-spacing: 0.05em;
 }
 
+.consultation-page-loading {
+  padding: 2rem 4rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
 .content { padding: 0 4rem 4rem; }
 
 .form-grid {

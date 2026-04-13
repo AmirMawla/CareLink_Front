@@ -10,12 +10,14 @@
   <div class="page-hero">
     <div class="hero-content">
       <a routerLink="/doctor/queue" class="back-link">← Back to Queue</a>
-      <h1>Consultation</h1>
-      <p>APPOINTMENT #{{ appointmentId }}</p>
+      <h1>{{ isEditMode ? 'Edit consultation' : 'Add consultation' }}</h1>
+      <p>Appointment #{{ appointmentId }}</p>
     </div>
   </div>
 
-  <div class="content">
+  <p *ngIf="pageLoading" class="consultation-page-loading">Loading consultation…</p>
+
+  <div class="content" *ngIf="!pageLoading">
     <div class="form-grid">
 
       <!-- Diagnosis & Notes -->
@@ -60,7 +62,7 @@
       class="btn-primary"
       (click)="saveConsultation()"
       [disabled]="loading">
-      {{ loading ? 'Saving...' : '✓ Save & Complete Consultation' }}
+      {{ loading ? 'Saving…' : (isEditMode ? 'Save changes' : 'Save & complete visit') }}
     </button>
   </div>
 </div>

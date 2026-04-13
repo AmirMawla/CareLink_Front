@@ -1,0 +1,232 @@
+<div class="detail-page">
+  <a routerLink="/doctor/appointments" class="back-link">← Back to appointments</a>
+
+  <div *ngIf="toastVisible()" class="detail-toast" role="status">{{ toastMessage() }}</div>
+
+  <div *ngIf="loading()" class="detail-skeleton card-flat">
+    <div class="sk sk-line sk-w-40 mb-3"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-50"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="detail-error-shell" role="alert">
+    <div class="detail-error-card card-flat">
+      <div class="detail-error-icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" stroke-linecap="round" />
+        </svg>
+      </div>
+      <h2 class="detail-error-title font-display">Could not load appointment</h2>
+      <p class="detail-error-text">{{ error() }}</p>
+      <div class="detail-error-actions">
+        <button type="button" class="btn btn-primary" (click)="retryLoad()">Try again</button>
+        <a routerLink="/doctor/appointments" class="btn btn-secondary">Back to appointments</a>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && appointment() as a">
+    <header class="page-header detail-header">
+      <div class="detail-hero card-flat">
+        <div class="detail-hero-top">
+          <span class="avatar avatar-lg avatar-primary">{{ patientInitials(a) }}</span>
+          <div class="detail-hero-text">
+            <h1 class="page-title font-display detail-title">{{ patientName(a) }}</h1>
+            <p class="page-subtitle mb-0 text-muted">Patient ID {{ a.patient?.id }}</p>
+          </div>
+          <span [ngClass]="statusBadgeClass(a.status)">{{ statusLabel(a.status) }}</span>
+        </div>
+        <div class="detail-hero-meta">
+          <div class="meta-block">
+            <span class="meta-label">Scheduled</span>
+            <span [class.text-muted]="isPast(a.scheduled_datetime)" class="meta-value">
+              {{ a.scheduled_datetime | date : 'EEE, MMM d, y' }} · {{ a.scheduled_datetime | date : 'hh:mm a' }}
+            </span>
+          </div>
+          <div class="meta-block">
+            <span class="meta-label">Visit type</span>
+            <span *ngIf="!a.is_telemedicine" class="badge badge-info">In-Person</span>
+            <span *ngIf="a.is_telemedicine" class="badge badge-info">Telemedicine</span>
+          </div>
+          <div class="meta-block">
+            <span class="meta-label">Checked in</span>
+            <span *ngIf="a.check_in_time" class="meta-value">{{ a.check_in_time | date : 'MMM d, hh:mm a' }}</span>
+            <span *ngIf="!a.check_in_time" class="meta-value text-muted">—</span>
+          </div>
+        </div>
+        <div *ngIf="a.is_telemedicine && a.meeting_link" class="meeting-row">
+          <span class="meta-label">Meeting</span>
+          <a [href]="a.meeting_link" target="_blank" rel="noopener noreferrer" class="meeting-link">{{
+            a.meeting_link
+          }}</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="detail-grid">
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Patient</h2>
+        <dl class="detail-dl">
+          <div *ngIf="a.patient?.email">
+            <dt>Email</dt>
+            <dd>{{ a.patient?.email }}</dd>
+          </div>
+          <div *ngIf="a.patient?.phone_number">
+            <dt>Phone</dt>
+            <dd>{{ a.patient?.phone_number }}</dd>
+          </div>
+          <div *ngIf="a.patient?.date_of_birth">
+            <dt>Date of birth</dt>
+            <dd>{{ a.patient?.date_of_birth | date : 'mediumDate' }}</dd>
+          </div>
+          <div *ngIf="a.patient?.username">
+            <dt>Username</dt>
+            <dd>{{ a.patient?.username }}</dd>
+          </div>
+        </dl>
+        <div *ngIf="a.patient?.medical_history" class="history-block">
+          <h3 class="history-title">Medical history</h3>
+          <p class="history-text">{{ a.patient?.medical_history }}</p>
+        </div>
+      </section>
+
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Consultation record</h2>
+        <ng-container *ngIf="a.consultation as c">
+          <div *ngIf="c.diagnosis" class="consult-block">
+            <h3 class="consult-label">Diagnosis</h3>
+            <p>{{ c.diagnosis }}</p>
+          </div>
+          <div *ngIf="c.clinical_notes" class="consult-block">
+            <h3 class="consult-label">Clinical notes</h3>
+            <p class="notes-pre">{{ c.clinical_notes }}</p>
+          </div>
+          <div *ngIf="c.prescriptions?.length" class="consult-block">
+            <h3 class="consult-label">Prescriptions</h3>
+            <ul class="consult-list">
+              <li *ngFor="let p of c.prescriptions">
+                <strong>{{ p.drug_name }}</strong> — {{ p.dose }}, {{ p.duration_days }} day(s)
+              </li>
+            </ul>
+          </div>
+          <div *ngIf="c.tests?.length" class="consult-block">
+            <h3 class="consult-label">Tests</h3>
+            <ul class="consult-list">
+              <li *ngFor="let t of c.tests">{{ t.test_name }}</li>
+            </ul>
+          </div>
+          <p
+            *ngIf="!c.diagnosis && !c.clinical_notes && !c.prescriptions?.length && !c.tests?.length"
+            class="consult-empty text-muted mb-0"
+          >
+            No clinical details recorded yet.
+          </p>
+        </ng-container>
+        <p *ngIf="!a.consultation && a.status === 'CHECKED_IN'" class="consult-empty text-muted mb-0">
+          No consultation saved yet. Use “Record or edit consultation” to add diagnosis and notes before marking
+          complete.
+        </p>
+        <p *ngIf="!a.consultation && a.status === 'NO_SHOW'" class="consult-empty text-muted mb-0">
+          Use Mark complete to open the consultation form when you need to add notes for this visit.
+        </p>
+        <p
+          *ngIf="!a.consultation && a.status !== 'CHECKED_IN' && a.status !== 'NO_SHOW'"
+          class="consult-empty text-muted mb-0"
+        >
+          No consultation on file for this visit.
+        </p>
+      </section>
+
+      <section class="card-flat detail-panel detail-actions-panel">
+        <div class="detail-actions-head">
+          <h2 class="panel-title detail-actions-title">Actions</h2>
+          <p *ngIf="formError()" class="form-error detail-actions-form-error">{{ formError() }}</p>
+        </div>
+
+        <div class="detail-actions-groups">
+          <div class="detail-action-group">
+            <span class="detail-action-group__label">Booking</span>
+            <div class="detail-action-group__row">
+              <button
+                type="button"
+                class="detail-action-btn detail-action-btn--accent"
+                [disabled]="actionBusy() || !canConfirmDetail(a.status)"
+                [title]="canConfirmDetail(a.status) ? '' : 'Only when status is Requested'"
+                (click)="updateStatus('CONFIRMED', 'Appointment confirmed')"
+              >
+                Confirm appointment
+              </button>
+              <button
+                type="button"
+                class="detail-action-btn"
+                [disabled]="actionBusy() || !canUnconfirmDetail(a.status)"
+                [title]="canUnconfirmDetail(a.status) ? '' : 'Only when status is Confirmed'"
+                (click)="updateStatus('REQUESTED', 'Moved back to requested')"
+              >
+                Back to requested
+              </button>
+              <button
+                type="button"
+                class="detail-action-btn detail-action-btn--risk"
+                [disabled]="actionBusy() || !canDeclineDetail(a.status)"
+                [title]="canDeclineDetail(a.status) ? '' : 'Only when status is Requested'"
+                (click)="updateStatus('CANCELLED', 'Appointment declined')"
+              >
+                Reject / decline
+              </button>
+            </div>
+          </div>
+
+          <div class="detail-action-group">
+            <span class="detail-action-group__label">Visit &amp; notes</span>
+            <div class="detail-action-group__row detail-action-group__row--split">
+              <button
+                type="button"
+                class="detail-action-btn detail-action-btn--wide detail-action-btn--primary-outline"
+                [disabled]="actionBusy() || !canConsultationDetail(a)"
+                [attr.title]="consultationDetailTooltip(a)"
+                (click)="openConsultationRecord()"
+              >
+                {{ consultationDetailLabel(a) }}
+              </button>
+              <button
+                type="button"
+                class="detail-action-btn"
+                [disabled]="actionBusy() || !canRevertToCheckedInDetail(a.status)"
+                [title]="canRevertToCheckedInDetail(a.status) ? '' : 'Only when completed or no-show (correction)'"
+                (click)="updateStatus('CHECKED_IN', 'Status set to checked in')"
+              >
+                Mark checked in
+              </button>
+            </div>
+          </div>
+
+          <div class="detail-action-group">
+            <span class="detail-action-group__label">Visit outcome</span>
+            <div class="detail-action-group__row">
+              <button
+                type="button"
+                class="detail-action-btn detail-action-btn--accent"
+                [disabled]="actionBusy() || !canCompleteDetail(a.status)"
+                [attr.title]="markCompleteTooltip(a.status)"
+                (click)="onMarkCompleteClick()"
+              >
+                Mark complete
+              </button>
+              <button
+                type="button"
+                class="detail-action-btn detail-action-btn--risk"
+                [disabled]="actionBusy() || !canNoShowDetail(a.status)"
+                [title]="canNoShowDetail(a.status) ? '' : 'Not available for this status'"
+                (click)="updateStatus('NO_SHOW', 'Marked as no-show')"
+              >
+                Mark no-show
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>
