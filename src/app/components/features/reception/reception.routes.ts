@@ -2,9 +2,9 @@ import { Routes } from '@angular/router';
 import { QueueComponent } from './queue/queue';
 import { AppointmentListComponent } from './appointment-list/appointment-list';
 import { BookAppointment } from './book-appointment/book-appointment';
-// import { WeeklyScheduleComponent } from '../doctor/schedules/weekly.component';
-// import { ScheduleExceptionsComponent } from '../doctor/exceptions/exceptions.component';
-// import { AvailableSlotsComponent } from '../doctor/slots/slots.component';
+import { AvailableSlots } from '../doctor/available-slots/available-slots';
+import { WeeklySchedule } from '../doctor/weekly-schedule/weekly-schedule';
+import { ScheduleExceptions } from '../doctor/schedule-exceptions/schedule-exceptions';
 
 export const RECEPTION_ROUTES: Routes = [
   {
@@ -22,21 +22,21 @@ export const RECEPTION_ROUTES: Routes = [
     component: AppointmentListComponent,
     title: 'All Appointments',
   },
-  // {
-  //   path: 'schedules',
-  //   component: WeeklyScheduleComponent,
-  //   title: 'Weekly Schedules',
-  // },
-  // {
-  //   path: 'schedules/exceptions',
-  //   component: ScheduleExceptionsComponent,
-  //   title: 'Schedule Exceptions',
-  // },
-  // {
-  //   path: 'slots',
-  //   component: AvailableSlotsComponent,
-  //   title: 'Available Slots',
-  // },
+  {
+    path: 'schedules',
+    component: WeeklySchedule,
+    title: 'Weekly Schedules',
+  },
+  {
+    path: 'schedules/exceptions',
+    component: ScheduleExceptions,
+    title: 'Schedule Exceptions',
+  },
+  {
+    path: 'slots',
+    component: AvailableSlots,
+    title: 'Available Slots',
+  },
   {
       path: 'appointments/book',
       component: BookAppointment,
