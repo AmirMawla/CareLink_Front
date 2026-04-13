@@ -1,0 +1,48 @@
+<div class="modal-backdrop" (click)="onClose.emit()">
+    <div class="modal-panel glass-modal" (click)="$event.stopPropagation()">
+        <header class="d-flex justify-between align-center mb-4">
+            <h2 class="modal-title mb-0">User Profile</h2>
+            <button class="close-circle" (click)="onClose.emit()">✕</button>
+        </header>
+
+        <div *ngIf="loading()" class="text-center py-5">
+            <div class="spinner mx-auto"></div>
+        </div>
+
+        <div *ngIf="!loading() && fullProfile()">
+            <div class="profile-hero mb-4">
+                <div class="avatar avatar-xl avatar-primary mb-3">{{fullProfile().username[0]}}</div>
+                <h3>{{fullProfile().full_name}}</h3>
+                <span class="badge" [ngClass]="user.role === 'DOCTOR' ? 'badge-doctor' : 'badge-info'">
+                    {{fullProfile().role_display}}
+                </span>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <label>Email Address</label>
+                    <p>{{fullProfile().email}}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Date Joined</label>
+                    <p>{{fullProfile().date_joined | date:'longDate'}}</p>
+                </div>
+
+                <ng-container *ngIf="fullProfile().doctor_profile">
+                    <div class="detail-item full">
+                        <label>Medical Specialty</label>
+                        <p class="text-primary fw-700">{{fullProfile().doctor_profile.specialty_display}}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Session Duration</label>
+                        <p>{{fullProfile().doctor_profile.session_duration}} Minutes</p>
+                    </div>
+                </ng-container>
+            </div>
+
+            <footer class="mt-4 pt-4 border-top">
+                <button class="btn btn-secondary w-full" (click)="onClose.emit()">Dismiss</button>
+            </footer>
+        </div>
+    </div>
+</div>

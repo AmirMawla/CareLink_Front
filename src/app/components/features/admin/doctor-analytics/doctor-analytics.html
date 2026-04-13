@@ -1,0 +1,79 @@
+<div class="fluid-container" *ngIf="!isLoading(); else loadingTpl">
+    <div class="page-header">
+        <h1 class="page-title">Medical Staff & Resources</h1>
+        <p class="page-subtitle">Departmental distribution and scheduling exceptions</p>
+    </div>
+
+    <div class="stats-grid mb-4">
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Total Doctors</div>
+                <div class="stat-value">{{stats()?.doctors.total_doctors}}</div>
+                <div class="stat-meta text-success">{{stats()?.doctors.total_with_schedule}} With Active Schedules</div>
+            </div>
+            <div class="stat-badge bg-primary-light">👨‍⚕️</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Avg. Workload</div>
+                <div class="stat-value">{{stats()?.scheduling.average_working_hours_per_doctor}}h</div>
+                <div class="stat-meta">Average hours per week</div>
+            </div>
+            <div class="stat-badge bg-warning-container">⏱️</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-label">Exceptions Today</div>
+                <div class="stat-value text-error">{{stats()?.scheduling.schedule_exceptions_today}}</div>
+                <div class="stat-meta">{{stats()?.scheduling.doctors_off_today}} Doctors off today</div>
+            </div>
+            <div class="stat-badge bg-error-container">⚠️</div>
+        </div>
+    </div>
+
+    <div class="d-grid layout-main gap-4">
+        <div class="card">
+            <div class="card-header d-flex justify-between align-center mb-4">
+                <h3 class="card-title mb-0">Staffing by Specialty</h3>
+                <span class="text-tiny text-muted">Total Departments: {{ specialtyCount() }}</span>
+            </div>
+            <apx-chart [series]="specialtyChartOptions.series" [chart]="specialtyChartOptions.chart"
+                [labels]="specialtyChartOptions.labels" [colors]="specialtyChartOptions.colors"
+                [fill]="specialtyChartOptions.fill" [stroke]="specialtyChartOptions.stroke"></apx-chart>
+        </div>
+
+        <div class="d-flex flex-col gap-4">
+            <div class="card">
+                <h3 class="card-title">Consultation Speed</h3>
+                <p class="text-xxs text-muted mb-3">Distribution of session durations across the team</p>
+                <apx-chart [series]="durationChartOptions.series" [chart]="durationChartOptions.chart"
+                    [plotOptions]="durationChartOptions.plotOptions" [xaxis]="durationChartOptions.xaxis"
+                    [colors]="durationChartOptions.colors" [grid]="durationChartOptions.grid"></apx-chart>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Weekly Load Distribution</h3>
+                <div class="heatmap-container mt-3">
+                    <div class="heatmap-container mt-3">
+                        <div *ngFor="let day of (stats()?.scheduling?.by_day_of_week | keyvalue)" class="heat-cell">
+                            <div class="heat-bar"
+                                [style.height.%]="(($any(day.value) / (stats()?.scheduling?.total_weekly_schedules || 1)) * 400) + 10">
+                            </div>
+                            <span class="heat-label">{{ $any(day.key).substring(0,3) }}</span>
+                            <span class="heat-val">{{day.value}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTpl>
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p class="fw-600 mt-2">Compiling Staff Analytics...</p>
+    </div>
+</ng-template>

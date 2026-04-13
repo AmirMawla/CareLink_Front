@@ -1,0 +1,110 @@
+<div class="fluid-container" *ngIf="!isLoading(); else loadingTpl">
+    <div class="page-header d-flex justify-between align-end">
+        <div>
+            <h1 class="page-title">Clinical Performance</h1>
+            <p class="page-subtitle">Deep dive into patient care, medical tests, and scheduling reliability</p>
+        </div>
+        <div class="filter-box">
+            <label class="form-label">Filter by Doctor ID</label>
+            <div class="d-flex gap-2">
+                <input type="number" class="form-control" placeholder="Enter ID..." [(ngModel)]="doctorId">
+                <button class="btn btn-primary" (click)="onFilterChange()">Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid main-layout gap-4">
+        <div class="column">
+            <div class="card mb-4">
+                <h3 class="card-title">Appointment Reliability</h3>
+                <div class="d-grid gap-3 grid-cols-2">
+                    <div class="metric-mini">
+                        <span class="text-tiny text-muted">No-Show Rate</span>
+                        <div class="text-lg fw-800 text-error">{{stats()?.appointments.no_show_rate_percentage}}%</div>
+                    </div>
+                    <div class="metric-mini">
+                        <span class="text-tiny text-muted">Cancellation Rate</span>
+                        <div class="text-lg fw-800 text-warning">{{stats()?.appointments.cancellation_rate_percentage}}%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-gap my-3"></div>
+
+                <div class="d-flex justify-between align-center mb-2">
+                    <span class="fw-600">Telemedicine vs In-Person</span>
+                    <span class="text-tiny badge badge-info">{{stats()?.appointments.telemedicine_count}} Digital</span>
+                </div>
+                <div class="progress-double">
+                    <div class="prog-fill telemedicine"
+                        [style.width.%]="(stats()?.appointments.telemedicine_count / stats()?.appointments.total_appointments) * 100">
+                    </div>
+                    <div class="prog-fill inperson"
+                        [style.width.%]="(stats()?.appointments.in_person_count / stats()?.appointments.total_appointments) * 100">
+                    </div>
+                </div>
+                <div class="d-flex justify-between text-tiny mt-1">
+                    <span>Telemedicine</span>
+                    <span>In-Person</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Rescheduling Audit</h3>
+                <p class="text-xxs text-muted mb-3">Top reasons why appointments are moved</p>
+                <apx-chart [series]="reasonChartOptions.series" [chart]="reasonChartOptions.chart"
+                    [labels]="reasonChartOptions.labels" [colors]="reasonChartOptions.colors"
+                    [legend]="reasonChartOptions.legend"></apx-chart>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card mb-4">
+                <h3 class="card-title">Consultation Impact</h3>
+                <div class="stats-mini-row mb-4">
+                    <div class="s-item">
+                        <div class="val">{{stats()?.consultations.total_consultations}}</div>
+                        <div class="lbl">Total Sessions</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="val">{{stats()?.consultations.average_prescription_items_per_consultation}}</div>
+                        <div class="lbl">Avg. Prescriptions</div>
+                    </div>
+                </div>
+
+                <apx-chart [series]="trendChartOptions.series" [chart]="trendChartOptions.chart"
+                    [plotOptions]="trendChartOptions.plotOptions" [colors]="trendChartOptions.colors"
+                    [xaxis]="trendChartOptions.xaxis"></apx-chart>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Top Requested Diagnostics</h3>
+                <div class="table-responsive">
+                    <table class="table-clean">
+                        <thead>
+                            <tr>
+                                <th>Test Name</th>
+                                <th class="text-right">Frequency</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let test of stats()?.consultations.top_prescribed_tests">
+                                <td class="fw-600">{{test.test_name}}</td>
+                                <td class="text-right">
+                                    <span class="bio-chip">{{test.count}} requests</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTpl>
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Retrieving Clinical Data...</p>
+    </div>
+</ng-template>

@@ -1,0 +1,158 @@
+<div class="profile-container">
+    <div class="profile-card">
+
+        <!-- Header -->
+        <div class="profile-header">
+            <div class="avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h1>{{ profiledata.first_name }} {{ profiledata.last_name }}</h1>
+            <p class="username">@{{ profiledata.username }}</p>
+            <span class="role-badge" [ngClass]="profiledata.role">
+                {{ profiledata.role }}
+            </span>
+        </div>
+
+        <!-- Common Information -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Basic Information</h2>
+                <button *ngIf="!isEditMode" class="edit-btn-small" (click)="toggleEdit()">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">First Name</span>
+                    <span class="value" *ngIf="!isEditMode">{{ profiledata.first_name }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.first_name" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">Last Name</span>
+                    <span class="value" *ngIf="!isEditMode">{{ profiledata.last_name }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.last_name" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">Email</span>
+                    <span class="value" *ngIf="!isEditMode">{{ profiledata.email }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.email" type="email" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">Username</span>
+                    <span class="value" *ngIf="!isEditMode">@{{ profiledata.username }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.username" class="edit-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Specific -->
+        <div class="section" *ngIf="isDoctor">
+            <h2>Doctor Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Specialty</span>
+                    <span class="value" *ngIf="!isEditMode">{{ doctorData.specialty }}</span>
+
+                    <select *ngIf="isEditMode" [(ngModel)]="formData.specialty" class="edit-input">
+                        <option value="CARDIOLOGY">Cardiology</option>
+                        <option value="DERMATOLOGY">Dermatology</option>
+                        <option value="NEUROLOGY">Neurology</option>
+                        <option value="PEDIATRICS">Pediatrics</option>
+                        <option value="ORTHOPEDICS">Orthopedics</option>
+                        <option value="GENERAL">General Practice</option>
+                    </select>
+                </div>
+                <div class="info-item">
+                    <span class="label">Session Duration (min)</span>
+
+                    <!-- View mode -->
+                    <span class="value" *ngIf="!isEditMode">
+                        {{ doctorData.session_duration }}
+                    </span>
+
+                    <!-- Edit mode -->
+                    <select *ngIf="isEditMode" [(ngModel)]="formData.session_duration" class="edit-input">
+                        <option [ngValue]="15">15</option>
+                        <option [ngValue]="30">30</option>
+                    </select>
+                </div>
+                <div class="info-item">
+                    <span class="label">Buffer Time (min)</span>
+                    <span class="value" *ngIf="!isEditMode">{{ doctorData.buffer_time }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.buffer_time" type="number" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">Session Price (EGP)</span>
+                    <span class="value" *ngIf="!isEditMode">{{ doctorData.session_price }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.session_price" type="number" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">doctor id</span>
+                    <span class="value" *ngIf="!isEditMode">{{ doctorData.id }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Specific -->
+        <div class="section" *ngIf="isPatient">
+            <h2>Patient Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Date of Birth</span>
+                    <span class="value" *ngIf="!isEditMode">{{ patientData.date_of_birth }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.date_of_birth" type="date" class="edit-input">
+                </div>
+                <div class="info-item">
+                    <span class="label">Phone Number</span>
+                    <span class="value" *ngIf="!isEditMode">{{ patientData.phone_number }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.phone_number" class="edit-input">
+                </div>
+                <div class="info-item full-width">
+                    <span class="label">Medical History</span>
+                    <span class="value medical-history" *ngIf="!isEditMode">
+                        {{ patientData.medical_history || 'No medical history added yet' }}
+                    </span>
+                    <textarea *ngIf="isEditMode" [(ngModel)]="formData.medical_history" class="edit-textarea"
+                        rows="4"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receptionist Specific -->
+        <div class="section" *ngIf="isReceptionist">
+            <h2>Receptionist Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Assigned Doctor</span>
+                    <span class="value">{{ receptionistData.doctor_name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Doctor ID</span>
+                    <span class="value" *ngIf="!isEditMode">{{ receptionistData.doctor }}</span>
+                    <input *ngIf="isEditMode" [(ngModel)]="formData.doctor" type="number" class="edit-input"
+                        placeholder="Doctor ID">
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Specific -->
+        <div class="section" *ngIf="isAdmin">
+            <h2>Admin Information</h2>
+            <p class="admin-note">You have full administrator privileges in the system.</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="actions" *ngIf="isEditMode">
+            <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+            <button class="save-btn" (click)="saveProfile()">Save Changes</button>
+        </div>
+
+        <div class="actions" *ngIf="!isEditMode">
+            <button class="edit-btn" (click)="toggleEdit()">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+        </div>
+
+    </div>
+</div>

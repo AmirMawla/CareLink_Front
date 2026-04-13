@@ -1,0 +1,127 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+::ng-deep .page-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: var(--sp-4);
+}
+
+.report-layout {
+    grid-template-columns: 400px 1fr;
+}
+
+@media (max-width: 900px) {
+    .report-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Report Cards */
+.selection-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.report-card {
+    background: white;
+    padding: 20px;
+    border-radius: var(--r-xl);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.report-card:hover {
+    transform: translateX(8px);
+    border-color: var(--primary-light);
+}
+
+.report-card.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.r-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.r-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.r-info p {
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Config Panel */
+.config-panel {
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.empty-config {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--on-surface-3);
+}
+
+.pulsing-circle {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 71, 141, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(0, 71, 141, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 71, 141, 0);
+    }
+}
+
+.glass-modal {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid white;
+    max-width: 400px;
+}
+
+.modal-icon {
+    font-size: 48px;
+}
