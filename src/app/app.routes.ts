@@ -17,6 +17,8 @@ import {PatientSummary} from './components/features/doctor/patient-summary/patie
 import {DoctorAppointments} from './components/features/doctor/doctor-appointments/doctor-appointments'
 
 import { PatientAppointments} from './components/features/patient/patient-appointments/patient-appointments';
+import { ReceptionistLayoutComponent } from './components/layouts/receptionist-layout/receptionist-layout.component';
+import { RECEPTIONIST_ROUTES } from './components/features/receptionist/receptionist.routes';
 export const routes: Routes = [
   {
     path : 'auth/login',
@@ -45,6 +47,9 @@ export const routes: Routes = [
     component: AdminLayoutComponent,
     children: ADMIN_ROUTES
   },
-    
-
+    {
+  path: 'receptionist',
+  component: ReceptionistLayoutComponent,
+  children: RECEPTIONIST_ROUTES
+    }
 ];

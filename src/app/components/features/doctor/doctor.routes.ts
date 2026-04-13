@@ -11,6 +11,7 @@ import { WeeklySchedule } from './weekly-schedule/weekly-schedule';
 import { ScheduleExceptions } from './schedule-exceptions/schedule-exceptions';
 import { DoctorProfile } from './doctor-profile/doctor-profile';
 import { AvailableSlots } from './available-slots/available-slots';
+import { Consultationhistory } from './consultationhistory/consultationhistory';
 
 export const DOCTOR_ROUTES: Routes = [
   {
@@ -70,6 +71,11 @@ export const DOCTOR_ROUTES: Routes = [
   { 
     path: 'consultation/:id',
     component: Consultation
+  },
+  {
+    path: 'consultations',
+    component: Consultationhistory,
+    title: 'Consultations',
   },
   {     
     path: 'patient-summary/:id',

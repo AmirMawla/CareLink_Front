@@ -1,223 +1,153 @@
-.history-page {
-  background: #F8F9FB;
-  min-height: 100vh;
-  font-family: 'Inter', sans-serif;
-  color: #191C1E;
-}
-
-.page-hero {
-  background: linear-gradient(135deg, #00478D, #005EB8);
-  padding: 3rem 4rem;
-  border-radius: 0 0 2rem 2rem;
-  margin-bottom: 2.5rem;
-}
-
-.page-hero h1 {
-  font-family: 'Manrope', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: white;
-  margin-bottom: 0.5rem;
-}
-
-.page-hero p {
-  color: rgba(255,255,255,0.75);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-}
-
-.content { padding: 0 4rem 4rem; }
-
-.search-bar { margin-bottom: 2rem; }
-
-.search-bar input {
+.ch-page {
   width: 100%;
-  max-width: 500px;
-  padding: 0.75rem 1.5rem;
-  background: white;
-  border: none;
-  border-radius: 0.75rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  color: #191C1E;
-  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
-  outline: none;
-  transition: box-shadow 0.2s;
 }
 
-.search-bar input:focus {
-  box-shadow: 0 0 0 3px rgba(0, 71, 141, 0.1);
+.ch-loading,
+.ch-empty {
+  padding: 18px;
 }
 
-.consultation-card {
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
-  margin-bottom: 1rem;
+.ch-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.ch-card {
+  padding: 0;
   overflow: hidden;
 }
 
-.card-header {
-  padding: 1.5rem 2rem;
+.ch-head {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 14px 16px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  gap: 12px;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.card-header:hover { background: #F3F4F6; }
-
-.patient-name {
-  font-family: 'Manrope', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+.ch-head:hover {
+  background: rgba(15, 23, 42, 0.03);
 }
 
-.date {
-  font-size: 0.8rem;
-  color: #6B7280;
+.ch-title {
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
-.card-header-right {
+.ch-sub {
+  font-size: 0.875rem;
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ch-dot {
+  opacity: 0.6;
+}
+
+.ch-head__left {
+  display: flex;
+  flex-direction: column;
+}
+
+.ch-head__right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.diagnosis-preview {
-  background: #E8F1FB;
-  color: #00478D;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
+.ch-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 260px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: rgb(30, 64, 175);
+  font-weight: 700;
   font-size: 0.8rem;
-  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.expand-icon {
-  color: #6B7280;
+.ch-caret {
+  opacity: 0.65;
   font-size: 0.8rem;
 }
 
-.card-body {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid #F3F4F6;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.ch-body {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 12px 16px 16px;
+  display: grid;
+  gap: 14px;
 }
 
-.detail-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.detail-label {
+.ch-block__label {
   font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6B7280;
+  color: rgba(15, 23, 42, 0.55);
+  font-weight: 800;
+  margin-bottom: 6px;
 }
 
-.detail-value {
-  font-size: 0.95rem;
+.ch-block__value {
   line-height: 1.6;
 }
 
-.chips-section { display: flex; flex-direction: column; gap: 0.5rem; }
-
-.chips-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #6B7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.drug-chip {
-  display: inline-block;
-  background: #E8F1FB;
-  color: #00478D;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin: 0.25rem;
-}
-
-.test-chip {
-  display: inline-block;
-  background: #F0FDF4;
-  color: #059669;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin: 0.25rem;
-}
-
-.empty-text { color: #6B7280; font-size: 0.85rem; }
-
-.empty-state {
-  text-align: center;
-  padding: 4rem;
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
-}
-
-.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
-.empty-state h3 { font-family: 'Manrope', sans-serif; font-size: 1.3rem; font-weight: 700; }
-.empty-state p { color: #6B7280; margin-top: 0.5rem; }
-
-.pagination {
+.ch-pills {
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 2rem;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.pagination button {
-  padding: 0.75rem 2rem;
-  background: white;
-  border: none;
-  border-radius: 0.75rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  cursor: pointer;
-  box-shadow: 0 20px 40px -10px rgba(0, 71, 141, 0.06);
-  transition: all 0.2s;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: #00478D;
-  color: white;
-}
-
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.loading-state, .error-state {
-  display: flex;
-  flex-direction: column;
+.ch-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  gap: 1rem;
-  color: #6B7280;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.10);
+  color: rgb(30, 64, 175);
+  font-weight: 700;
+  font-size: 0.82rem;
 }
 
-.loading-spinner {
-  width: 40px; height: 40px;
-  border: 3px solid #E8F1FB;
-  border-top-color: #00478D;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.ch-pill--test {
+  background: rgba(16, 185, 129, 0.12);
+  color: rgb(4, 120, 87);
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sk {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.20), rgba(148, 163, 184, 0.38), rgba(148, 163, 184, 0.20));
+  background-size: 240% 100%;
+  border-radius: 10px;
+  height: 14px;
+  animation: sk 1.2s ease-in-out infinite;
+}
+
+.sk-line {
+  height: 12px;
+}
+
+.sk-w-40 { width: 40%; }
+.sk-w-55 { width: 55%; }
+.sk-w-70 { width: 70%; }
+
+@keyframes sk {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}

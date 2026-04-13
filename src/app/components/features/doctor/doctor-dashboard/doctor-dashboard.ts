@@ -1,14 +1,21 @@
 import { DatePipe, DecimalPipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LegendPosition, NgxChartsModule } from '@swimlane/ngx-charts';
 import { Subject, interval } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { ChartPeriod, DoctorDashboardStats, PendingAppointmentRow, QueueItem, StatusSegment } from '../../../../models/doctor-dashboard.model';
+import {
+  ChartPeriod,
+  DoctorDashboardStats,
+  PendingAppointmentRow,
+  QueueItem,
+  StatusSegment,
+} from '../../../../models/doctor-dashboard.model';
 import { DoctorDashboardService } from '../../../../services/doctor-dashboard';
 
 @Component({
   selector: 'app-doctor-dashboard',
-  imports: [NgIf, NgFor, NgClass, DatePipe, DecimalPipe, RouterLink],
+  imports: [NgIf, NgFor, NgClass, DatePipe, DecimalPipe, RouterLink, NgxChartsModule],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css',
 })
@@ -26,7 +33,15 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   readonly chartLoading = signal(true);
   readonly chartError = signal(false);
   readonly chartPeriod = signal<ChartPeriod>('7d');
-  readonly chartPoints = signal<{ date: string; label: string; count: number }[]>([]);
+  readonly chartPoints = signal<{ date: string; label: string; count: number; completed_count?: number; revenue?: number }[]>(
+    [],
+  );
+  readonly chartSessionPrice = signal<number | null>(null);
+
+  /** ngx-charts view [width, height] — updated on resize */
+  readonly chartView = signal<[number, number]>([920, 300]);
+  /** Donut chart view */
+  readonly pieView = signal<[number, number]>([400, 400]);
 
   readonly breakdownLoading = signal(true);
   readonly breakdownError = signal(false);
@@ -49,17 +64,38 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   readonly toastVisible = signal(false);
   readonly toastMessage = signal('');
 
-  readonly chartMax = computed(() => {
-    const pts = this.chartPoints();
-    if (!pts.length) return 0;
-    return Math.max(...pts.map((p) => p.count));
-  });
+  /** ngx-charts built-in scheme names (typed as string for chart inputs) */
+  readonly schemeVisits: string = 'ocean';
+  readonly schemeRevenue: string = 'flame';
+  readonly schemePie: string = 'vivid';
+
+  readonly pieLegendPosition = LegendPosition.Below;
 
   readonly queuePreview = computed(() => this.queueItems().slice(0, 5));
 
-  readonly chartEmpty = computed(() => !this.chartLoading() && !this.chartError() && this.chartMax() === 0);
+  readonly appointmentsChartSeries = computed(() =>
+    this.chartPoints().map((p) => ({ name: p.label, value: p.count })),
+  );
+
+  readonly revenueChartSeries = computed(() =>
+    this.chartPoints().map((p) => ({ name: p.label, value: p.revenue ?? 0 })),
+  );
+
+  readonly statusPieSeries = computed(() =>
+    this.breakdownSegments().map((s) => ({
+      name: this.formatStatusLabel(s.status),
+      value: s.count,
+      extra: { percent: s.percent },
+    })),
+  );
+
+  readonly chartHasAnyActivity = computed(() => {
+    const pts = this.chartPoints();
+    return pts.some((p) => p.count > 0 || (p.revenue ?? 0) > 0);
+  });
 
   ngOnInit(): void {
+    this.updateChartView();
     this.loadStats();
     this.loadChart();
     this.loadBreakdown();
@@ -74,6 +110,22 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     if (this.toastTimer !== null) {
       clearTimeout(this.toastTimer);
     }
+  }
+
+  @HostListener('window:resize')
+  onWinResize(): void {
+    this.updateChartView();
+  }
+
+  private updateChartView(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const w = Math.max(320, Math.min(1120, window.innerWidth - 64));
+    const barH = Math.min(320, Math.max(240, Math.round(window.innerHeight * 0.28)));
+    const pieSize = Math.min(440, Math.round(w * 0.42));
+    this.chartView.set([w, barH]);
+    this.pieView.set([pieSize, pieSize]);
   }
 
   loadStats(): void {
@@ -105,10 +157,14 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         finalize(() => this.chartLoading.set(false)),
       )
       .subscribe({
-        next: (r) => this.chartPoints.set(r.points ?? []),
+        next: (r) => {
+          this.chartPoints.set(r.points ?? []);
+          this.chartSessionPrice.set(r.session_price ?? null);
+        },
         error: () => {
           this.chartError.set(true);
           this.chartPoints.set([]);
+          this.chartSessionPrice.set(null);
         },
       });
   }
@@ -213,13 +269,52 @@ export class DoctorDashboard implements OnInit, OnDestroy {
       .subscribe(() => this.loadQueue(false));
   }
 
-  barHeight(count: number): number {
-    const max = this.chartMax();
-    if (max === 0) {
-      return 0;
+  /** ngx-charts Y-axis: integers for visit counts */
+  readonly yAxisTicksInt = (value: number): string =>
+    Number.isFinite(value) ? String(Math.round(value)) : '';
+
+  /** Format revenue integers (backend uses same unit as session_price). */
+  formatMoney(value: number): string {
+    if (!Number.isFinite(value)) {
+      return '';
     }
-    return (count / max) * 100;
+    return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(Math.round(value));
   }
+
+  /**
+   * Short line for MoM revenue (this month vs previous calendar month).
+   */
+  revenueMomText(s: DoctorDashboardStats): string {
+    const cur = s.revenue_this_month ?? 0;
+    const prev = s.revenue_last_month ?? 0;
+    const pct = s.revenue_mom_change_percent;
+    if (prev === 0 && cur === 0) {
+      return `Same as last month (${this.formatMoney(0)})`;
+    }
+    if (prev === 0 && cur > 0) {
+      return 'First revenue vs last month (was 0)';
+    }
+    if (pct === null || pct === undefined) {
+      return `Last month ${this.formatMoney(prev)}`;
+    }
+    if (pct === 0) {
+      return `Flat vs last month (${this.formatMoney(prev)})`;
+    }
+    const dir = pct > 0 ? '↑' : '↓';
+    return `${dir} ${Math.abs(pct)}% vs last month (${this.formatMoney(prev)})`;
+  }
+
+  revenueMomUp(s: DoctorDashboardStats): boolean {
+    const p = s.revenue_mom_change_percent;
+    return p !== null && p !== undefined && p > 0;
+  }
+
+  revenueMomDown(s: DoctorDashboardStats): boolean {
+    const p = s.revenue_mom_change_percent;
+    return p !== null && p !== undefined && p < 0;
+  }
+
+  readonly formatMoneyAxis = (value: number): string => this.formatMoney(value);
 
   formatWait(minutes: number): string {
     if (minutes < 1) {
@@ -343,6 +438,14 @@ export class DoctorDashboard implements OnInit, OnDestroy {
       .split('_')
       .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
       .join(' ');
+  }
+
+  refreshDashboard(): void {
+    this.loadStats();
+    this.loadChart();
+    this.loadBreakdown();
+    this.loadPendingRequests();
+    this.loadQueue(false);
   }
 
   readonly skeletonChartBars = [1, 2, 3, 4, 5, 6, 7];

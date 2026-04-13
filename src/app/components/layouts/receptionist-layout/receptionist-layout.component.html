@@ -83,7 +83,7 @@
 
     <div class="cl-nav-section">Doctor Schedules</div>
 
-    <a class="cl-nav-item" routerLink="/receptionist/schedules" routerLinkActive="active">
+    <a class="cl-nav-item" routerLink="/receptionist/schedule" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="cl-nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -94,7 +94,7 @@
       Weekly Schedules
     </a>
 
-    <a class="cl-nav-item" routerLink="/receptionist/schedules/exceptions" routerLinkActive="active">
+    <a class="cl-nav-item" routerLink="/receptionist/schedule/exceptions" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="cl-nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
@@ -104,7 +104,7 @@
       Days Off / Exceptions
     </a>
 
-    <a class="cl-nav-item" routerLink="/receptionist/slots" routerLinkActive="active">
+    <a class="cl-nav-item" routerLink="/receptionist/available-slots" routerLinkActive="active">
       <span class="cl-nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"/>
@@ -137,7 +137,7 @@
   </app-sidebar>
 
   <div class="main-content">
-    <div class="page-wrapper">
+    <div class="page-wrapper receptionist-layout__page">
       <router-outlet />
     </div>
   </div>

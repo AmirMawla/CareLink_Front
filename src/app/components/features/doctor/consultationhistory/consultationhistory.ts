@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Subject, of } from 'rxjs';
+import { catchError, finalize, takeUntil } from 'rxjs/operators';
+import { ApiService } from '../../../../services/api.service';
 
 interface Prescription {
   id: number;
@@ -23,6 +25,7 @@ interface Consultation {
       user: {
         first_name: string;
         last_name: string;
+        username?: string;
       };
     };
     scheduled_datetime: string;
@@ -42,67 +45,150 @@ interface PaginatedResponse {
 }
 @Component({
   selector: 'app-consultationhistory',
-  imports: [CommonModule, RouterModule],
+  standalone: true,
+  imports: [NgIf, NgFor, DatePipe],
   templateUrl: './consultationhistory.html',
-  styleUrl: './consultationhistory.css',
+  styleUrls: ['./consultationhistory.css', '../doctor-appointments/doctor-appointments.css'],
 })
-export class Consultationhistory implements OnInit {
-  consultations: Consultation[] = [];
-  loading = true;
-  error = '';
-  count = 0;
-  nextPage: string | null = null;
-  prevPage: string | null = null;
-  searchQuery = '';
-  expandedId: number | null = null;
+export class Consultationhistory implements OnInit, OnDestroy {
+  private readonly http = inject(HttpClient);
+  private readonly api = inject(ApiService);
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private http: HttpClient) {}
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
 
-  ngOnInit() {
-    this.loadHistory();
+  readonly count = signal(0);
+  readonly nextPageUrl = signal<string | null>(null);
+  readonly prevPageUrl = signal<string | null>(null);
+
+  readonly query = signal('');
+  readonly expandedId = signal<number | null>(null);
+
+  readonly consultations = signal<Consultation[]>([]);
+
+  readonly subtitle = computed(() => {
+    const n = this.count();
+    return `${n} consultation${n === 1 ? '' : 's'} total`;
+  });
+
+  readonly empty = computed(() => !this.loading() && !this.error() && this.consultations().length === 0);
+
+  ngOnInit(): void {
+    this.reload();
   }
 
-  loadHistory(url?: string) {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({ 'Authorization': `Token ${token}` });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-    let apiUrl = url || 'http://127.0.0.1:8000/api/medical/doctor/consultations/';
+  onSearch(value: string): void {
+    this.query.set((value || '').trim());
+    this.reload();
+  }
 
-    if (!url && this.searchQuery) {
-      apiUrl += `?search=${this.searchQuery}`;
+  toggleExpand(id: number): void {
+    this.expandedId.set(this.expandedId() === id ? null : id);
+  }
+
+  reload(): void {
+    this.fetch(undefined)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => this.applyResponse(data));
+  }
+
+  goToNext(): void {
+    const url = this.nextPageUrl();
+    if (!url) return;
+    this.fetch(url)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => this.applyResponse(data));
+  }
+
+  goToPrev(): void {
+    const url = this.prevPageUrl();
+    if (!url) return;
+    this.fetch(url)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => this.applyResponse(data));
+  }
+
+  patientName(c: Consultation): string {
+    const u = c?.appointment?.patient?.user;
+    const fn = (u?.first_name || '').trim();
+    const ln = (u?.last_name || '').trim();
+    return `${fn} ${ln}`.trim() || u?.username || 'Patient';
+  }
+
+  rxSummary(c: Consultation): string {
+    const n = c?.prescriptions?.length ?? 0;
+    return n ? `${n} prescription${n === 1 ? '' : 's'}` : 'No prescriptions';
+  }
+
+  testsSummary(c: Consultation): string {
+    const n = c?.tests?.length ?? 0;
+    return n ? `${n} test${n === 1 ? '' : 's'}` : 'No tests';
+  }
+
+  private baseUrl(): string {
+    return this.api.resolve('/api/medical/doctor/consultations/');
+  }
+
+  private extractPage(url: string): string | null {
+    try {
+      const u = new URL(url, 'http://x.invalid');
+      return u.searchParams.get('page');
+    } catch {
+      const m = String(url).match(/[?&]page=(\d+)/);
+      return m ? m[1] : null;
     }
-
-    this.loading = true;
-    this.http.get<PaginatedResponse>(apiUrl, { headers })
-      .subscribe({
-        next: (data) => {
-          this.consultations = data.results;
-          this.count = data.count;
-          this.nextPage = data.next;
-          this.prevPage = data.previous;
-          this.loading = false;
-        },
-        error: (err) => {
-          this.error = 'Failed to load consultation history';
-          this.loading = false;
-        }
-      });
   }
 
-  onSearch(event: Event) {
-    this.searchQuery = (event.target as HTMLInputElement).value;
-    this.loadHistory();
+  private fetch(nextOrPrevUrl?: string) {
+    this.loading.set(true);
+    this.error.set(null);
+
+    let params = new HttpParams();
+    const q = this.query();
+    if (q) params = params.set('search', q);
+
+    const page = nextOrPrevUrl ? this.extractPage(nextOrPrevUrl) : null;
+    if (page) params = params.set('page', page);
+
+    return this.http.get<PaginatedResponse>(this.baseUrl(), { params }).pipe(
+      finalize(() => this.loading.set(false)),
+      catchError((err) => {
+        this.error.set(this.apiErrorMessage(err));
+        this.consultations.set([]);
+        this.count.set(0);
+        this.nextPageUrl.set(null);
+        this.prevPageUrl.set(null);
+        return of(null);
+      }),
+    );
   }
 
-  toggleExpand(id: number) {
-    this.expandedId = this.expandedId === id ? null : id;
+  private applyResponse(data: PaginatedResponse | null): void {
+    if (!data) return;
+    this.consultations.set(data.results ?? []);
+    this.count.set(data.count ?? 0);
+    this.nextPageUrl.set(data.next ?? null);
+    this.prevPageUrl.set(data.previous ?? null);
   }
 
-  goToNext() {
-    if (this.nextPage) this.loadHistory(this.nextPage);
-  }
-
-  goToPrev() {
-    if (this.prevPage) this.loadHistory(this.prevPage);
+  private apiErrorMessage(err: unknown): string {
+    const httpErr = err as HttpErrorResponse;
+    const status = httpErr?.status;
+    const body = httpErr?.error;
+    if (body && typeof body === 'object') {
+      const e = body as Record<string, unknown>;
+      const msg = e['message'] ?? e['detail'] ?? e['error'];
+      if (typeof msg === 'string') return msg;
+    }
+    if (status === 403) return 'Not allowed.';
+    if (status === 401) return 'Please sign in again.';
+    if (status === 0) return 'Could not reach the server.';
+    return 'Failed to load consultation history.';
   }
 }

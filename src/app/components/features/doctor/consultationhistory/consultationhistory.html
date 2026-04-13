@@ -1,103 +1,99 @@
-<!-- <p>consultationhistory works!</p> -->
-<div class="history-page">
+<div class="ch-page">
+  <header class="page-header d-flex justify-between align-center flex-wrap gap-2">
+    <div>
+      <h1 class="page-title font-display">Consultation history</h1>
+      <p class="page-subtitle mb-0">{{ subtitle() }}</p>
+    </div>
+    <button type="button" class="btn btn-secondary" [disabled]="loading()" (click)="reload()">Refresh</button>
+  </header>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="loading-spinner"></div>
-    <p>Loading history...</p>
+  <div class="filters-card mb-3">
+    <div class="filters-card-inner">
+      <div class="filters-row">
+        <span class="filter-label">Search</span>
+        <div class="search-shell">
+          <span class="search-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input
+            class="search-input"
+            type="text"
+            placeholder="Patient name or diagnosis…"
+            [value]="query()"
+            (input)="onSearch($any($event.target).value)"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Error -->
-  <div *ngIf="error" class="error-state">
-    <p>{{ error }}</p>
+  <div *ngIf="loading()" class="card-flat ch-loading">
+    <div class="sk sk-line sk-w-40 mb-2"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-55"></div>
   </div>
 
-  <!-- Content -->
-  <div *ngIf="!loading && !error">
+  <div *ngIf="!loading() && error()" class="alert alert-error d-flex justify-between align-center gap-2 mb-3" role="alert">
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="reload()">Retry</button>
+  </div>
 
-    <!-- Hero -->
-    <div class="page-hero">
-      <h1>Consultation History</h1>
-      <p>{{ count }} TOTAL CONSULTATION{{ count !== 1 ? 'S' : '' }}</p>
-    </div>
+  <div *ngIf="empty()" class="card-flat ch-empty">
+    <h3 class="font-display fw-800 mb-1">No consultations yet</h3>
+    <p class="text-muted mb-0">Completed consultations will appear here once saved.</p>
+  </div>
 
-    <div class="content">
-
-      <!-- Search -->
-      <div class="search-bar">
-        <input
-          type="text"
-          placeholder="Search by patient name or diagnosis..."
-          (input)="onSearch($event)">
-      </div>
-
-      <!-- Empty -->
-      <div *ngIf="consultations.length === 0" class="empty-state">
-        <div class="icon">🩺</div>
-        <h3>No Consultations Found</h3>
-        <p>Your consultation history will appear here</p>
-      </div>
-
-      <!-- List -->
-      <div *ngFor="let consultation of consultations" class="consultation-card">
-
-        <!-- Header -->
-        <div class="card-header" (click)="toggleExpand(consultation.id)">
-          <div class="patient-info">
-            <div class="patient-name">
-              {{ consultation.appointment.patient.user.first_name }}
-              {{ consultation.appointment.patient.user.last_name }}
-            </div>
-            <div class="date">
-              📅 {{ consultation.appointment.scheduled_datetime | date:'MMM d, y — HH:mm' }}
-            </div>
-          </div>
-          <div class="card-header-right">
-            <div class="diagnosis-preview">{{ consultation.diagnosis }}</div>
-            <span class="expand-icon">{{ expandedId === consultation.id ? '▲' : '▼' }}</span>
+  <div class="ch-list" *ngIf="!loading() && !error() && consultations().length">
+    <section class="card-flat ch-card" *ngFor="let c of consultations()">
+      <button type="button" class="ch-head" (click)="toggleExpand(c.id)">
+        <div class="ch-head__left min-w-0">
+          <div class="ch-title truncate">{{ patientName(c) }}</div>
+          <div class="ch-sub text-muted">
+            {{ c.appointment.scheduled_datetime | date : 'medium' }}
+            <span class="ch-dot">•</span>
+            {{ rxSummary(c) }}
+            <span class="ch-dot">•</span>
+            {{ testsSummary(c) }}
           </div>
         </div>
+        <div class="ch-head__right">
+          <span class="ch-chip" *ngIf="c.diagnosis">{{ c.diagnosis }}</span>
+          <span class="ch-caret" aria-hidden="true">{{ expandedId() === c.id ? '▲' : '▼' }}</span>
+        </div>
+      </button>
 
-        <!-- Expanded Details -->
-        <div *ngIf="expandedId === consultation.id" class="card-body">
-          <div class="detail-row">
-            <span class="detail-label">Clinical Notes</span>
-            <span class="detail-value">{{ consultation.clinical_notes }}</span>
-          </div>
-
-          <div class="chips-section">
-            <div class="chips-title">💊 Prescriptions</div>
-            <div *ngIf="consultation.prescriptions.length > 0; else noRx">
-              <span *ngFor="let rx of consultation.prescriptions" class="drug-chip">
-                {{ rx.drug_name }} — {{ rx.dose }} — {{ rx.duration_days }}d
-              </span>
-            </div>
-            <ng-template #noRx>
-              <span class="empty-text">No prescriptions</span>
-            </ng-template>
-          </div>
-
-          <div class="chips-section">
-            <div class="chips-title">🔬 Tests</div>
-            <div *ngIf="consultation.tests.length > 0; else noTests">
-              <span *ngFor="let test of consultation.tests" class="test-chip">
-                {{ test.test_name }}
-              </span>
-            </div>
-            <ng-template #noTests>
-              <span class="empty-text">No tests</span>
-            </ng-template>
-          </div>
+      <div class="ch-body" *ngIf="expandedId() === c.id">
+        <div class="ch-block">
+          <div class="ch-block__label">Clinical notes</div>
+          <div class="ch-block__value">{{ c.clinical_notes || '—' }}</div>
         </div>
 
-      </div>
+        <div class="ch-block">
+          <div class="ch-block__label">Prescriptions</div>
+          <div class="ch-pills" *ngIf="c.prescriptions.length; else noRx">
+            <span class="ch-pill" *ngFor="let rx of c.prescriptions">
+              {{ rx.drug_name }} · {{ rx.dose }} · {{ rx.duration_days }}d
+            </span>
+          </div>
+          <ng-template #noRx><div class="text-muted">No prescriptions</div></ng-template>
+        </div>
 
-      <!-- Pagination -->
-      <div class="pagination" *ngIf="count > 10">
-        <button (click)="goToPrev()" [disabled]="!prevPage">← Previous</button>
-        <button (click)="goToNext()" [disabled]="!nextPage">Next →</button>
+        <div class="ch-block">
+          <div class="ch-block__label">Tests</div>
+          <div class="ch-pills" *ngIf="c.tests.length; else noT">
+            <span class="ch-pill ch-pill--test" *ngFor="let t of c.tests">{{ t.test_name }}</span>
+          </div>
+          <ng-template #noT><div class="text-muted">No tests</div></ng-template>
+        </div>
       </div>
+    </section>
+  </div>
 
-    </div>
+  <div class="pagination d-flex gap-2 justify-center mt-3" *ngIf="!loading() && !error() && (prevPageUrl() || nextPageUrl())">
+    <button class="btn btn-secondary" type="button" (click)="goToPrev()" [disabled]="!prevPageUrl()">← Previous</button>
+    <button class="btn btn-secondary" type="button" (click)="goToNext()" [disabled]="!nextPageUrl()">Next →</button>
   </div>
 </div>

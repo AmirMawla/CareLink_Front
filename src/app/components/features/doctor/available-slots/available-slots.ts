@@ -1,10 +1,12 @@
 import { DatePipe, NgFor, NgIf } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
 import { catchError, finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { DoctorAvailableSlotsResponse } from '../../../../models/doctor-dashboard.model';
 import { DoctorDashboardService } from '../../../../services/doctor-dashboard';
+import { ApiService } from '../../../../services/api.service';
+import { BaseProfile, ReceptionistProfile } from '../../../../models/users';
 
 type RangeMode = '14d' | 'all' | 'date';
 
@@ -48,6 +50,8 @@ function slotTimeLabel(iso: string): string {
 })
 export class AvailableSlots implements OnInit, OnDestroy {
   private readonly service = inject(DoctorDashboardService);
+  private readonly http = inject(HttpClient);
+  private readonly api = inject(ApiService);
   private readonly destroy$ = new Subject<void>();
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -77,18 +81,38 @@ export class AvailableSlots implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.service
-      .getLoggedInDoctor()
+    // Doctors use /dashboard/doctor/me, receptionists use /accounts/profile to get assigned doctor id.
+    this.http
+      .get<BaseProfile>(this.api.resolve('/api/accounts/profile/'))
       .pipe(
         takeUntil(this.destroy$),
-        switchMap((doc) => {
-          this.doctorId.set(doc?.id ?? null);
-          const id = doc?.id;
-          if (!id) {
-            this.error.set('Could not determine your doctor profile.');
-            return of(null);
+        switchMap((profile) => {
+          const role = (profile?.role || '').toString().toUpperCase();
+          if (role === 'DOCTOR') {
+            return this.service.getLoggedInDoctor().pipe(
+              switchMap((doc) => {
+                this.doctorId.set(doc?.id ?? null);
+                const id = doc?.id;
+                if (!id) {
+                  this.error.set('Could not determine your doctor profile.');
+                  return of(null);
+                }
+                return this.fetch(id);
+              }),
+            );
           }
-          return this.fetch(id);
+          if (role === 'RECEPTIONIST') {
+            const rec = profile as unknown as ReceptionistProfile;
+            const id = rec?.doctor;
+            this.doctorId.set(id ?? null);
+            if (!id) {
+              this.error.set('Could not determine the assigned doctor for this receptionist.');
+              return of(null);
+            }
+            return this.fetch(id);
+          }
+          this.error.set('Not allowed.');
+          return of(null);
         }),
       )
       .subscribe((res) => {

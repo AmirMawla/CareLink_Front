@@ -4,20 +4,106 @@
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--sp-2);
 }
 
-@media (max-width: 992px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Exactly 8 KPIs: 4×2 desktop, 2×4 tablet, stack on phone */
+.kpi-grid--eight {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 900px) {
+  .kpi-grid--eight {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 576px) {
-  .kpi-grid {
+  .kpi-grid--eight {
     grid-template-columns: 1fr;
   }
+}
+
+.stat-card--kpi {
+  min-height: 118px;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stat-card--kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-card--kpi .stat-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.stat-value--money {
+  color: var(--success);
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+}
+
+.stat-trend--line {
+  margin-top: 4px;
+}
+
+.stat-trend--up {
+  color: var(--success) !important;
+  font-weight: 700;
+}
+
+.stat-trend--down {
+  color: var(--error) !important;
+  font-weight: 700;
+}
+
+.dash-breakdown-row {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stat-card--revenue .stat-value {
+  color: var(--success);
+}
+
+.dash-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+@media (max-width: 1100px) {
+  .dash-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ngx-card .ngx-chart-host {
+  width: 100%;
+  min-height: 280px;
+  overflow-x: auto;
+}
+
+.ngx-card .ngx-chart-host ::ng-deep .ngx-charts {
+  display: block;
+}
+
+.ngx-card--pie .ngx-pie-host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.chart-hint {
+  font-size: var(--t-tiny);
+  color: var(--on-surface-3);
 }
 
 .stat-card-icon {
@@ -349,6 +435,12 @@
 .skeleton-stat {
   height: 72px;
   width: 100%;
+}
+
+.skeleton-stat--tall {
+  height: 148px;
+  width: 100%;
+  border-radius: var(--r-md);
 }
 
 .skeleton-line {

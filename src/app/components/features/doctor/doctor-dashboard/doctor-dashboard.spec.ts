@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -35,6 +36,15 @@ describe('DoctorDashboard', () => {
     pending_requests: 2,
     confirmed_today: 4,
     currently_waiting: 3,
+    session_price: 50,
+    revenue_total: 400,
+    revenue_this_month: 200,
+    revenue_today: 50,
+    revenue_last_month: 100,
+    revenue_mom_change_percent: 100.0,
+    completed_this_month: 4,
+    completed_last_month: 2,
+    completion_rate: 88.0,
   };
 
   const pendingRow = (id: number): PendingAppointmentRow => ({
@@ -51,7 +61,13 @@ describe('DoctorDashboard', () => {
   beforeEach(async () => {
     serviceMock = {
       getStats: vi.fn(() => of(statsPayload)),
-      getAppointmentsOverTime: vi.fn(() => of({ period: '7d', points: [{ date: '2026-04-11', label: 'Sat', count: 3 }] })),
+      getAppointmentsOverTime: vi.fn(() =>
+        of({
+          period: '7d',
+          session_price: 50,
+          points: [{ date: '2026-04-11', label: 'Sat', count: 3, completed_count: 2, revenue: 100 }],
+        }),
+      ),
       getStatusBreakdown: vi.fn(() => of({ segments: [{ status: 'COMPLETED', count: 2, percent: 100 }], total: 2 })),
       getLoggedInDoctor: vi.fn(() => of({ id: 99 })),
       getPendingRequests: vi.fn(() => of([pendingRow(1)])),
@@ -62,7 +78,7 @@ describe('DoctorDashboard', () => {
 
     await TestBed.configureTestingModule({
       imports: [DoctorDashboard],
-      providers: [{ provide: DoctorDashboardService, useValue: serviceMock }, provideRouter([])],
+      providers: [{ provide: DoctorDashboardService, useValue: serviceMock }, provideRouter([]), provideAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DoctorDashboard);
@@ -151,22 +167,6 @@ describe('DoctorDashboard', () => {
     }
   });
 
-  it('barHeight() returns 100 for the max value', () => {
-    component.chartPoints.set([
-      { date: 'a', label: 'a', count: 2 },
-      { date: 'b', label: 'b', count: 8 },
-    ]);
-    expect(component.barHeight(8)).toBe(100);
-  });
-
-  it('barHeight() returns 0 when chartMax is 0', () => {
-    component.chartPoints.set([
-      { date: 'a', label: 'a', count: 0 },
-      { date: 'b', label: 'b', count: 0 },
-    ]);
-    expect(component.barHeight(0)).toBe(0);
-  });
-
   it("formatWait(0) returns '< 1 min'", () => {
     expect(component.formatWait(0)).toBe('< 1 min');
   });
@@ -202,7 +202,7 @@ describe('DoctorDashboard', () => {
     component.statsLoading.set(true);
     fixture.detectChanges();
     const skeletons = fixture.nativeElement.querySelectorAll('.kpi-grid .skeleton-stat');
-    expect(skeletons.length).toBe(6);
+    expect(skeletons.length).toBe(8);
   });
 
   it('Empty state is shown when pendingRequests is an empty array', () => {

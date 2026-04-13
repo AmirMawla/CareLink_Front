@@ -58,36 +58,14 @@
 //     return `${diff} min`;
 //   }
 // }
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Subject, finalize, takeUntil } from 'rxjs';
+import { DoctorDashboardService } from '../../../../services/doctor-dashboard';
+import { QueueItem } from '../../../../models/doctor-dashboard.model';
 
-interface Appointment {
-  id: number;
-  patient: {
-    id: number;
-    user: {
-      id: number;
-      first_name: string;
-      last_name: string;
-      username: string;
-    };
-    phone_number: string;
-  };
-  check_in_time: string;
-  scheduled_datetime: string;
-  status: string;
-  is_telemedicine: boolean;
-  meeting_link: string | null;
-}
-
-interface PaginatedResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Appointment[];
-}
+type QueueSort = 'wait_desc' | 'wait_asc' | 'scheduled_asc' | 'scheduled_desc' | 'name_asc';
 
 @Component({
   selector: 'app-doctorqueue',
@@ -95,74 +73,96 @@ interface PaginatedResponse {
   templateUrl: './doctorqueue.html',
   styleUrl: './doctorqueue.css',
 })
-export class Doctorqueue implements OnInit {
-  appointments: Appointment[] = [];
-  loading = true;
-  error = '';
-  today = new Date();
-  count = 0;
-  nextPage: string | null = null;
-  prevPage: string | null = null;
-  searchQuery = '';
-  cdr=inject(ChangeDetectorRef);
+export class Doctorqueue implements OnInit, OnDestroy {
+  private readonly dashboard = inject(DoctorDashboardService);
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private http: HttpClient) {}
+  readonly today = new Date();
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly lastUpdatedAt = signal<Date | null>(null);
 
-  ngOnInit() {
-    this.loadQueue();
-    this.cdr.detectChanges();
+  readonly query = signal('');
+  readonly sort = signal<QueueSort>('wait_asc');
+
+  readonly items = signal<QueueItem[]>([]);
+
+  readonly filtered = computed(() => {
+    const q = this.query().trim().toLowerCase();
+    const sort = this.sort();
+    const base = q
+      ? this.items().filter((i) => (i.patient_name || '').toLowerCase().includes(q))
+      : this.items();
+
+    const arr = [...base];
+    arr.sort((a, b) => {
+      if (sort === 'wait_desc') return (b.wait_minutes ?? 0) - (a.wait_minutes ?? 0);
+      if (sort === 'wait_asc') return (a.wait_minutes ?? 0) - (b.wait_minutes ?? 0);
+      if (sort === 'scheduled_asc') return new Date(a.scheduled_datetime).getTime() - new Date(b.scheduled_datetime).getTime();
+      if (sort === 'scheduled_desc') return new Date(b.scheduled_datetime).getTime() - new Date(a.scheduled_datetime).getTime();
+      if (sort === 'name_asc') return (a.patient_name || '').localeCompare(b.patient_name || '');
+      return 0;
+    });
+    return arr;
+  });
+
+  readonly stats = computed(() => {
+    const list = this.items();
+    const waiting = list.length;
+    const maxWait = waiting ? Math.max(...list.map((i) => i.wait_minutes ?? 0)) : 0;
+    const avgWait = waiting ? Math.round(list.reduce((s, i) => s + (i.wait_minutes ?? 0), 0) / waiting) : 0;
+    const next = waiting
+      ? [...list].sort((a, b) => new Date(a.scheduled_datetime).getTime() - new Date(b.scheduled_datetime).getTime())[0]
+      : null;
+    return { waiting, maxWait, avgWait, next };
+  });
+
+  ngOnInit(): void {
+    this.refresh();
   }
 
-  loadQueue(url?: string) {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-    let apiUrl = url || 'http://127.0.0.1:8000/api/medical/doctor/queue/';
-
-    if (!url && this.searchQuery) {
-      apiUrl += `?search=${this.searchQuery}`;
-    }
-
-    this.loading = true;
-    this.http.get<PaginatedResponse>(apiUrl, { headers })
+  refresh(): void {
+    this.error.set(null);
+    this.loading.set(true);
+    this.dashboard
+      .getQueueToday()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.loading.set(false)),
+      )
       .subscribe({
-        next: (data) => {
-          this.appointments = data.results;
-          this.count = data.count;
-          this.nextPage = data.next;
-          this.prevPage = data.previous;
-          this.loading = false;
-          this.cdr.detectChanges();
+        next: (res) => {
+          this.items.set(res?.items ?? []);
+          this.lastUpdatedAt.set(new Date());
         },
-        error: (err) => {
-          this.error = 'Failed to load queue';
-          this.loading = false;
-          this.cdr.detectChanges();
-        }
+        error: () => {
+          this.error.set('Failed to load today queue.');
+        },
       });
   }
 
-  onSearch(event: Event) {
-    this.searchQuery = (event.target as HTMLInputElement).value;
-    this.loadQueue();
-    this.cdr.detectChanges();
+  onQueryInput(v: string): void {
+    this.query.set(v);
   }
 
-  goToNext() {
-    if (this.nextPage) this.loadQueue(this.nextPage);
+  setSort(v: string): void {
+    this.sort.set((v as QueueSort) || 'wait_desc');
   }
 
-  goToPrev() {
-    if (this.prevPage) this.loadQueue(this.prevPage);
+  trackById(_: number, item: QueueItem): number {
+    return item.id;
   }
 
-  getWaitingTime(checkInTime: string): string {
-    const checkIn = new Date(checkInTime);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - checkIn.getTime()) / 60000);
-    this.cdr.detectChanges();
-    return `${diff} min`;
+  waitLabel(minutes: number): string {
+    const m = Math.max(0, Math.floor(minutes || 0));
+    if (m < 60) return `${m} min`;
+    const h = Math.floor(m / 60);
+    const mm = m % 60;
+    return mm ? `${h}h ${mm}m` : `${h}h`;
   }
 }

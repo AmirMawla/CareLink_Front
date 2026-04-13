@@ -1,0 +1,7 @@
+.receptionist-layout__page {
+  /* Match doctor layout: avoid global .page-wrapper max-width flash/jump */
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+

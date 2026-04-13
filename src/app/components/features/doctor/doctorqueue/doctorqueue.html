@@ -1,69 +1,118 @@
-<div class="queue-page">
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="loading-spinner"></div>
-    <p>Loading queue...</p>
-  </div>
-
-  <!-- Error -->
-  <div *ngIf="error" class="error-state">
-    <p>{{ error }}</p>
-  </div>
-
-  <!-- Content -->
-  <div *ngIf="!loading && !error">
-
-    <!-- Hero -->
-    <div class="page-hero">
-      <div>
-        <h1>Today's Queue</h1>
-        <p>{{ appointments.length }} PATIENT{{ appointments.length !== 1 ? 'S' : '' }} WAITING</p>
+<div class="dq-page">
+  <div class="dq-hero">
+    <div class="dq-hero__left">
+      <div class="dq-title">Doctor Queue</div>
+      <div class="dq-subtitle">
+        Today · {{ today | date : 'fullDate' }}
+        <span class="dq-dot">•</span>
+        <span class="dq-subtle">Checked-in patients, ordered by your preference</span>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="label">Total Today</div>
-        <div class="value">{{ appointments.length }}</div>
+    <div class="dq-hero__actions">
+      <button class="dq-btn dq-btn--ghost" type="button" (click)="refresh()" [disabled]="loading()">
+        <span class="dq-btn__icon" aria-hidden="true">↻</span>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="dq-shell">
+    <div class="dq-stats">
+      <div class="dq-stat">
+        <div class="dq-stat__label">Currently waiting</div>
+        <div class="dq-stat__value">{{ stats().waiting }}</div>
       </div>
-      <div class="stat-card">
-        <div class="label">Status</div>
-        <div class="value green">Checked In</div>
+      <div class="dq-stat">
+        <div class="dq-stat__label">Average wait</div>
+        <div class="dq-stat__value">{{ waitLabel(stats().avgWait) }}</div>
       </div>
-      <div class="stat-card">
-        <div class="label">Date</div>
-        <div class="value small">{{ today | date:'MMM d, y' }}</div>
+      <div class="dq-stat">
+        <div class="dq-stat__label">Longest wait</div>
+        <div class="dq-stat__value dq-stat__value--warn">{{ waitLabel(stats().maxWait) }}</div>
+      </div>
+      <div class="dq-stat dq-stat--wide">
+        <div class="dq-stat__label">Next scheduled</div>
+        <div class="dq-stat__value dq-stat__value--small" *ngIf="stats().next; else noNext">
+          {{ stats().next?.patient_name }} · {{ stats().next?.scheduled_datetime | date : 'shortTime' }}
+        </div>
+        <ng-template #noNext>
+          <div class="dq-stat__value dq-stat__value--small dq-subtle">—</div>
+        </ng-template>
       </div>
     </div>
 
-    <!-- Queue List -->
-    <div class="queue-section">
-      <h2>Patient Queue</h2>
-
-      <div *ngIf="appointments.length === 0" class="empty-state">
-        <div class="icon">🏥</div>
-        <h3>No Patients in Queue</h3>
-        <p>All checked-in patients will appear here</p>
+    <div class="dq-toolbar">
+      <div class="dq-search">
+        <span class="dq-search__icon" aria-hidden="true">⌕</span>
+        <input
+          class="dq-input"
+          type="text"
+          placeholder="Search patient name…"
+          [value]="query()"
+          (input)="onQueryInput(($any($event.target).value))"
+        />
       </div>
 
-      <div *ngFor="let appointment of appointments; let i = index" class="patient-card">
-        <div class="queue-number">{{ i + 1 }}</div>
-        <div class="patient-info">
-          <div class="name">
-            {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}
+      <div class="dq-sort">
+        <label class="dq-label" for="dq-sort">Sort</label>
+        <select id="dq-sort" class="dq-select" [value]="sort()" (change)="setSort(($any($event.target).value))">
+          <option value="wait_desc">Wait (high → low)</option>
+          <option value="wait_asc">Wait (low → high)</option>
+          <option value="scheduled_asc">Scheduled (early → late)</option>
+          <option value="scheduled_desc">Scheduled (late → early)</option>
+          <option value="name_asc">Name (A → Z)</option>
+        </select>
+      </div>
+
+      <div class="dq-updated" *ngIf="lastUpdatedAt() as t">
+        Updated {{ t | date : 'shortTime' }}
+      </div>
+    </div>
+
+    <div class="dq-state" *ngIf="loading()">
+      <div class="dq-spinner" aria-hidden="true"></div>
+      <div class="dq-subtle">Loading today queue…</div>
+    </div>
+
+    <div class="dq-state dq-state--error" *ngIf="!loading() && error() as e">
+      <div class="dq-state__title">Couldn’t load queue</div>
+      <div class="dq-subtle">{{ e }}</div>
+      <button class="dq-btn dq-btn--primary" type="button" (click)="refresh()">Try again</button>
+    </div>
+
+    <div class="dq-empty" *ngIf="!loading() && !error() && filtered().length === 0">
+      <div class="dq-empty__icon" aria-hidden="true">🏥</div>
+      <div class="dq-empty__title">No one is waiting</div>
+      <div class="dq-subtle">Checked-in patients will appear here automatically.</div>
+    </div>
+
+    <div class="dq-list" *ngIf="!loading() && !error() && filtered().length > 0">
+      <div class="dq-row" *ngFor="let item of filtered(); let i = index; trackBy: trackById">
+        <div class="dq-row__left">
+          <div class="dq-badge">{{ (item.patient_initials || '—') }}</div>
+          <div class="dq-main">
+            <div class="dq-name">
+              <span class="dq-pos">#{{ i + 1 }}</span>
+              {{ item.patient_name }}
+            </div>
+            <div class="dq-meta">
+              Scheduled {{ item.scheduled_datetime | date : 'shortTime' }}
+              <span class="dq-dot">•</span>
+              Waiting <strong>{{ waitLabel(item.wait_minutes) }}</strong>
+            </div>
           </div>
-          <div class="meta">CHECKED IN AT {{ appointment.check_in_time | date:'HH:mm' }}</div>
         </div>
-        <div class="waiting-chip">
-          ⏱ {{ getWaitingTime(appointment.check_in_time) }}
-        </div>
-        <a [routerLink]="['/doctor/consultation', appointment.id]" class="btn-primary">
-          Start Consultation
-        </a>
-      </div>
 
+        <div class="dq-row__right">
+          <div class="dq-pill" [class.dq-pill--hot]="item.wait_minutes >= 30">
+            {{ waitLabel(item.wait_minutes) }}
+          </div>
+          <a class="dq-btn dq-btn--primary" [routerLink]="['/doctor/consultation', item.id]">
+            Start consultation
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

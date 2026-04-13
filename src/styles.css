@@ -89,7 +89,12 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  /* Prevent layout shift when content height changes (scrollbar appears/disappears). */
+  scrollbar-gutter: stable;
+}
 body {
   font-family: var(--font-body);
   font-size: var(--t-sm);
@@ -97,6 +102,8 @@ body {
   background: var(--surface);
   line-height: 1.6;
   min-height: 100vh;
+  /* Fallback for browsers without scrollbar-gutter (keeps width stable). */
+  overflow-y: scroll;
 }
 h1,h2,h3,h4,h5,h6 {
   font-family: var(--font-display);

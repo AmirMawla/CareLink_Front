@@ -4,12 +4,20 @@
   min-width: 0;
 }
 
+/* Ensure scheduling pages don't get constrained by global .page-wrapper max-width */
+:host ::ng-deep .page-wrapper {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
 .ws-page {
   width: 100%;
   min-width: 0;
 }
 
 .ws-bulk {
+  width: 100%;
+  max-width: 100%;
   padding: var(--sp-3);
   border: 1px solid var(--outline);
   background: var(--surface-lowest);
@@ -60,11 +68,15 @@
 }
 
 .ws-loading {
+  width: 100%;
+  max-width: 100%;
   padding: var(--sp-4);
   border: 1px solid var(--outline);
 }
 
 .ws-grid {
+  width: 100%;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: var(--sp-2);

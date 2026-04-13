@@ -29,16 +29,34 @@ export interface DoctorDashboardStats {
   pending_requests: number;
   confirmed_today: number;
   currently_waiting: number;
+  /** Doctor profile session price (same unit as stored in backend, typically whole currency units). */
+  session_price?: number;
+  /** Total revenue: COMPLETED appointments × session_price (all time). */
+  revenue_total?: number;
+  revenue_this_month?: number;
+  revenue_today?: number;
+  revenue_last_month?: number;
+  /** Month-over-month change for this month's revenue vs last calendar month; null if last month revenue was 0 but this month has revenue. */
+  revenue_mom_change_percent?: number | null;
+  completed_this_month?: number;
+  completed_last_month?: number;
+  /** Completed / non-cancelled appointments, percent. */
+  completion_rate?: number;
 }
 
 export interface ChartPoint {
   date: string;
   label: string;
   count: number;
+  /** Same-day COMPLETED count (used for revenue). */
+  completed_count?: number;
+  /** completed_count × session_price for that day. */
+  revenue?: number;
 }
 
 export interface AppointmentsOverTimeResponse {
   period: string;
+  session_price?: number;
   points: ChartPoint[];
 }
 
