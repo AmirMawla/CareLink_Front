@@ -59,13 +59,55 @@
   background: var(--error);
   border: 1.5px solid var(--surface-lowest);
 }
+.cl-user-menu {
+  position: relative;
+}
 .cl-topbar__user {
   display: flex; align-items: center; gap: 10px;
   padding: 4px 12px 4px 4px;
   border-radius: var(--r-full);
   background: var(--surface-low); cursor: pointer;
   transition: background var(--ease);
+  border: none;
 }
 .cl-topbar__user:hover { background: var(--surface-container); }
 .cl-topbar__user-name { font-size: var(--t-xs); font-weight: 600; color: var(--on-surface); display: block; }
 .cl-topbar__user-role { font-size: var(--t-tiny); color: var(--on-surface-3); display: block; }
+
+.cl-user-menu__dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 180px;
+  background: var(--surface-lowest);
+  border: 1px solid var(--outline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+  z-index: 250;
+}
+
+.cl-user-menu__item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--on-surface);
+  transition: background var(--ease), color var(--ease);
+}
+
+.cl-user-menu__item:hover {
+  background: var(--surface-container);
+}
+
+.cl-user-menu__item--danger {
+  color: var(--error);
+}
+
+.cl-user-menu__item--danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+}

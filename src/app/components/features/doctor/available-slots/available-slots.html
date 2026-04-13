@@ -1,0 +1,124 @@
+<div class="as-page">
+  <div class="page-header d-flex justify-between align-center flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="page-title font-display">Available Slots</h1>
+      <p class="page-subtitle mb-0">
+        {{ headerSubtitle() }} · {{ slotsCount() }} slot{{ slotsCount() === 1 ? '' : 's' }}
+      </p>
+    </div>
+    <div class="d-flex align-center gap-2 flex-wrap">
+      <button type="button" class="btn btn-secondary" [disabled]="loading()" (click)="reload()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="toast-banner" *ngIf="toastVisible()" role="status">{{ toastMessage() }}</div>
+
+  <div class="card-flat as-controls mb-3">
+    <div class="as-controls-row">
+      <span class="filter-label filter-label--inline">View</span>
+      <div class="segmented cluster-pills">
+        <button
+          type="button"
+          class="appt-pill appt-pill-all appt-pill--compact"
+          [class.appt-pill-active]="rangeMode() === '14d'"
+          (click)="setMode('14d')"
+        >
+          Next days
+        </button>
+        <button
+          type="button"
+          class="appt-pill appt-pill-all appt-pill--compact"
+          [class.appt-pill-active]="rangeMode() === 'all'"
+          (click)="setMode('all')"
+        >
+          Next 90 days
+        </button>
+        <button
+          type="button"
+          class="appt-pill appt-pill-all appt-pill--compact"
+          [class.appt-pill-active]="rangeMode() === 'date'"
+          (click)="setMode('date')"
+        >
+          Pick a date
+        </button>
+      </div>
+    </div>
+
+    <div class="as-controls-row as-controls-row--inputs">
+      <div class="as-inline" *ngIf="rangeMode() === '14d'">
+        <label class="as-field">
+          <span class="as-field-label">Days</span>
+          <input type="number" class="form-control as-number" min="1" max="365" [value]="days()" (input)="onDays($any($event.target).value)" />
+        </label>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="loading()" (click)="applyDays()">Apply</button>
+        <span class="text-muted as-hint">Shows future slots within your schedule and exceptions.</span>
+      </div>
+
+      <div class="as-inline" *ngIf="rangeMode() === 'date'">
+        <label class="as-field">
+          <span class="as-field-label">Date</span>
+          <input type="date" class="form-control as-date" [value]="selectedDate()" (change)="onSelectedDate($any($event.target).value)" />
+        </label>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="loading()" (click)="applyDate()">Show</button>
+        <span class="text-muted as-hint">Must be in the future (server rule).</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="card-flat as-loading">
+    <div class="sk sk-line sk-w-40 mb-2"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-55"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="alert alert-error d-flex justify-between align-center gap-2 mb-3" role="alert">
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="reload()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && data() as d">
+    <div class="as-meta card-flat mb-3">
+      <div class="as-meta-grid">
+        <div class="as-stat">
+          <span class="as-stat-label">Session duration</span>
+          <span class="as-stat-value">{{ d.session_duration }} min</span>
+        </div>
+        <div class="as-stat">
+          <span class="as-stat-label">Buffer time</span>
+          <span class="as-stat-value">{{ d.buffer_time }} min</span>
+        </div>
+        <div class="as-stat">
+          <span class="as-stat-label">Range</span>
+          <span class="as-stat-value">{{ d.range_start | date : 'MMM d' }} → {{ d.range_end | date : 'MMM d' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="slotsCount() === 0" class="card-flat as-empty">
+      <h3 class="font-display fw-800 mb-1">No available slots found.</h3>
+      <p class="text-muted mb-0">
+        Try expanding the range, or check your <a routerLink="/doctor/schedule">weekly schedule</a> and
+        <a routerLink="/doctor/schedule/exceptions">exceptions</a>.
+      </p>
+    </div>
+
+    <div class="as-grid" *ngIf="slotsCount() > 0">
+      <section class="card-flat as-day" *ngFor="let g of grouped(); trackBy: trackByDay">
+        <header class="as-day-head d-flex justify-between align-center gap-2">
+          <div class="min-w-0">
+            <h3 class="as-day-title font-display mb-0">{{ g.date | date : 'EEEE, MMM d' }}</h3>
+            <div class="text-muted as-day-sub">{{ g.slots.length }} slot{{ g.slots.length === 1 ? '' : 's' }}</div>
+          </div>
+          <button type="button" class="btn btn-tertiary btn-sm" (click)="copyDay(g.date, g.slots)">Copy</button>
+        </header>
+
+        <div class="as-slots">
+          <button type="button" class="as-slot" *ngFor="let s of g.slots; trackBy: trackBySlot">
+            <span class="as-slot-time">{{ slotLabel(s) }}</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>
+

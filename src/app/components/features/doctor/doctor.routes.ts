@@ -40,6 +40,26 @@ export const DOCTOR_ROUTES: Routes = [
     title: 'Patient details',
   },
   {
+    path: 'schedule',
+    loadComponent: () => import('./weekly-schedule').then((m) => m.WeeklySchedule),
+    title: 'Weekly schedule',
+  },
+  {
+    path: 'schedule/exceptions',
+    loadComponent: () => import('./schedule-exceptions').then((m) => m.ScheduleExceptions),
+    title: 'Days off / exceptions',
+  },
+  {
+    path: 'available-slots',
+    loadComponent: () => import('./available-slots').then((m) => m.AvailableSlots),
+    title: 'Available slots',
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./doctor-profile').then((m) => m.DoctorProfile),
+    title: 'My profile',
+  },
+  {
     path: 'queue',
     component: Doctorqueue
   },

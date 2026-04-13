@@ -1,0 +1,6 @@
+/* Use full width of .main-content; global .page-wrapper caps at --max-w (1280px). */
+.doctor-layout__page {
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+}

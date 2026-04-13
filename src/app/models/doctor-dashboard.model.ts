@@ -4,7 +4,15 @@ export interface DoctorProfileMe {
   id: number;
   username?: string;
   email?: string;
+  role?: string;
   specialty?: string;
+  session_duration?: number | null;
+  buffer_time?: number | null;
+}
+
+export interface DoctorProfileUpdateResponse {
+  message: string;
+  doctor: DoctorProfileMe;
 }
 
 export interface DoctorDashboardStats {
@@ -62,6 +70,7 @@ export interface DoctorAppointmentListRow extends PendingAppointmentRow {
   patient_email?: string;
   patient_phone?: string;
   meeting_link?: string | null;
+  has_consultation?: boolean;
 }
 
 export interface DoctorAppointmentsListResponse {
@@ -90,4 +99,151 @@ export interface QueueItem {
 
 export interface QueueTodayResponse {
   items: QueueItem[];
+}
+
+export interface DoctorAppointmentDetailPatient {
+  id: number;
+  username?: string;
+  email?: string;
+  role?: string;
+  date_of_birth?: string | null;
+  phone_number?: string;
+  medical_history?: string;
+}
+
+export interface DoctorAppointmentDetailPrescription {
+  id: number;
+  drug_name: string;
+  dose: string;
+  duration_days: number;
+}
+
+export interface DoctorAppointmentDetailTest {
+  id: number;
+  test_name: string;
+}
+
+export interface DoctorAppointmentDetailConsultation {
+  id: number;
+  diagnosis?: string;
+  clinical_notes?: string;
+  created_at?: string;
+  prescriptions: DoctorAppointmentDetailPrescription[];
+  tests: DoctorAppointmentDetailTest[];
+}
+
+export interface DoctorAppointmentDetailData {
+  id: number;
+  patient: DoctorAppointmentDetailPatient;
+  scheduled_datetime: string;
+  status: string;
+  check_in_time?: string | null;
+  is_telemedicine: boolean;
+  meeting_link?: string | null;
+  consultation: DoctorAppointmentDetailConsultation | null;
+}
+
+export interface DoctorAppointmentDetailResponse {
+  appointment: DoctorAppointmentDetailData;
+}
+
+
+export interface DoctorPatientListRow {
+  id: number;
+  username: string;
+  email: string;
+  date_of_birth?: string | null;
+  phone_number?: string;
+  appointments_count: number;
+  last_appointment_at?: string | null;
+  next_appointment_at?: string | null;
+}
+
+export interface DoctorPatientsListResponse {
+  count: number;
+  page: number;
+  total_pages: number;
+  page_size: number;
+  patients: DoctorPatientListRow[];
+}
+
+export interface DoctorPatientDetailAppointment {
+  id: number;
+  scheduled_datetime: string;
+  status: string;
+  is_telemedicine: boolean;
+  meeting_link?: string | null;
+  check_in_time?: string | null;
+  consultation: DoctorAppointmentDetailConsultation | null;
+}
+
+export interface DoctorPatientDetailData {
+  id: number;
+  username: string;
+  email: string;
+  role?: string;
+  date_of_birth?: string | null;
+  phone_number?: string;
+  medical_history?: string;
+  last_appointment_at?: string | null;
+  next_appointment_at?: string | null;
+  appointments: DoctorPatientDetailAppointment[];
+}
+
+export interface DoctorPatientDetailResponse {
+  patient: DoctorPatientDetailData;
+}
+
+export interface DoctorWeeklySchedule {
+  id: number;
+  doctor: number;
+  day_of_week: number; 
+  start_time: string; 
+  end_time: string;
+}
+
+export interface DoctorWeeklyScheduleResponse {
+  message: string;
+  schedule: DoctorWeeklySchedule;
+}
+
+export interface DoctorWeeklyScheduleBulkSetResponse {
+  message: string;
+  days_set: number[];
+  schedules: DoctorWeeklySchedule[];
+}
+
+export interface DoctorWeeklyScheduleBulkDeleteResponse {
+  message: string;
+  deleted_count: number;
+}
+
+export interface DoctorScheduleException {
+  id: number;
+  doctor: number;
+  date: string; // YYYY-MM-DD
+  is_day_off: boolean;
+  start_time?: string | null; // HH:MM:SS
+  end_time?: string | null;
+}
+
+export interface DoctorScheduleExceptionResponse {
+  message: string;
+  exception: DoctorScheduleException;
+}
+
+export interface DoctorAvailableSlotsResponse {
+  doctor: DoctorProfileMe & {
+    role?: string;
+    session_duration?: number;
+    buffer_time?: number;
+  };
+  weekly_schedules: DoctorWeeklySchedule[];
+  schedule_exceptions: DoctorScheduleException[];
+  range_start: string;
+  range_end: string;
+  selected_date: string | null;
+  available_slots: string[];
+  session_duration: number;
+  buffer_time: number;
 }

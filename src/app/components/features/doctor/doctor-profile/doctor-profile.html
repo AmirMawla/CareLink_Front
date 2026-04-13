@@ -1,0 +1,105 @@
+<div class="detail-page">
+  <div *ngIf="toastVisible()" class="detail-toast" role="status">{{ toastMessage() }}</div>
+
+  <div class="page-header detail-header">
+    <div class="detail-hero card-flat">
+      <div class="detail-hero-top">
+        <span class="avatar avatar-lg avatar-primary">{{ initials() }}</span>
+        <div class="detail-hero-text">
+          <h1 class="page-title font-display detail-title">My Profile</h1>
+          <p class="page-subtitle mb-0 text-muted">
+            {{ displayName() }} <span *ngIf="doctor()?.email">· {{ doctor()?.email }}</span>
+          </p>
+        </div>
+        <span class="badge badge-info">Doctor</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="detail-skeleton card-flat">
+    <div class="sk sk-line sk-w-40 mb-3"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-55"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="detail-error-shell" role="alert">
+    <div class="detail-error-card card-flat">
+      <div class="detail-error-icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" stroke-linecap="round" />
+        </svg>
+      </div>
+      <h2 class="detail-error-title font-display">Could not load profile</h2>
+      <p class="detail-error-text">{{ error() }}</p>
+      <div class="detail-error-actions">
+        <button type="button" class="btn btn-primary" (click)="reload()">Try again</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error()">
+    <div class="profile-grid">
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Public info</h2>
+
+        <label class="pf-field">
+          <span class="pf-label">Specialty</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="e.g. Cardiology"
+            [value]="specialty()"
+            (input)="onSpecialty($any($event.target).value)"
+          />
+        </label>
+
+        <p class="text-muted pf-hint mb-0">This helps patients understand your focus area.</p>
+      </section>
+
+      <section class="card-flat detail-panel">
+        <h2 class="panel-title">Scheduling</h2>
+
+        <div *ngIf="formError()" class="alert alert-error mb-2" role="alert">{{ formError() }}</div>
+
+        <div class="pf-2col">
+          <label class="pf-field">
+            <span class="pf-label">Session duration (min)</span>
+            <input
+              type="number"
+              min="5"
+              max="240"
+              class="form-control"
+              [value]="sessionDuration()"
+              (input)="onSessionDuration($any($event.target).value)"
+            />
+          </label>
+
+          <label class="pf-field">
+            <span class="pf-label">Buffer time (min)</span>
+            <input
+              type="number"
+              min="0"
+              max="120"
+              class="form-control"
+              [value]="bufferTime()"
+              (input)="onBufferTime($any($event.target).value)"
+            />
+          </label>
+        </div>
+
+        <div class="pf-actions d-flex align-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-primary" [disabled]="saving()" (click)="save()">
+            {{ saving() ? 'Saving…' : 'Save changes' }}
+          </button>
+          <button type="button" class="btn btn-secondary" [disabled]="saving()" (click)="reset()">Reset</button>
+        </div>
+
+        <p class="text-muted pf-hint mb-0">
+          Session duration and buffer time affect slot generation and bookings.
+        </p>
+      </section>
+    </div>
+  </ng-container>
+</div>
+

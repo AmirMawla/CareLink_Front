@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--sp-2);
+}
+
+.profile-grid > section {
+  grid-column: span 6;
+}
+
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--sp-2);
+}
+
+.pf-label {
+  font-size: var(--t-tiny);
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--on-surface-3);
+}
+
+.pf-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+.pf-actions {
+  margin-top: var(--sp-1);
+  margin-bottom: var(--sp-2);
+}
+
+.pf-hint {
+  font-size: var(--t-xs);
+}
+
+@media (max-width: 920px) {
+  .profile-grid > section {
+    grid-column: span 12;
+  }
+  .pf-2col {
+    grid-template-columns: 1fr;
+  }
+}
+

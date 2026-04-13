@@ -35,7 +35,6 @@
         </svg>
       </span>
       Appointments
-      <span class="cl-nav-badge">4</span>
     </a>
 
 
@@ -47,6 +46,55 @@
         </svg>
       </span>
       My Patients
+    </a>
+
+    <div class="cl-nav-section">Profile</div>
+
+    <a class="cl-nav-item" routerLink="/doctor/profile" routerLinkActive="active">
+      <span class="cl-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </span>
+      My Profile
+    </a>
+
+
+    <div class="cl-nav-section">Schedule</div>
+
+    <a
+      class="cl-nav-item"
+      routerLink="/doctor/schedule"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="cl-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </span>
+      Weekly Schedule
+    </a>
+
+    <a class="cl-nav-item" routerLink="/doctor/schedule/exceptions" routerLinkActive="active">
+      <span class="cl-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </span>
+      Days Off / Exceptions
+    </a>
+
+    <a class="cl-nav-item" routerLink="/doctor/available-slots" routerLinkActive="active">
+      <span class="cl-nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </span>
+      Available Slots
     </a>
 
     <div class="cl-nav-section">Clinical</div>
@@ -81,38 +129,7 @@
       Test Requests
     </a>
 
-    <div class="cl-nav-section">Schedule</div>
-
-    <a class="cl-nav-item" routerLink="/doctor/schedule" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </span>
-      Weekly Schedule
-    </a>
-
-    <a class="cl-nav-item" routerLink="/doctor/schedule/exceptions" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-      </span>
-      Days Off / Exceptions
-    </a>
-
-    <a class="cl-nav-item" routerLink="/doctor/available-slots" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </span>
-      Available Slots
-    </a>
-
-    <div class="cl-nav-section">Reports</div>
+    <!-- <div class="cl-nav-section">Reports</div> -->
 
     <!-- <a class="cl-nav-item" routerLink="/doctor/analytics" routerLinkActive="active">
       <span class="cl-nav-icon">
@@ -138,7 +155,7 @@
   </app-sidebar>
 
   <div class="main-content">
-    <div class="page-wrapper">
+    <div class="page-wrapper doctor-layout__page">
       <router-outlet />
     </div>
   </div>

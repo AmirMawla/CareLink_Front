@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
-export class SidebarComponent {}
+export class SidebarComponent {
+  private readonly router = inject(Router);
+  signOut(): void {
+    localStorage.removeItem('token');
+    this.router.navigate(['/auth/login']);
+  }
+}
