@@ -1,0 +1,136 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.ws-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.ws-bulk {
+  padding: var(--sp-3);
+  border: 1px solid var(--outline);
+  background: var(--surface-lowest);
+  box-shadow: var(--shadow-sm);
+}
+
+.ws-bulk-head {
+  margin-bottom: var(--sp-2);
+}
+
+.ws-section-title {
+  font-size: var(--t-md);
+  font-weight: 700;
+  margin: 0 0 2px 0;
+}
+
+.ws-badge {
+  flex-shrink: 0;
+}
+
+.ws-bulk-body {
+  min-width: 0;
+}
+
+.ws-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ws-field-label {
+  font-size: var(--t-tiny);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--on-surface-3);
+}
+
+.ws-time {
+  padding: 7px 10px;
+  font-size: var(--t-xs);
+  min-width: 120px;
+}
+
+.ws-bulk-actions {
+  margin-left: auto;
+}
+
+.ws-loading {
+  padding: var(--sp-4);
+  border: 1px solid var(--outline);
+}
+
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--sp-2);
+}
+
+.ws-day {
+  grid-column: span 6;
+  padding: var(--sp-3);
+  border: 1px solid var(--outline);
+  background: var(--surface-lowest);
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+
+.ws-day-head {
+  padding-bottom: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--outline);
+}
+
+.ws-day-title {
+  font-size: var(--t-lg);
+  font-weight: 800;
+}
+
+.ws-day-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.ws-range {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--on-surface-2);
+  white-space: nowrap;
+}
+
+.ws-time-row {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-2);
+}
+
+.ws-day-actions {
+  margin-top: 2px;
+}
+
+.ws-delete {
+  color: var(--error);
+}
+
+.ws-hint {
+  margin-top: var(--sp-2);
+  font-size: var(--t-xs);
+}
+
+@media (max-width: 920px) {
+  .ws-day {
+    grid-column: span 12;
+  }
+  .ws-bulk-actions {
+    margin-left: 0;
+  }
+}
+

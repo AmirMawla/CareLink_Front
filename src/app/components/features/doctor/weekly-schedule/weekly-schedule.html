@@ -1,0 +1,116 @@
+<div class="ws-page">
+  <div class="page-header d-flex justify-between align-center flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="page-title font-display">Weekly Schedule</h1>
+      <p class="page-subtitle mb-0">Set your weekly working hours. Patients can book within these windows.</p>
+    </div>
+    <div class="d-flex align-center gap-2 flex-wrap">
+      <button type="button" class="btn btn-secondary" [disabled]="loading()" (click)="reload()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="toast-banner" *ngIf="toastVisible()" role="status">{{ toastMessage() }}</div>
+
+  <div class="card-flat ws-bulk card-flat mb-3">
+    <div class="ws-bulk-head d-flex justify-between align-start flex-wrap gap-2">
+      <div>
+        <h2 class="ws-section-title">Quick actions</h2>
+        <p class="ws-section-sub text-muted mb-0">Apply a time range to all days except Friday.</p>
+      </div>
+      <span class="badge badge-info ws-badge">Bulk</span>
+    </div>
+
+    <div class="ws-bulk-body d-flex align-center gap-2 flex-wrap">
+      <label class="ws-field">
+        <span class="ws-field-label">Start</span>
+        <input type="time" class="form-control ws-time" [value]="bulkStart()" (change)="bulkStart.set($any($event.target).value)" />
+      </label>
+      <label class="ws-field">
+        <span class="ws-field-label">End</span>
+        <input type="time" class="form-control ws-time" [value]="bulkEnd()" (change)="bulkEnd.set($any($event.target).value)" />
+      </label>
+
+      <div class="ws-bulk-actions d-flex align-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-primary" [disabled]="!canBulkApply()" (click)="bulkApplyExceptFriday()">
+          Apply Mon–Thu, Sat–Sun
+        </button>
+        <button type="button" class="btn btn-tertiary" [disabled]="bulkBusy()" (click)="bulkDeleteExceptFriday()">
+          Clear Mon–Thu, Sat–Sun
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="card-flat ws-loading">
+    <div class="sk sk-line sk-w-40 mb-2"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-55"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="alert alert-error d-flex justify-between align-center gap-2 mb-3" role="alert">
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="reload()">Retry</button>
+  </div>
+
+  <div class="ws-grid" *ngIf="!loading() && !error()">
+    <section class="card ws-day card-flat" *ngFor="let d of days">
+      <header class="ws-day-head d-flex justify-between align-start gap-2">
+        <div class="min-w-0">
+          <h3 class="ws-day-title font-display mb-0">{{ d.label }}</h3>
+          <div class="ws-day-sub text-muted truncate">
+            <span class="badge badge-info" *ngIf="dayHasSchedule(d.key)">Working</span>
+            <span class="badge badge-cancelled" *ngIf="!dayHasSchedule(d.key)">Off</span>
+            <span class="ws-range">{{ rangeLabel(d.key) }}</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-tertiary btn-sm" (click)="copyDayToBulk(d.key)">Copy to bulk</button>
+      </header>
+
+      <div class="ws-day-body">
+        <div class="ws-time-row">
+          <label class="ws-field">
+            <span class="ws-field-label">Start</span>
+            <input
+              type="time"
+              class="form-control ws-time"
+              [value]="draftStart()[d.key] || ''"
+              (change)="onDraftStart(d.key, $any($event.target).value)"
+            />
+          </label>
+          <label class="ws-field">
+            <span class="ws-field-label">End</span>
+            <input
+              type="time"
+              class="form-control ws-time"
+              [value]="draftEnd()[d.key] || ''"
+              (change)="onDraftEnd(d.key, $any($event.target).value)"
+            />
+          </label>
+        </div>
+
+        <div class="ws-day-actions d-flex align-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-primary btn-sm" [disabled]="!canSaveDay(d.key)" (click)="saveDay(d.key)">
+            {{ savingDay() === d.key ? 'Saving…' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" [disabled]="savingDay() === d.key || deletingDay() === d.key || bulkBusy()" (click)="clearDraft(d.key)">
+            Reset
+          </button>
+          <button
+            type="button"
+            class="btn btn-tertiary btn-sm ws-delete"
+            *ngIf="dayHasSchedule(d.key)"
+            [disabled]="deletingDay() === d.key || savingDay() === d.key || bulkBusy()"
+            (click)="deleteDay(d.key)"
+          >
+            {{ deletingDay() === d.key ? 'Deleting…' : 'Delete' }}
+          </button>
+        </div>
+
+        <p class="ws-hint text-muted mb-0" *ngIf="d.key === 4">
+          Friday is excluded from bulk actions (you can still set it manually).
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+
