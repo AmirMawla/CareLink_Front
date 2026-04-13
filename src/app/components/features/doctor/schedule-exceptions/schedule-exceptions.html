@@ -1,0 +1,191 @@
+<div class="se-page">
+  <div class="page-header d-flex justify-between align-center flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="page-title font-display">Days Off / Exceptions</h1>
+      <p class="page-subtitle mb-0">Override your weekly schedule for a specific date.</p>
+    </div>
+    <div class="d-flex align-center gap-2 flex-wrap">
+      <button type="button" class="btn btn-secondary" [disabled]="loading()" (click)="reload()">Refresh</button>
+      <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="openCreate()">Add exception</button>
+    </div>
+  </div>
+
+  <div class="toast-banner" *ngIf="toastVisible()" role="status">{{ toastMessage() }}</div>
+
+  <div *ngIf="loading()" class="card-flat se-loading">
+    <div class="sk sk-line sk-w-40 mb-2"></div>
+    <div class="sk sk-line sk-w-70 mb-2"></div>
+    <div class="sk sk-line sk-w-55"></div>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="alert alert-error d-flex justify-between align-center gap-2 mb-3" role="alert">
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="reload()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error()">
+    <div class="se-split">
+      <section class="card-flat se-panel">
+        <div class="se-panel-head d-flex justify-between align-center gap-2">
+          <h2 class="se-title font-display mb-0">Upcoming</h2>
+          <span class="badge badge-info">{{ upcoming().length }}</span>
+        </div>
+
+        <div *ngIf="upcoming().length === 0" class="se-empty text-muted">No upcoming exceptions.</div>
+
+        <div class="se-list" *ngIf="upcoming().length">
+          <article class="se-row" *ngFor="let row of upcoming(); trackBy: trackByExc">
+            <div class="se-date">
+              <div class="se-date__top">{{ row.date | date : 'EEE' }}</div>
+              <div class="se-date__main font-display">{{ row.date | date : 'MMM d' }}</div>
+              <div class="se-date__year text-muted">{{ row.date | date : 'y' }}</div>
+            </div>
+
+            <div class="se-body min-w-0">
+              <div class="se-body-top d-flex align-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="se-label fw-700 truncate">{{ exceptionTypeLabel(row) }}</div>
+                  <div class="text-muted se-sub truncate">
+                    {{ row.is_day_off ? 'Clinic closed for you on this date' : 'Override hours for this date' }}
+                  </div>
+                </div>
+                <span [ngClass]="badgeClass(row)">{{ row.is_day_off ? 'Day off' : 'Custom' }}</span>
+              </div>
+
+              <div class="se-actions d-flex align-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="openEdit(row)">Edit</button>
+                <button
+                  type="button"
+                  class="btn btn-tertiary btn-sm se-del"
+                  [disabled]="deletingId() === row.id"
+                  (click)="delete(row)"
+                >
+                  {{ deletingId() === row.id ? 'Deleting…' : 'Delete' }}
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-flat se-panel">
+        <div class="se-panel-head d-flex justify-between align-center gap-2">
+          <h2 class="se-title font-display mb-0">Past</h2>
+          <span class="badge badge-info">{{ past().length }}</span>
+        </div>
+
+        <div *ngIf="past().length === 0" class="se-empty text-muted">No past exceptions.</div>
+
+        <div class="se-list" *ngIf="past().length">
+          <article class="se-row se-row--past" *ngFor="let row of past(); trackBy: trackByExc">
+            <div class="se-date se-date--muted">
+              <div class="se-date__top">{{ row.date | date : 'EEE' }}</div>
+              <div class="se-date__main font-display">{{ row.date | date : 'MMM d' }}</div>
+              <div class="se-date__year text-muted">{{ row.date | date : 'y' }}</div>
+            </div>
+
+            <div class="se-body min-w-0">
+              <div class="se-body-top d-flex align-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="se-label fw-700 truncate">{{ exceptionTypeLabel(row) }}</div>
+                  <div class="text-muted se-sub truncate">Past exception</div>
+                </div>
+                <span [ngClass]="badgeClass(row)">{{ row.is_day_off ? 'Day off' : 'Custom' }}</span>
+              </div>
+
+              <div class="se-actions d-flex align-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="openEdit(row)">Edit</button>
+                <button
+                  type="button"
+                  class="btn btn-tertiary btn-sm se-del"
+                  [disabled]="deletingId() === row.id"
+                  (click)="delete(row)"
+                >
+                  {{ deletingId() === row.id ? 'Deleting…' : 'Delete' }}
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+
+  <!-- Editor drawer -->
+  <div class="se-drawer-backdrop" *ngIf="editorOpen()" (click)="closeEditor()"></div>
+  <aside class="se-drawer card-flat" *ngIf="editorOpen()" role="dialog" aria-modal="true">
+    <header class="se-drawer-head d-flex justify-between align-center gap-2">
+      <div>
+        <h2 class="se-drawer-title font-display mb-0">{{ editingId() ? 'Edit exception' : 'Add exception' }}</h2>
+        <p class="text-muted mb-0 se-drawer-sub">Set a day off or custom working hours for a specific date.</p>
+      </div>
+      <button type="button" class="btn btn-tertiary btn-sm" (click)="closeEditor()">Close</button>
+    </header>
+
+    <div class="se-drawer-body">
+      <div *ngIf="formError()" class="alert alert-error mb-2" role="alert">{{ formError() }}</div>
+
+      <label class="se-field">
+        <span class="se-field-label">Date</span>
+        <input type="date" class="form-control" [value]="formDate()" (change)="formDate.set($any($event.target).value)" />
+      </label>
+
+      <div class="se-toggle">
+        <span class="se-field-label">Type</span>
+        <div class="segmented se-toggle-row">
+          <button
+            type="button"
+            class="appt-pill appt-pill-all appt-pill--compact"
+            [class.appt-pill-active]="formDayOff()"
+            (click)="toggleDayOff(true)"
+          >
+            Day off
+          </button>
+          <button
+            type="button"
+            class="appt-pill appt-pill-all appt-pill--compact"
+            [class.appt-pill-active]="!formDayOff()"
+            (click)="toggleDayOff(false)"
+          >
+            Custom hours
+          </button>
+        </div>
+      </div>
+
+      <div class="se-time-grid" [class.se-time-grid--disabled]="formDayOff()">
+        <label class="se-field">
+          <span class="se-field-label">Start</span>
+          <input
+            type="time"
+            class="form-control"
+            [disabled]="formDayOff()"
+            [value]="formStart()"
+            (change)="formStart.set($any($event.target).value)"
+          />
+        </label>
+        <label class="se-field">
+          <span class="se-field-label">End</span>
+          <input
+            type="time"
+            class="form-control"
+            [disabled]="formDayOff()"
+            [value]="formEnd()"
+            (change)="formEnd.set($any($event.target).value)"
+          />
+        </label>
+      </div>
+
+      <div class="se-drawer-actions d-flex align-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-secondary" [disabled]="saving()" (click)="closeEditor()">Cancel</button>
+      </div>
+
+      <p class="text-muted se-footnote mb-0">
+        Note: If you create an exception for a date that already exists, the server updates it automatically.
+      </p>
+    </div>
+  </aside>
+</div>
+
