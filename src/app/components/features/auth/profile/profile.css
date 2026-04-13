@@ -268,4 +268,15 @@
   padding: 14px 32px;
   border-radius: 50px;
   font-weight: 600;
+  margin: 50px !important;
+}
+
+.cancel-btn:hover {
+  background-color: #e61d1d;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px #e74c3c;
+}
+
+.cancel-btn:active {
+  transform: translateY(-1px);
 }

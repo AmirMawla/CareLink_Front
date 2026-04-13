@@ -8,6 +8,7 @@ import {Signup} from './components/features/auth/signup/signup'
 import {Profile} from './components/features/auth/profile/profile'
 import { ADMIN_ROUTES } from './components/features/admin/admin.routes';
 import { AdminLayoutComponent } from './components/layouts/admin-layout/admin-layout.component';
+import { ChangePassword } from './components/features/auth/change-password/change-password';
 
 import {Consultationhistory} from './components/features/doctor/consultationhistory/consultationhistory'
 import{Doctorqueue} from './components/features/doctor/doctorqueue/doctorqueue'
@@ -24,6 +25,10 @@ export const routes: Routes = [
   {
     path : 'auth/register',
     component : Signup
+  },
+  {
+    path : 'auth/ChangePassword',
+    component : ChangePassword
   },
   {
     path : 'auth/profile',
