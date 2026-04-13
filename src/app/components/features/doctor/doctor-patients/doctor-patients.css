@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+#doctor-patients-table-anchor {
+  scroll-margin-top: 1rem;
+}
+
+/* Patients table uses the same 5-column layout as appointments */
+.table-data-wrap--patients {
+  overflow-x: auto !important;
+  overflow-y: visible;
+}
+
+.table-clean--patients {
+  min-width: 860px;
+}
+
+.table-clean--patients thead th,
+.table-clean--patients tbody td {
+  vertical-align: middle;
+}
+
+/* make the center number column look like appointments (stable) */
+.table-clean--patients tbody td:nth-child(3) {
+  text-align: center;
+}
+
+/* keep last/next lines readable without breaking the row */
+.table-clean--patients tbody td:nth-child(4) .truncate {
+  white-space: nowrap;
+}
