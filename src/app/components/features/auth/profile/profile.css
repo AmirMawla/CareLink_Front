@@ -1,0 +1,271 @@
+/* ====================== Root Variables ====================== */
+:root {
+  --primary: #00478D;
+  --primary-container: #005EB8;
+  --primary-light: #E8F1FB;
+  --primary-fixed: #1A6BC4;
+  
+  --surface: #F8F9FB;
+  --surface-low: #F3F4F6;
+  --surface-lowest: #FFFFFF;
+  --surface-container: #EEF0F4;
+  --surface-high: #E7EAF0;
+
+  --success: #1B8A5A;
+  --success-container: #E6F6EF;
+  --warning: #C07B00;
+  --warning-container: #FFF4E0;
+  --error: #BA1A1A;
+  --error-container: #FFDAD6;
+  --info: #006494;
+  --info-container: #E0F2FF;
+
+  --s-requested: #005EB8;
+}
+
+/* ====================== Profile Component ====================== */
+.profile-container {
+  padding: 24px 16px;
+  max-width: 820px;
+  margin: 0 auto;
+  background-color: var(--surface);
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  direction: rtl;
+}
+
+.profile-card {
+  background-color: var(--surface-lowest);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid var(--surface-high);
+}
+
+/* ==================== Header ==================== */
+.profile-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.avatar {
+  font-size: 92px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.profile-header h1 {
+  margin: 8px 0 6px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.username {
+  font-size: 17px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.role-badge {
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Role Colors */
+.role-badge.DOCTOR {
+  background-color: var(--error);
+  color: white;
+}
+
+.role-badge.PATIENT {
+  background-color: var(--success);
+  color: white;
+}
+
+.role-badge.RECEPTIONIST {
+  background-color: var(--warning);
+  color: white;
+}
+
+.role-badge.ADMIN {
+  background-color: var(--primary-fixed);
+  color: white;
+}
+
+/* ==================== Sections ==================== */
+.section {
+  padding: 28px 32px;
+  border-bottom: 1px solid var(--surface-high);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h2 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 14.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 16.5px;
+  color: #1e2937;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.medical-history {
+  background-color: var(--surface-container);
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-high);
+  line-height: 1.7;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+/* Admin Note */
+.admin-note {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  border-right: 4px solid var(--primary);
+}
+
+/* ==================== Actions ==================== */
+.actions {
+  padding: 32px;
+  text-align: center;
+}
+
+.edit-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 71, 141, 0.25);
+}
+
+.edit-btn:hover {
+  background-color: var(--primary-container);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 71, 141, 0.35);
+}
+
+.edit-btn:active {
+  transform: translateY(-1px);
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 640px) {
+  .profile-container {
+    padding: 16px 12px;
+  }
+
+  .section {
+    padding: 24px 20px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-header {
+    padding: 32px 20px;
+  }
+}
+
+
+/* Edit Mode Styles */
+.edit-input, .edit-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--surface-high);
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.edit-btn-small {
+  background: none;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: var(--success);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+  margin-left: 12px;
+}
+
+.cancel-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+}

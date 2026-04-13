@@ -17,7 +17,7 @@ export interface DoctorProfile extends BaseProfile {
 export interface PatientProfile extends BaseProfile {
   date_of_birth: string;
   phone_number: string;
-  medical_history: string;
+  medical_history: string | null;
 }
 
 export interface ReceptionistProfile extends BaseProfile {
