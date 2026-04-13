@@ -7,7 +7,7 @@
                 <i class="fas fa-user-circle"></i>
             </div>
             <h1>{{ profiledata.first_name }} {{ profiledata.last_name }}</h1>
-            <p class="username">@{{ profiledata.username }}</p>
+            <p class="username">{{ profiledata.username }}</p>
             <span class="role-badge" [ngClass]="profiledata.role">
                 {{ profiledata.role }}
             </span>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="info-item">
                     <span class="label">Username</span>
-                    <span class="value" *ngIf="!isEditMode">@{{ profiledata.username }}</span>
+                    <span class="value" *ngIf="!isEditMode">{{ profiledata.username }}</span>
                     <input *ngIf="isEditMode" [(ngModel)]="formData.username" class="edit-input">
                 </div>
             </div>

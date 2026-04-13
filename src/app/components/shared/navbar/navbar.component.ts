@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent {
-  readonly userInitials = 'JD';
-  readonly userName = 'John Doe';
-  readonly userRole = 'Doctor';
+  //readonly userInitials = 'JD';
+  readonly userName = localStorage.getItem('username');
+  //readonly userRole = 'Doctor';
 }

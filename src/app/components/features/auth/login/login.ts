@@ -64,6 +64,7 @@ export class Login implements OnInit{
      
     if(localStorage.getItem('token')){
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
       this.cdr.detectChanges();
     }
     
@@ -72,7 +73,8 @@ export class Login implements OnInit{
       password: this.password
     }).subscribe({
       next: (response) => {
-        localStorage.setItem('token', response.token); 
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('username',this.username); 
         this.isLoading = false;
         console.log("logged in successfully");
         this.router.navigate(['/']); 
