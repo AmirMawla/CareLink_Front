@@ -48,22 +48,25 @@
 
   <div class="ch-list" *ngIf="!loading() && !error() && consultations().length">
     <section class="card-flat ch-card" *ngFor="let c of consultations()">
-      <button type="button" class="ch-head" (click)="toggleExpand(c.id)">
-        <div class="ch-head__left min-w-0">
-          <div class="ch-title truncate">{{ patientName(c) }}</div>
-          <div class="ch-sub text-muted">
-            {{ c.appointment.scheduled_datetime | date : 'medium' }}
-            <span class="ch-dot">•</span>
-            {{ rxSummary(c) }}
-            <span class="ch-dot">•</span>
-            {{ testsSummary(c) }}
+      <div class="ch-head-row">
+        <button type="button" class="ch-head-toggle" (click)="toggleExpand(c.id)">
+          <div class="ch-head__left min-w-0">
+            <div class="ch-title truncate">{{ patientName(c) }}</div>
+            <div class="ch-sub text-muted">
+              {{ c.appointment.scheduled_datetime | date : 'medium' }}
+              <span class="ch-dot">•</span>
+              {{ rxSummary(c) }}
+              <span class="ch-dot">•</span>
+              {{ testsSummary(c) }}
+            </div>
           </div>
-        </div>
-        <div class="ch-head__right">
-          <span class="ch-chip" *ngIf="c.diagnosis">{{ c.diagnosis }}</span>
+          <div class="ch-head__mid">
+            <span class="ch-chip" *ngIf="c.diagnosis">{{ c.diagnosis }}</span>
+          </div>
           <span class="ch-caret" aria-hidden="true">{{ expandedId() === c.id ? '▲' : '▼' }}</span>
-        </div>
-      </button>
+        </button>
+        <a class="ch-edit-btn" [routerLink]="['/doctor/consultation', c.appointment.id]">Edit</a>
+      </div>
 
       <div class="ch-body" *ngIf="expandedId() === c.id">
         <div class="ch-block">
@@ -87,6 +90,10 @@
             <span class="ch-pill ch-pill--test" *ngFor="let t of c.tests">{{ t.test_name }}</span>
           </div>
           <ng-template #noT><div class="text-muted">No tests</div></ng-template>
+        </div>
+
+        <div class="ch-body-footer">
+          <a class="btn btn-primary btn-sm" [routerLink]="['/doctor/consultation', c.appointment.id]">Open in editor</a>
         </div>
       </div>
     </section>

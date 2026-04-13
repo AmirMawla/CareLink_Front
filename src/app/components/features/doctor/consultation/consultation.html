@@ -1,68 +1,148 @@
-<div class="consultation-page">
-
-  <!-- Error -->
-  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-  <!-- Success -->
-  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
-
-  <!-- Hero -->
-  <div class="page-hero">
-    <div class="hero-content">
-      <a routerLink="/doctor/queue" class="back-link">← Back to Queue</a>
-      <h1>{{ isEditMode ? 'Edit consultation' : 'Add consultation' }}</h1>
-      <p>Appointment #{{ appointmentId }}</p>
-    </div>
+<div class="cons">
+  <div class="cons__alerts" *ngIf="error || success">
+    <div *ngIf="error" class="cons-alert cons-alert--error" role="alert">{{ error }}</div>
+    <div *ngIf="success" class="cons-alert cons-alert--success" role="status">{{ success }}</div>
   </div>
 
-  <p *ngIf="pageLoading" class="consultation-page-loading">Loading consultation…</p>
+  <header class="cons-hero">
+    <div class="cons-hero__inner">
+      <nav class="cons-hero__nav">
+        <a [routerLink]="isEditMode ? '/doctor/consultations' : '/doctor/queue'" class="cons-back">
+          <span class="cons-back__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </span>
+          {{ isEditMode ? 'History' : 'Queue' }}
+        </a>
+        <a *ngIf="!isEditMode" routerLink="/doctor/consultations" class="cons-back cons-back--ghost">History</a>
+      </nav>
 
-  <div class="content" *ngIf="!pageLoading">
-    <div class="form-grid">
-
-      <!-- Diagnosis & Notes -->
-      <div class="form-card full-width">
-        <h3>🩺 Diagnosis & Notes</h3>
-        <div class="form-group">
-          <label>Diagnosis</label>
-          <input type="text" [(ngModel)]="diagnosis" placeholder="Primary diagnosis...">
-        </div>
-        <div class="form-group">
-          <label>Clinical Notes</label>
-          <textarea [(ngModel)]="clinicalNotes" placeholder="Detailed clinical notes..."></textarea>
-        </div>
+      <div class="cons-hero__badges">
+        <span class="cons-badge" [class.cons-badge--muted]="!isEditMode" [class.cons-badge--accent]="isEditMode">
+          {{ isEditMode ? 'Editing record' : 'New visit note' }}
+        </span>
+        <span class="cons-badge cons-badge--outline" *ngIf="visitScheduledAt">
+          {{ visitScheduledAt | date : 'EEE, MMM d · h:mm a' }}
+        </span>
       </div>
 
-      <!-- Prescriptions -->
-      <div class="form-card">
-        <h3>💊 Prescriptions</h3>
-        <div *ngFor="let rx of prescriptions; let i = index" class="prescription-row">
-          <input type="text" [(ngModel)]="rx.drug_name" placeholder="Drug name">
-          <input type="text" [(ngModel)]="rx.dose" placeholder="Dose">
-          <input type="number" [(ngModel)]="rx.duration_days" placeholder="Days">
-          <button type="button" class="btn-remove" (click)="removePrescription(i)">✕</button>
-        </div>
-        <button type="button" class="btn-add" (click)="addPrescription()">+ Add Drug</button>
-      </div>
+      <h1 class="cons-hero__title">{{ isEditMode ? 'Update consultation' : 'Record consultation' }}</h1>
 
-      <!-- Tests -->
-      <div class="form-card">
-        <h3>🔬 Requested Tests</h3>
-        <div *ngFor="let test of tests; let i = index" class="test-row">
-          <input type="text" [(ngModel)]="test.test_name" placeholder="Test name">
-          <button type="button" class="btn-remove" (click)="removeTest(i)">✕</button>
+      <div class="cons-hero__patient">
+        <span class="avatar avatar-lg avatar-primary cons-hero__avatar" aria-hidden="true">{{ patientInitials() }}</span>
+        <div class="cons-hero__patient-text">
+          <span class="cons-hero__name">{{ patientName || 'Patient' }}</span>
+          <span class="cons-hero__id">Appointment #{{ appointmentId }}</span>
         </div>
-        <button type="button" class="btn-add" (click)="addTest()">+ Add Test</button>
       </div>
+    </div>
+  </header>
 
+  <div class="cons-shell">
+    <div *ngIf="pageLoading" class="cons-skel" aria-busy="true">
+      <div class="cons-skel__bar cons-skel__bar--lg"></div>
+      <div class="cons-skel__grid">
+        <div class="cons-skel__card"><div class="cons-skel__bar"></div><div class="cons-skel__bar"></div></div>
+        <div class="cons-skel__card"><div class="cons-skel__bar"></div></div>
+      </div>
     </div>
 
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="saveConsultation()"
-      [disabled]="loading">
-      {{ loading ? 'Saving…' : (isEditMode ? 'Save changes' : 'Save & complete visit') }}
-    </button>
+    <main class="cons-main" *ngIf="!pageLoading">
+      <div class="cons-layout">
+        <section class="cons-panel cons-panel--clinical">
+          <div class="cons-panel__head">
+            <span class="cons-panel__icon cons-panel__icon--clinical" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4.5 9.5a7.5 7.5 0 1115 0c0 4.1-2.5 6.5-5 9l-2.5 2.5L9 18.5c-2.5-2.5-4.5-4.9-4.5-9z" />
+                <circle cx="12" cy="9.5" r="2.5" />
+              </svg>
+            </span>
+            <div>
+              <h2 class="cons-panel__title">Clinical summary</h2>
+              <p class="cons-panel__hint">Diagnosis and narrative notes for this visit.</p>
+            </div>
+          </div>
+          <div class="cons-field">
+            <label class="cons-label" for="cons-diagnosis">Diagnosis</label>
+            <input id="cons-diagnosis" type="text" [(ngModel)]="diagnosis" class="cons-input" placeholder="e.g. Acute tension headache" />
+          </div>
+          <div class="cons-field">
+            <label class="cons-label" for="cons-notes">Clinical notes</label>
+            <textarea
+              id="cons-notes"
+              [(ngModel)]="clinicalNotes"
+              class="cons-input cons-input--area"
+              rows="8"
+              placeholder="History, exam findings, assessment, plan…"
+            ></textarea>
+          </div>
+        </section>
+
+        <aside class="cons-aside">
+          <section class="cons-panel cons-panel--rx">
+            <div class="cons-panel__head cons-panel__head--compact">
+              <span class="cons-panel__icon cons-panel__icon--rx" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.5 20.5L3.5 13.5a4.2 4.2 0 016-6l1 1M13.5 3.5l7 7a4.2 4.2 0 01-6 6l-1-1" />
+                  <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+              </span>
+              <div>
+                <h2 class="cons-panel__title">Prescriptions</h2>
+                <p class="cons-panel__hint">Leave dose empty to skip a row.</p>
+              </div>
+            </div>
+            <div class="cons-rows">
+              <div class="cons-rx-row" *ngFor="let rx of prescriptions; let i = index">
+                <span class="cons-rx-idx">{{ i + 1 }}</span>
+                <div class="cons-rx-fields">
+                  <input type="text" [(ngModel)]="rx.drug_name" class="cons-input cons-input--sm" placeholder="Medication" />
+                  <div class="cons-rx-split">
+                    <input type="text" [(ngModel)]="rx.dose" class="cons-input cons-input--sm" placeholder="Dose" />
+                    <input type="number" [(ngModel)]="rx.duration_days" class="cons-input cons-input--sm cons-input--days" placeholder="Days" />
+                  </div>
+                </div>
+                <button type="button" class="cons-icon-btn" (click)="removePrescription(i)" [disabled]="prescriptions.length <= 1" title="Remove">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="cons-add" (click)="addPrescription()">+ Add medication</button>
+          </section>
+
+          <section class="cons-panel cons-panel--labs">
+            <div class="cons-panel__head cons-panel__head--compact">
+              <span class="cons-panel__icon cons-panel__icon--labs" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 3h6l1 5H8l1-5zM8 8h8l2 13H6L8 8z" />
+                </svg>
+              </span>
+              <div>
+                <h2 class="cons-panel__title">Tests &amp; labs</h2>
+                <p class="cons-panel__hint">Requests to order or follow up.</p>
+              </div>
+            </div>
+            <div class="cons-rows">
+              <div class="cons-test-row" *ngFor="let test of tests; let i = index">
+                <span class="cons-rx-idx cons-rx-idx--muted">{{ i + 1 }}</span>
+                <input type="text" [(ngModel)]="test.test_name" class="cons-input cons-input--sm" placeholder="Test name" />
+                <button type="button" class="cons-icon-btn" (click)="removeTest(i)" [disabled]="tests.length <= 1" title="Remove">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="cons-add cons-add--muted" (click)="addTest()">+ Add test</button>
+          </section>
+        </aside>
+      </div>
+
+      <footer class="cons-footer d-flex justify-content-center">
+        <button type="button" class="cons-save" (click)="saveConsultation()" [disabled]="loading">
+          <span *ngIf="!loading">{{ isEditMode ? 'Save changes' : 'Save consultation' }}</span>
+          <span *ngIf="loading">Saving…</span>
+        </button>
+      </footer>
+    </main>
   </div>
 </div>

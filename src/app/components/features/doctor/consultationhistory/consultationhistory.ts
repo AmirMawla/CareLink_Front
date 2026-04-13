@@ -1,6 +1,7 @@
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { catchError, finalize, takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../../../services/api.service';
@@ -46,7 +47,7 @@ interface PaginatedResponse {
 @Component({
   selector: 'app-consultationhistory',
   standalone: true,
-  imports: [NgIf, NgFor, DatePipe],
+  imports: [NgIf, NgFor, DatePipe, RouterLink],
   templateUrl: './consultationhistory.html',
   styleUrls: ['./consultationhistory.css', '../doctor-appointments/doctor-appointments.css'],
 })
