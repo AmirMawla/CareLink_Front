@@ -1,0 +1,103 @@
+<!-- <p>consultationhistory works!</p> -->
+<div class="history-page">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading history...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <h1>Consultation History</h1>
+      <p>{{ count }} TOTAL CONSULTATION{{ count !== 1 ? 'S' : '' }}</p>
+    </div>
+
+    <div class="content">
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="Search by patient name or diagnosis..."
+          (input)="onSearch($event)">
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="consultations.length === 0" class="empty-state">
+        <div class="icon">🩺</div>
+        <h3>No Consultations Found</h3>
+        <p>Your consultation history will appear here</p>
+      </div>
+
+      <!-- List -->
+      <div *ngFor="let consultation of consultations" class="consultation-card">
+
+        <!-- Header -->
+        <div class="card-header" (click)="toggleExpand(consultation.id)">
+          <div class="patient-info">
+            <div class="patient-name">
+              {{ consultation.appointment.patient.user.first_name }}
+              {{ consultation.appointment.patient.user.last_name }}
+            </div>
+            <div class="date">
+              📅 {{ consultation.appointment.scheduled_datetime | date:'MMM d, y — HH:mm' }}
+            </div>
+          </div>
+          <div class="card-header-right">
+            <div class="diagnosis-preview">{{ consultation.diagnosis }}</div>
+            <span class="expand-icon">{{ expandedId === consultation.id ? '▲' : '▼' }}</span>
+          </div>
+        </div>
+
+        <!-- Expanded Details -->
+        <div *ngIf="expandedId === consultation.id" class="card-body">
+          <div class="detail-row">
+            <span class="detail-label">Clinical Notes</span>
+            <span class="detail-value">{{ consultation.clinical_notes }}</span>
+          </div>
+
+          <div class="chips-section">
+            <div class="chips-title">💊 Prescriptions</div>
+            <div *ngIf="consultation.prescriptions.length > 0; else noRx">
+              <span *ngFor="let rx of consultation.prescriptions" class="drug-chip">
+                {{ rx.drug_name }} — {{ rx.dose }} — {{ rx.duration_days }}d
+              </span>
+            </div>
+            <ng-template #noRx>
+              <span class="empty-text">No prescriptions</span>
+            </ng-template>
+          </div>
+
+          <div class="chips-section">
+            <div class="chips-title">🔬 Tests</div>
+            <div *ngIf="consultation.tests.length > 0; else noTests">
+              <span *ngFor="let test of consultation.tests" class="test-chip">
+                {{ test.test_name }}
+              </span>
+            </div>
+            <ng-template #noTests>
+              <span class="empty-text">No tests</span>
+            </ng-template>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="count > 10">
+        <button (click)="goToPrev()" [disabled]="!prevPage">← Previous</button>
+        <button (click)="goToNext()" [disabled]="!nextPage">Next →</button>
+      </div>
+
+    </div>
+  </div>
+</div>

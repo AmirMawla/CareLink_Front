@@ -1,9 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Subject, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
-import { DoctorDashboardService } from '../../../services/doctor-dashboard';
 import { NgIf } from '@angular/common';
+import { ApiService } from '../../../services/api.service';
+import { BaseProfile } from '../../../models/users';
 
 @Component({
   selector: 'app-navbar',
@@ -13,8 +15,9 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  private readonly service = inject(DoctorDashboardService);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly api = inject(ApiService);
   private readonly destroy$ = new Subject<void>();
 
   readonly userInitials = signal('—');
@@ -32,19 +35,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
 
 
-    this.service
-      .getLoggedInDoctor()
+    this.http
+      .get<BaseProfile>(this.api.resolve('/api/accounts/profile/'))
       .pipe(
         takeUntil(this.destroy$),
         catchError(() => of(null)),
       )
-      .subscribe((doc) => {
-        const username = (doc?.username || '').trim();
-        const email = (doc?.email || '').trim();
-        const name = username || email || 'Doctor';
+      .subscribe((p) => {
+        const username = (p?.username || '').trim();
+        const email = (p?.email || '').trim();
+        const name = username || email || 'User';
         this.userName.set(name);
         this.userInitials.set(this.initialsFromName(name));
-        const roleRaw = (doc?.role || 'DOCTOR').toString().toUpperCase();
+        const roleRaw = (p?.role || '').toString().toUpperCase();
         this.userRole.set(this.prettyRole(roleRaw));
       });
   }

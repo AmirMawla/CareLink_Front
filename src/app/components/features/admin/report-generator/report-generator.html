@@ -1,0 +1,118 @@
+<div class="fluid-container">
+    <div class="page-header">
+        <h1 class="page-title">Report Export Center</h1>
+        <p class="page-subtitle">Configure and generate CSV datasets for external analysis</p>
+    </div>
+
+    <div class="d-grid report-layout gap-4">
+        <div class="selection-grid">
+            <div class="report-card" [class.active]="selectedReport() === 'users'" (click)="selectReport('users')">
+                <div class="r-icon bg-primary-light">👥</div>
+                <div class="r-info">
+                    <h3>User Directory</h3>
+                    <p>Export all staff and admin accounts with status.</p>
+                </div>
+            </div>
+
+            <div class="report-card" [class.active]="selectedReport() === 'doctors'" (click)="selectReport('doctors')">
+                <div class="r-icon bg-success-container">🩺</div>
+                <div class="r-info">
+                    <h3>Doctor Rosters</h3>
+                    <p>Specialties, session durations, and active status.</p>
+                </div>
+            </div>
+
+            <div class="report-card" [class.active]="selectedReport() === 'patients'"
+                (click)="selectReport('patients')">
+                <div class="r-icon bg-info-container">🩹</div>
+                <div class="r-info">
+                    <h3>Patient Records</h3>
+                    <p>Summary of registered patients and history logs.</p>
+                </div>
+            </div>
+
+            <div class="report-card" [class.active]="selectedReport() === 'appointments'"
+                (click)="selectReport('appointments')">
+                <div class="r-icon bg-warning-container">📅</div>
+                <div class="r-info">
+                    <h3>Appointment Logs</h3>
+                    <p>Comprehensive history with date range filtering.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-panel card">
+            <div *ngIf="!selectedReport()" class="empty-config">
+                <div class="pulsing-circle"></div>
+                <p>Select a report type from the left to configure filters</p>
+            </div>
+
+            <div *ngIf="selectedReport() as type" class="config-content">
+                <h2 class="mb-4">Configure {{ type | titlecase }} Report</h2>
+
+                <div class="form-container">
+                    <div class="form-group mb-4">
+                        <label class="form-label">Search Keywords</label>
+                        <input type="text" class="form-control" placeholder="Name, Email, or ID..."
+                            [(ngModel)]="getFilterGroup(type).search">
+                    </div>
+
+                    <div class="form-group mb-4" *ngIf="type === 'users'">
+                        <label class="form-label">Filter by Role</label>
+                        <select class="form-control" [(ngModel)]="filters.users.role">
+                            <option value="">All Roles</option>
+                            <option value="ADMIN">Administrators</option>
+                            <option value="DOCTOR">Doctors</option>
+                            <option value="RECEPTIONIST">Receptionists</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-4" *ngIf="type === 'doctors'">
+                        <label class="form-label">Specialty</label>
+                        <select class="form-control" [(ngModel)]="filters.doctors.specialty">
+                            <option value="">All Specialties</option>
+                            <option value="CARDIOLOGY">Cardiology</option>
+                            <option value="PEDIATRICS">Pediatrics</option>
+                            <option value="GENERAL">General Practice</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-3 mb-4" *ngIf="type === 'appointments'"
+                        style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control" [(ngModel)]="filters.appointments.from_date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control" [(ngModel)]="filters.appointments.to_date">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-full btn-lg mt-4" (click)="requestDownload()"
+                        [disabled]="isPreparing()">
+                        Generate CSV Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showConfirmation()">
+    <div class="modal-panel glass-modal text-center">
+        <div class="modal-icon mb-3">💾</div>
+        <h2 class="mb-2">Confirm Export</h2>
+        <p class="text-muted mb-4">Confirm to generate the <strong>{{ selectedReport() }}</strong> report. This file
+            will download automatically once ready.</p>
+
+        <div class="d-flex gap-3">
+            <button class="btn btn-secondary flex-1" (click)="showConfirmation.set(false)"
+                [disabled]="isPreparing()">Cancel</button>
+            <button class="btn btn-primary flex-1" (click)="confirmAndDownload()" [disabled]="isPreparing()">
+                <span *ngIf="isPreparing()" class="spinner mr-2"></span>
+                {{ isPreparing() ? 'Preparing...' : 'Start Download' }}
+            </button>
+        </div>
+    </div>
+</div>
