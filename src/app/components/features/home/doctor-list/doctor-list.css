@@ -1,0 +1,127 @@
+.page-container {
+    padding: 40px 10%;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-text h1 {
+    color: var(--primary);
+    font-size: 2.5rem;
+}
+
+.search-box {
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 450px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    margin-left: 10px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+/* Pagination Styling */
+.pagination-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--surface-high);
+}
+
+.btn-page {
+    background: white;
+    border: 1px solid var(--surface-high);
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-page:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-weight: 800;
+    color: var(--primary);
+}
+
+/* Reuse the Home Card CSS here for consistency */
+.doc-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.doc-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.doc-img-wrapper {
+    height: 220px;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.availability-tag {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--s-confirmed-bg);
+    color: var(--s-confirmed);
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.doc-content {
+    padding: 25px;
+}
+
+.btn-book-sm {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-top: 20px;
+    cursor: pointer;
+}
