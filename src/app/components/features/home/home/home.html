@@ -1,0 +1,146 @@
+<main class="home-container">
+  <section class="hero-wrapper">
+    <div class="hero-content">
+      <div class="pill-badge">
+        <span class="material-icons">verified</span>
+        {{ homeService.stats()?.users?.active || '35' }}+ Active Patients
+      </div>
+      <h1>Revolutionizing <br> <span class="text-primary">Healthcare</span> Access</h1>
+      <p>
+        Connect with <strong>{{ homeService.stats()?.doctors?.total || '9' }}</strong> verified specialists.
+        <strong>{{ homeService.stats()?.telemedicine?.percentage || '40' }}%</strong> of our consultations are now
+        digital.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-primary">Find a Doctor</button>
+        <button class="btn-outline">Watch Demo</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="glass-stat-card">
+        <span class="material-icons">videocam</span>
+        <div>
+          <strong>{{ homeService.stats()?.telemedicine?.total || '20' }}</strong>
+          <small>Online Sessions</small>
+        </div>
+      </div>
+      <!-- <div class="placeholder-img hero-img"> -->
+        <!-- <span class="material-icons">medical_services</span> -->
+         <img class="placeholder-img hero-img" src="/home/hero.png" alt="hero image">
+      <!-- </div> -->
+    </div>
+  </section>
+
+  <section class="stats-row">
+    <div class="stat-card">
+      <h3>{{ homeService.stats()?.appointments?.total || '50' }}</h3>
+      <p>Total Consultations</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ homeService.stats()?.key_metrics?.completion_rate || '6' }}%</h3>
+      <p>Completion Rate</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ homeService.stats()?.users?.total || '40' }}</h3>
+      <p>Registered Users</p>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="section-header">
+      <h2>Browse by Specialty</h2>
+      <p>Quick access to specific medical departments</p>
+    </div>
+    <div class="category-grid">
+      <div class="cat-card" *ngFor="let cat of categories" [style.background]="cat.color">
+        <span class="material-icons">{{ cat.icon }}</span>
+        <h4>{{ cat.name }}</h4>
+        <span class="count-tag">
+          {{ homeService.doctorStats()?.by_specialty?.[cat.name.toUpperCase()] || 0 }} Doctors
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tree-container">
+    <div class="tree-item">
+      <div class="tree-info">
+        <span class="step-num">01</span>
+        <h2>Precision Filtering</h2>
+        <p>Our intelligent system matches you with the best specialist based on your symptoms and insurance provider.
+        </p>
+      </div>
+      <div class="tree-graphic">
+        <div class="placeholder-img mockup">
+          <img class="placeholder-img mockup" src="/home/feature_1.avif" alt="hero image">
+        </div>
+      </div>
+    </div>
+
+    <div class="tree-item reverse">
+      <div class="tree-info">
+        <span class="step-num">02</span>
+        <h2>Instant Telehealth</h2>
+        <p>End-to-end encrypted video calls. No software download required—it just works in your browser.</p>
+      </div>
+      <div class="tree-graphic">
+        <div class="placeholder-img mockup">
+          <img class="placeholder-img mockup" src="/home/feature_2.jpg" alt="hero image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding doctor-spotlight">
+    <div class="section-header-flex">
+      <div>
+        <h2>Our Expert Doctors</h2>
+        <p>Meet our highly qualified medical professionals ready to help you.</p>
+      </div>
+      <button class="btn-outline-sm">View All Specialists</button>
+    </div>
+
+    <div class="doctor-carousel">
+      <div class="doc-card" *ngFor="let doc of homeService.homeDoctors()" (click)="navigateToDoctor(doc.id)">
+        <div class="doc-img-wrapper">
+          <div class="doc-placeholder">
+            <span class="material-icons">person</span>
+          </div>
+          <div class="availability-tag">Available Now</div>
+        </div>
+        <div class="doc-content">
+          <h4>{{ doc.full_name }}</h4>
+          <span class="doc-role">{{ doc.role_display }}</span>
+          <div class="doc-meta">
+            <span class="material-icons">event_available</span>
+            <small>Joined {{ doc.date_joined | date:'MMM yyyy' }}</small>
+          </div>
+          <button class="btn-book-sm">View Profile</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="marquee-wrapper">
+    <div class="marquee-content">
+      <div class="testimonial-card" *ngFor="let t of [...testimonials, ...testimonials]">
+        <div class="stars">
+          <span class="material-icons" *ngFor="let i of [1,2,3,4,5]">star</span>
+        </div>
+        <p>"{{ t.text }}"</p>
+        <div class="user-meta">
+          <strong>{{ t.name }}</strong>
+          <span>{{ t.role }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="cta-box">
+      <h2>Ready to take control of your health?</h2>
+      <p>Join thousands of users who have simplified their medical journey.</p>
+      <button class="btn-white">Create Free Account</button>
+    </div>
+  </section>
+</main>
