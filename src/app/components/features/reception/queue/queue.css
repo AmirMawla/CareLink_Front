@@ -1,0 +1,22 @@
+.queue-container { padding: 2rem; background: #fafbfc; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+
+.live-indicator { font-size: 0.85rem; color: #64748b; display: flex; align-items: center; }
+.dot { height: 8px; width: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 2s infinite; }
+
+.luxury-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+.luxury-table th { background: #f8fafc; padding: 1rem; text-align: left; color: #475569; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
+.luxury-table td { padding: 1.25rem 1rem; border-bottom: 1px solid #f1f5f9; }
+
+.status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.confirmed { background: #dcfce7; color: #166534; }
+.checked_in { background: #dbeafe; color: #1e40af; }
+
+.btn-primary { background: #0f172a; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-right: 0.5rem; }
+.btn-outline-danger { background: white; color: #ef4444; border: 1px solid #ef4444; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
