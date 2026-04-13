@@ -1,6 +1,6 @@
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -32,7 +32,7 @@ function queryParamMapFingerprint(p: ParamMap): string {
 @Component({
   selector: 'app-doctor-appointments',
   standalone: true,
-  imports: [NgIf, NgFor, NgClass, DatePipe, RouterLink, FormsModule],
+  imports: [NgIf, NgFor, NgClass, DatePipe, RouterLink],
   templateUrl: './doctor-appointments.html',
   styleUrl: './doctor-appointments.css',
 })
@@ -111,8 +111,6 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     }
     return chips;
   });
-
-  readonly sortSelectValue = computed(() => this.orderingToPreset(this.ordering()));
 
   readonly searchSpinner = computed(
     () => this.searchDebounceBusy() || (this.isLoading() && !!(this.searchInput() || '').trim()),
@@ -308,14 +306,6 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     this.mergeNavigate(patch);
   }
 
-  onSortPresetChange(preset: string): void {
-    const ord = this.presetToOrdering(preset);
-    const patch: Record<string, string | null> = { page: null };
-    if (ord === DEFAULT_ORDERING) patch['ordering'] = null;
-    else patch['ordering'] = ord;
-    this.mergeNavigate(patch);
-  }
-
   sortBy(field: string): void {
     const cur = this.ordering();
     if (cur === field) {
@@ -378,15 +368,147 @@ export class DoctorAppointments implements OnInit, OnDestroy {
   }
 
   reject(id: number): void {
-    this.patchRowStatus(id, 'CANCELLED', 'Appointment rejected');
+    this.patchRowStatus(id, 'CANCELLED', 'Appointment declined');
   }
 
   completeAppointment(id: number): void {
-    this.patchRowStatus(id, 'COMPLETED', 'Marked complete');
+    this.actionRowId.set(id);
+    this.service
+      .patchDashboardAppointmentStatus(id, 'COMPLETED')
+      .pipe(takeUntil(this.destroy$), finalize(() => this.actionRowId.set(null)))
+      .subscribe({
+        next: (res) => {
+          const nextStatus = res?.appointment?.status ?? 'COMPLETED';
+          this.appointments.update((rows) =>
+            rows.map((r) => (r.id === id ? { ...r, status: nextStatus } : r)),
+          );
+          this.showToast('Marked complete');
+        },
+        error: (err) => {
+          if (this.isCompleteBlockedByConsultation(err)) {
+            this.goToConsultationToComplete(id);
+            return;
+          }
+          this.showToast(this.apiErrorMessage(err));
+        },
+      });
   }
 
   markNoShow(id: number): void {
     this.patchRowStatus(id, 'NO_SHOW', 'Marked as no-show');
+  }
+
+  unconfirm(id: number): void {
+    this.patchRowStatus(id, 'REQUESTED', 'Moved back to requested');
+  }
+
+  revertToCheckedIn(id: number): void {
+    this.patchRowStatus(id, 'CHECKED_IN', 'Status set to checked in');
+  }
+
+  canConfirmStatus(status: string): boolean {
+    return status === 'REQUESTED';
+  }
+
+  canUnconfirmStatus(status: string): boolean {
+    return status === 'CONFIRMED';
+  }
+
+  canRejectStatus(status: string): boolean {
+    return status === 'REQUESTED';
+  }
+
+  canNoShowStatus(status: string): boolean {
+    return status === 'CONFIRMED' || status === 'CHECKED_IN' || status === 'COMPLETED';
+  }
+
+  canCompleteStatus(status: string): boolean {
+    return status === 'CHECKED_IN' || status === 'NO_SHOW';
+  }
+
+  canRevertToCheckedInStatus(status: string): boolean {
+    return status === 'COMPLETED' || status === 'NO_SHOW';
+  }
+
+  canConsultationAction(row: DoctorAppointmentListRow): boolean {
+    const st = row.status;
+    const has = !!row.has_consultation;
+    if (has) {
+      return st === 'CHECKED_IN' || st === 'NO_SHOW' || st === 'COMPLETED';
+    }
+    return st === 'CHECKED_IN' || st === 'NO_SHOW';
+  }
+
+  consultationListLabel(row: DoctorAppointmentListRow): string {
+    return row.has_consultation ? 'Edit consultation' : 'Add consultation';
+  }
+
+  rowActionLocked(rowId: number): boolean {
+    return this.actionRowId() === rowId;
+  }
+
+  goConsultation(row: DoctorAppointmentListRow): void {
+    if (!this.canConsultationAction(row)) return;
+    void this.router.navigate(['/doctor/consultation', row.id]);
+  }
+
+  closeApptActionsMenu(event: Event): void {
+    const el = (event.currentTarget as HTMLElement | null)?.closest('details.appt-actions-details');
+    if (el) {
+      el.removeAttribute('open');
+    }
+  }
+
+  /** Tooltips for disabled menu rows — matches dashboard doctor status rules */
+  tooltipConfirm(status: string): string {
+    if (status === 'REQUESTED') return '';
+    return 'Only when status is Requested. You cannot check in a patient from here—reception does that after you confirm.';
+  }
+
+  tooltipReject(status: string): string {
+    if (status === 'REQUESTED') return '';
+    return 'Only when status is Requested.';
+  }
+
+  tooltipUnconfirm(status: string): string {
+    if (status === 'CONFIRMED') return '';
+    return 'Only when status is Confirmed.';
+  }
+
+  tooltipConsultation(row: DoctorAppointmentListRow): string {
+    if (this.canConsultationAction(row)) return '';
+    return 'Add when checked in or no-show; edit when a consultation already exists.';
+  }
+
+  tooltipRevertCheckedIn(status: string): string {
+    if (status === 'COMPLETED' || status === 'NO_SHOW') return '';
+    return 'Only when completed or no-show (correction). Initial check-in is at reception.';
+  }
+
+  tooltipComplete(status: string): string {
+    if (status === 'CHECKED_IN' || status === 'NO_SHOW') return '';
+    if (status === 'COMPLETED') return 'Already completed.';
+    return 'Only when Checked in or No-show (needs consultation notes on the server).';
+  }
+
+  tooltipNoShow(status: string): string {
+    if (status === 'CONFIRMED' || status === 'CHECKED_IN' || status === 'COMPLETED') return '';
+    if (status === 'NO_SHOW') return 'Already no-show.';
+    return 'Available when Confirmed, Checked in, or Completed.';
+  }
+
+  private isCompleteBlockedByConsultation(err: unknown): boolean {
+    const httpErr = err as HttpErrorResponse;
+    const body = httpErr?.error;
+    if (!body || typeof body !== 'object') return false;
+    const statusArr = (body as { errors?: { status?: string[] } }).errors?.status;
+    const msg = statusArr?.[0];
+    return typeof msg === 'string' && msg.toLowerCase().includes('consultation');
+  }
+
+  /** Navigates to consultation without changing appointment status. */
+  private goToConsultationToComplete(id: number): void {
+    void this.router.navigate(['/doctor/consultation', id]);
   }
 
   private patchRowStatus(id: number, status: string, successMsg: string): void {
@@ -395,16 +517,48 @@ export class DoctorAppointments implements OnInit, OnDestroy {
       .patchDashboardAppointmentStatus(id, status)
       .pipe(takeUntil(this.destroy$), finalize(() => this.actionRowId.set(null)))
       .subscribe({
-        next: () => {
+        next: (res) => {
+          const nextStatus = res?.appointment?.status ?? status;
           this.appointments.update((rows) =>
-            rows.map((r) => (r.id === id ? { ...r, status } : r)),
+            rows.map((r) => (r.id === id ? { ...r, status: nextStatus } : r)),
           );
           this.showToast(successMsg);
         },
-        error: () => {
-          this.showToast('Action could not be completed. Try again.');
+        error: (err) => {
+          this.showToast(this.apiErrorMessage(err));
         },
       });
+  }
+
+  private apiErrorMessage(err: unknown): string {
+    const httpErr = err as HttpErrorResponse;
+    const status = httpErr?.status;
+    const body = httpErr?.error;
+
+    if (typeof body === 'string' && body.trim()) {
+      const t = body.replace(/<[^>]+>/g, '').trim();
+      if (t.length) return t.length > 200 ? `${t.slice(0, 200)}…` : t;
+    }
+
+    if (body && typeof body === 'object') {
+      const e = body as Record<string, unknown>;
+      const detail = e['detail'];
+      if (typeof detail === 'string') return detail;
+      if (Array.isArray(detail) && detail.length && typeof detail[0] === 'string') {
+        return detail[0];
+      }
+      const msg = e['message'];
+      if (typeof msg === 'string') return msg;
+      const statusArr = e['errors'] as { status?: string[] } | undefined;
+      if (statusArr?.status?.length) return statusArr.status[0];
+    }
+
+    if (status === 403) return 'You do not have permission to perform this action.';
+    if (status === 404) return 'Appointment not found.';
+    if (status === 401) return 'Please sign in again.';
+    if (status === 0) return 'Could not reach the server.';
+
+    return 'Action could not be completed. Try again.';
   }
 
   goDetail(event: MouseEvent, id: number): void {
@@ -423,12 +577,12 @@ export class DoctorAppointments implements OnInit, OnDestroy {
 
   paginationSummary(): string {
     const count = this.totalCount();
-    if (count === 0) return 'No records on this page';
+    if (count === 0) return '';
     const start = (this.page() - 1) * PAGE_SIZE + 1;
     const end = Math.min(this.page() * PAGE_SIZE, count);
     const tp = Math.max(1, this.totalPages());
     const cur = this.page();
-    return `Rows ${start}–${end} of ${count} · Page ${cur} of ${tp} · ${PAGE_SIZE} per page`;
+    return `${start}–${end} of ${count} · Page ${cur}/${tp} · ${PAGE_SIZE}/page`;
   }
 
   pageNumbers(): (number | 'ellipsis')[] {
@@ -514,19 +668,6 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     return d.getTime() < Date.now();
   }
 
-  waitMinutes(row: DoctorAppointmentListRow): number | null {
-    if (row.status !== 'CHECKED_IN' || !row.check_in_time) return null;
-    const t = new Date(row.check_in_time).getTime();
-    if (!Number.isFinite(t)) return null;
-    return Math.max(0, Math.floor((Date.now() - t) / 60_000));
-  }
-
-  waitClass(minutes: number): string {
-    if (minutes < 15) return 'wait-ok';
-    if (minutes <= 30) return 'wait-warning';
-    return 'wait-critical';
-  }
-
   sortFieldActive(field: string): boolean {
     const o = this.ordering();
     return o === field || o === `-${field}`;
@@ -591,25 +732,6 @@ export class DoctorAppointments implements OnInit, OnDestroy {
         return 'wait';
       default:
         return 'date_desc';
-    }
-  }
-
-  private presetToOrdering(preset: string): string {
-    switch (preset) {
-      case 'date_desc':
-        return '-scheduled_datetime';
-      case 'date_asc':
-        return 'scheduled_datetime';
-      case 'patient_asc':
-        return 'patient__user__last_name';
-      case 'patient_desc':
-        return '-patient__user__last_name';
-      case 'status':
-        return 'status';
-      case 'wait':
-        return 'check_in_time';
-      default:
-        return DEFAULT_ORDERING;
     }
   }
 
