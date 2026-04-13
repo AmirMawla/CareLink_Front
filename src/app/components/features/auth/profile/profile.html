@@ -87,6 +87,10 @@
                     <span class="value" *ngIf="!isEditMode">{{ doctorData.session_price }}</span>
                     <input *ngIf="isEditMode" [(ngModel)]="formData.session_price" type="number" class="edit-input">
                 </div>
+                <div class="info-item">
+                    <span class="label">doctor id</span>
+                    <span class="value" *ngIf="!isEditMode">{{ doctorData.id }}</span>
+                </div>
             </div>
         </div>
 
