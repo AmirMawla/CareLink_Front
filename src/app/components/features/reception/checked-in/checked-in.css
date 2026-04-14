@@ -45,10 +45,9 @@
 /* ستايل الكروت (خاص بـ Checked-In) */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); /* كان 350px */
+  gap: 25px;
 }
-
 .patient-card {
   display: flex;
   justify-content: space-between;
@@ -90,7 +89,7 @@
 
 .wait-timer {
   color: #e67e22; /* برتقالي لفت انتباه */
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1rem;
   background: rgba(230, 126, 34, 0.1);
   padding: 8px 12px;
