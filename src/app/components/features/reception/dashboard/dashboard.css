@@ -1,0 +1,145 @@
+.dashboard-wrapper {
+  padding: 40px;
+  background-color: #f0f4f8;
+  /* خلفية أغمق شوية عشان الكروت البيضاء تنطق */
+  min-height: 100vh;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  /* كبرنا المسافة بين الكروت */
+  width: 100%;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 300px;
+  /* كبرنا أقل عرض للكارت */
+  height: 160px;
+  /* ثبتنا طول الكارت عشان يبقى فخم */
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 24px;
+  /* زوايا دائرية أكتر */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  /* عشان الحركة تكون ناعمة */
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+/* تأثير عند الوقوف بالماوس */
+.stat-card:hover {
+  transform: translateY(-10px);
+  /* الكارت يترفع لفوق */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* خلفية ملونة خفيفة ورا كل كارت عشان الشكل */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 150px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 50%;
+}
+
+.stat-icon {
+  width: 70px;
+  /* كبرنا الأيقونة */
+  height: 70px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  z-index: 1;
+}
+
+/* ألوان استايلات الـ Luxury */
+.bookings {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.waiting {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  color: white;
+}
+
+.in-progress {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}
+
+.stat-details {
+  text-align: right;
+  /* عشان المحتوى العربي أو التنسيق يظبط */
+  z-index: 1;
+}
+
+.stat-label {
+  display: block;
+  font-size: 1.1rem;
+  color: #718096;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 2.5rem;
+  /* كبرنا الرقم جداً */
+  color: #1a202c;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.cancelled {
+  background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+  color: white;
+}
+
+.text-red {
+  color: #ff4b2b;
+}
+
+.border-red {
+  border-bottom: 3px solid #ff4b2b;
+}
+
+.noshow {
+  background: linear-gradient(135deg, #757f9a 0%, #d7dde8 100%);
+  color: white;
+}
+
+.text-gray {
+  color: #757f9a;
+}
+.text-yellow {
+  color: #dfec2a;
+}
+.text-blue {
+  color: #3206d2;
+}
+.text-green {
+  color: #1aca46;
+}
+.border-gray {
+  border-bottom: 3px solid #757f9a;
+}
+
+.completed {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}

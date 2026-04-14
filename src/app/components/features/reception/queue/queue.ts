@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Reception } from '../../../../services/reception';
 import { Appointment } from '../../../../models/appointment.model';
@@ -13,7 +13,7 @@ import { Subscription, interval } from 'rxjs';
 })
 export class QueueComponent implements OnInit, OnDestroy {
   private readonly receptionService = inject(Reception);
-
+private cdr = inject(ChangeDetectorRef);
   queue: Appointment[] = [];
   loading: boolean = false;
   private refreshSub?: Subscription;
@@ -33,10 +33,12 @@ export class QueueComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.queue = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Queue fetch failed:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -44,13 +46,14 @@ export class QueueComponent implements OnInit, OnDestroy {
   updateStatus(id: number, status: 'CHECKED_IN' | 'NO_SHOW'): void {
     this.receptionService.updateStatus(id, status).subscribe({
       next: () => {
-      // Show a professional success message
       alert(`Status updated to ${status.replace('_', ' ')} successfully.`);
-      this.loadQueue(); // Refresh the list
+      this.loadQueue();
+      this.cdr.detectChanges();
     },
     error: (err) => {
       console.error('Update failed', err);
       alert('Could not update status. Please try again.');
+      this.cdr.detectChanges();
     }
     });
   }
