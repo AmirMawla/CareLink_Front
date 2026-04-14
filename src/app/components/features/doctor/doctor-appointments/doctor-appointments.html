@@ -277,18 +277,9 @@
                       class="appt-menu-item appt-menu-item--warn"
                       [disabled]="!canRejectStatus(row.status) || rowActionLocked(row.id)"
                       [attr.title]="tooltipReject(row.status)"
-                      (click)="closeApptActionsMenu($event); reject(row.id)"
+                      (click)="closeApptActionsMenu($event); reject(row)"
                     >
                       Reject / decline
-                    </button>
-                    <button
-                      type="button"
-                      class="appt-menu-item"
-                      [disabled]="!canUnconfirmStatus(row.status) || rowActionLocked(row.id)"
-                      [attr.title]="tooltipUnconfirm(row.status)"
-                      (click)="closeApptActionsMenu($event); unconfirm(row.id)"
-                    >
-                      Back to requested
                     </button>
                     <div class="appt-menu-sep" role="separator"></div>
                     <button

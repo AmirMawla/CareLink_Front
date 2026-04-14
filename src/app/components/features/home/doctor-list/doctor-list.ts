@@ -39,7 +39,11 @@ export class DoctorList implements OnInit {
     if (next > 0) this.currentPage.set(next);
   }
 
-  navigateToDoctor(id: number) {
-    this.router.navigate(['/doctors', id]);
+  navigateToDoctor(doc: { doctor_profile_id?: number | null }) {
+    const pid = doc.doctor_profile_id;
+    if (pid == null) {
+      return;
+    }
+    void this.router.navigate(['/doctors', pid]);
   }
 }

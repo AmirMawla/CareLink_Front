@@ -2,8 +2,11 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router, RouterModule } from '@angular/router'; 
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../../environments/environment.development';
+
+type ProfileRole = 'ADMIN' | 'DOCTOR' | 'RECEPTIONIST' | 'PATIENT' | string;
+type ProfileResponse = { role?: ProfileRole } & Record<string, unknown>;
 
 export interface LoginResponse {
   token: string;
@@ -23,6 +26,7 @@ export interface LogoutResponse {
 export class Login implements OnInit{
   private httpClient = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
 
   username = '';
@@ -78,7 +82,31 @@ export class Login implements OnInit{
         this.isLoading = false;
         console.log("logged in successfully");
         this.cdr.detectChanges();
-        this.router.navigate(['/']); 
+
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+          void this.router.navigateByUrl(returnUrl);
+          return;
+        }
+
+        const headers = new HttpHeaders({ Authorization: `Token ${response.token}` });
+        this.httpClient.get<ProfileResponse>(`${this.apiurl}/api/accounts/profile/`, { headers }).subscribe({
+          next: (p) => {
+            const role = String(p?.role || '').toUpperCase();
+            if (role === 'ADMIN') {
+              void this.router.navigate(['/admin/dashboard']);
+            } else if (role === 'DOCTOR') {
+              void this.router.navigate(['/doctor/dashboard']);
+            } else if (role === 'RECEPTIONIST') {
+              void this.router.navigate(['/receptionist/queue']);
+            } else {
+              void this.router.navigate(['/']);
+            }
+          },
+          error: () => {
+            void this.router.navigate(['/']);
+          },
+        });
       },
       error: (error) => {
         console.error(error);

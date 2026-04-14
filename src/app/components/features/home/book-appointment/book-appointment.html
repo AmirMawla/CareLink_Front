@@ -1,0 +1,295 @@
+<div class="book-root">
+  @if (needsAuth()) {
+    <section class="book-gate card-flat" aria-labelledby="gate-title">
+      <div class="book-gate-icon" aria-hidden="true">
+        <span class="material-icons">lock_person</span>
+      </div>
+      <h2 id="gate-title">Sign in to book</h2>
+      <p>You need an account to see live availability and request an appointment.</p>
+      <div class="book-gate-actions">
+        <a class="btn btn-primary" [routerLink]="['/auth/login']" [queryParams]="{ returnUrl: returnUrl() }">Sign in</a>
+        <a class="btn btn-secondary" routerLink="/doctors">Browse doctors</a>
+      </div>
+    </section>
+  } @else {
+    <div class="book-back">
+      <a routerLink="/doctors" class="book-back-link">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        All specialists
+      </a>
+    </div>
+
+    @if (error() && !details()) {
+      <div class="book-alert book-alert--error" role="alert">{{ error() }}</div>
+    }
+
+    @if (bookSuccess()) {
+      <div class="book-success card-flat" role="status">
+        <span class="material-icons book-success-icon" aria-hidden="true">check_circle</span>
+        <div>
+          <h2>Appointment requested</h2>
+          <p>Your visit is pending confirmation. You’ll get updates from your care team.</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" (click)="bookSuccess.set(false)">Book another</button>
+      </div>
+    }
+
+    @if (loading() && !details()) {
+      <div class="book-skeleton" aria-busy="true">
+        <div class="sk sk-hero"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk sk-grid"></div>
+      </div>
+    }
+
+    @if (details(); as data) {
+      <header class="book-hero">
+        <div class="book-hero-glow" aria-hidden="true"></div>
+        <div class="book-hero-main">
+          <div class="book-avatar-wrap">
+            <div class="avatar avatar-xl book-avatar" [attr.aria-label]="displayName()">{{ initials() }}</div>
+            <div class="book-avatar-ring" aria-hidden="true"></div>
+          </div>
+          <div class="book-hero-text">
+            <p class="book-eyebrow">Book a visit</p>
+            <h1 class="book-title">{{ displayName() }}</h1>
+            <p class="book-sub">{{ data.doctor.specialty_display || data.doctor.specialty }}</p>
+            <div class="book-chips">
+              <span class="bio-chip">
+                <span class="material-icons bio-chip-ic" aria-hidden="true">schedule</span>
+                {{ data.session_duration || 30 }} min sessions
+              </span>
+              @if ((data.buffer_time || 0) > 0) {
+                <span class="bio-chip">
+                  <span class="material-icons bio-chip-ic" aria-hidden="true">hourglass_empty</span>
+                  {{ data.buffer_time }} min buffer
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+        <aside class="book-hero-aside" aria-label="Typical weekly hours">
+          <h3 class="book-aside-title">Weekly Schedule</h3>
+          <ul class="book-week-list">
+            @for (ws of data.weekly_schedules; track ws.id) {
+              <li>
+                <span class="book-week-day">{{ weekdayLabel(ws.day_of_week) }}</span>
+                <span class="book-week-time">{{ ws.start_time?.slice(0, 5) }} – {{ ws.end_time?.slice(0, 5) }}</span>
+              </li>
+            } @empty {
+              <li class="book-week-empty">Schedule set by the clinic — open slots below reflect real availability.</li>
+            }
+          </ul>
+        </aside>
+      </header>
+
+      @if (data.patient_booking?.same_doctor_block; as sdb) {
+        @if (sdb.active) {
+          <section class="book-notice book-notice--block" role="region" aria-labelledby="same-doc-title">
+            <div class="book-notice-icon" aria-hidden="true">
+              <span class="material-icons">event_repeat</span>
+            </div>
+            <div class="book-notice-body">
+              <h3 id="same-doc-title" class="book-notice-title">One visit at a time with this doctor</h3>
+              <p class="book-notice-text">{{ sdb.message }}</p>
+              <div class="book-notice-meta">
+                <span class="book-notice-pill">
+                  <span class="material-icons" aria-hidden="true">schedule</span>
+                  {{ formatDateTime(sdb.scheduled_datetime) }}
+                  <span class="book-notice-sep">→</span>
+                  {{ formatDateTime(sdb.ends_at) }}
+                </span>
+              </div>
+            </div>
+          </section>
+        }
+      }
+
+      @if (data.patient_booking; as pb) {
+        @if (pb.can_book_with_this_doctor && (pb.busy_intervals?.length ?? 0) > 0) {
+          <section class="book-busy-strip" aria-label="Your other visits in this period">
+            <div class="book-busy-head">
+              <span class="material-icons" aria-hidden="true">person_pin_circle</span>
+              <h3 class="book-busy-title">You’re already booked elsewhere</h3>
+            </div>
+            <p class="book-busy-lead">
+              Times below are blocked for new bookings because they overlap another visit’s full session (any doctor).
+            </p>
+            <ul class="book-busy-list">
+              @for (b of pb.busy_intervals; track b.scheduled_datetime + '-' + b.doctor_id) {
+                <li class="book-busy-item">
+                  <span class="book-busy-name">{{ b.doctor_name }}</span>
+                  <span class="book-busy-when">{{ formatDateTime(b.scheduled_datetime) }} – {{ formatDateTime(b.ends_at) }}</span>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      }
+
+      @if (data.schedule_exceptions?.length) {
+        <div class="book-exceptions" role="region" aria-label="Schedule notes">
+          @for (ex of data.schedule_exceptions; track ex.id) {
+            <div class="book-ex-card" [class.book-ex-card--off]="ex.is_day_off">
+              <span class="material-icons" aria-hidden="true">{{ ex.is_day_off ? 'event_busy' : 'event_note' }}</span>
+              <div>
+                <strong>{{ ex.date }}</strong>
+                @if (ex.is_day_off) {
+                  <span>Day off</span>
+                } @else if (ex.start_time && ex.end_time) {
+                  <span>Special hours {{ ex.start_time?.slice(0, 5) }} – {{ ex.end_time?.slice(0, 5) }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <section class="book-panel card-flat" aria-labelledby="slots-heading">
+        <div class="book-panel-head">
+          <div>
+            <h2 id="slots-heading" class="book-panel-title">Available slots</h2>
+            <p class="book-panel-hint">
+              @if (filterMode() === 'date' && data.selected_date) {
+                Showing {{ data.selected_date }}
+              } @else {
+                {{ data.available_slots.length }} openings ·
+                {{ data.range_start | date : 'mediumDate' }} — {{ data.range_end | date : 'mediumDate' }}
+              }
+            </p>
+          </div>
+        </div>
+
+        <div class="book-filters">
+          <div class="book-mode" role="tablist" aria-label="How to search slots">
+            <button
+              type="button"
+              role="tab"
+              class="book-mode-btn"
+              [class.book-mode-btn--on]="filterMode() === 'range'"
+              [attr.aria-selected]="filterMode() === 'range'"
+              (click)="setMode('range')"
+            >
+              <span class="material-icons" aria-hidden="true">date_range</span>
+              Next days
+            </button>
+            <button
+              type="button"
+              role="tab"
+              class="book-mode-btn"
+              [class.book-mode-btn--on]="filterMode() === 'date'"
+              [attr.aria-selected]="filterMode() === 'date'"
+              (click)="setMode('date')"
+            >
+              <span class="material-icons" aria-hidden="true">event</span>
+              One day
+            </button>
+          </div>
+
+          @if (filterMode() === 'range') {
+            <div class="book-range-row">
+              <label class="book-field">
+                <span class="book-field-label">Days ahead</span>
+                <input
+                  type="number"
+                  class="form-control book-num"
+                  min="1"
+                  max="365"
+                  [ngModel]="daysAhead()"
+                  (ngModelChange)="daysAhead.set(+$event || 1)"
+                />
+              </label>
+              <button type="button" class="btn btn-primary" (click)="applyFilters()" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="book-spin" aria-hidden="true"></span>
+                }
+                Refresh
+              </button>
+            </div>
+          } @else {
+            <div class="book-range-row book-range-row--date">
+              <label class="book-field book-field--grow">
+                <span class="book-field-label">Date</span>
+                <input type="date" class="form-control" [min]="minDateStr()" [ngModel]="singleDate()" (ngModelChange)="singleDate.set($event)" />
+              </label>
+              <button type="button" class="btn btn-primary" (click)="applyFilters()" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="book-spin" aria-hidden="true"></span>
+                }
+                Load slots
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="book-alert book-alert--error book-alert--inline" role="alert">{{ error() }}</div>
+        }
+
+        @if (loading() && details()) {
+          <p class="book-muted book-center">Updating slots…</p>
+        }
+
+        @if (!loading() && !slotGroups().length) {
+          @if (data.patient_booking?.same_doctor_block?.active) {
+            <div class="book-empty book-empty--muted card-flat">
+              <span class="material-icons" aria-hidden="true">block</span>
+              <h3>Booking paused with this specialist</h3>
+              <p>Finish or wait for your current visit to end, then you can pick a new time here.</p>
+            </div>
+          } @else {
+            <div class="book-empty card-flat">
+              <span class="material-icons" aria-hidden="true">event_available</span>
+              <h3>No open slots in this window</h3>
+              <p>Try more days, another date, or check back later.</p>
+            </div>
+          }
+        }
+
+        <div class="book-slot-days">
+          @for (g of slotGroups(); track g.dateKey) {
+            <div class="book-day-block">
+              <h3 class="book-day-title">{{ g.label }}</h3>
+              <div class="book-slot-grid">
+                @for (slot of g.slots; track slot) {
+                  <button type="button" class="book-slot" (click)="openConfirm(slot)">
+                    <span class="book-slot-time">{{ formatTime(slot) }}</span>
+                    <span class="book-slot-cta">Select</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>
+
+@if (confirmOpen()) {
+  <div class="modal-backdrop" (click)="closeConfirm()" role="presentation">
+    <div class="modal-panel book-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title" class="modal-title">Confirm visit</h2>
+      <p class="book-modal-when">
+        {{ selectedSlotIso() | date : 'fullDate' }} at {{ selectedSlotIso() | date : 'shortTime' }}
+      </p>
+      <label class="book-check book-check--block">
+        <input type="checkbox" [ngModel]="telemedicine()" (ngModelChange)="telemedicine.set($event)" />
+        <span>Telemedicine (online visit)</span>
+      </label>
+      @if (bookError()) {
+        <p class="form-error">{{ bookError() }}</p>
+      }
+      <div class="book-modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeConfirm()" [disabled]="booking()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="submitBooking()" [disabled]="booking()">
+          @if (booking()) {
+            Booking…
+          } @else {
+            Request appointment
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

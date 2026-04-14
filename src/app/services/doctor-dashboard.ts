@@ -68,12 +68,13 @@ export class DoctorDashboardService {
     return this.http.get<QueueTodayResponse>(this.api.resolve('/api/dashboard/doctor/queue-today/'));
   }
 
-  confirmAppointment(id: number): Observable<unknown> {
-    return this.http.patch(this.api.resolve(`/api/appointments/${id}/`), { status: 'CONFIRMED' });
+  confirmAppointment(id: number): Observable<DoctorAppointmentDetailResponse> {
+    return this.patchDashboardAppointmentStatus(id, 'CONFIRMED');
   }
 
+
   rejectAppointment(id: number): Observable<unknown> {
-    return this.http.patch(this.api.resolve(`/api/appointments/${id}/`), { status: 'CANCELLED' });
+    return this.patchDashboardAppointmentStatus(id, 'CANCELLED');
   }
 
   getDoctorAppointmentsList(params: Record<string, string | number>): Observable<DoctorAppointmentsListResponse> {

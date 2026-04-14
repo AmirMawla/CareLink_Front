@@ -13,7 +13,7 @@
     </header>
 
     <div class="grid-layout" *ngIf="homeService.doctorList().length > 0; else empty">
-        <div class="doc-card" *ngFor="let doc of homeService.doctorList()" (click)="navigateToDoctor(doc.id)">
+        <div class="doc-card" *ngFor="let doc of homeService.doctorList()" (click)="navigateToDoctor(doc)">
             <div class="doc-img-wrapper">
                 <div class="doc-placeholder"><span class="material-icons">person</span></div>
                 <div class="availability-tag">Available</div>

@@ -38,9 +38,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   );
   readonly chartSessionPrice = signal<number | null>(null);
 
-  /** ngx-charts view [width, height] — updated on resize */
   readonly chartView = signal<[number, number]>([920, 300]);
-  /** Donut chart view */
   readonly pieView = signal<[number, number]>([400, 400]);
 
   readonly breakdownLoading = signal(true);

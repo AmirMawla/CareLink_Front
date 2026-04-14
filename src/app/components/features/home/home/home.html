@@ -101,7 +101,7 @@
     </div>
 
     <div class="doctor-carousel">
-      <div class="doc-card" *ngFor="let doc of homeService.homeDoctors()" (click)="navigateToDoctor(doc.id)">
+      <div class="doc-card" *ngFor="let doc of homeService.homeDoctors()" (click)="navigateToDoctor(doc)">
         <div class="doc-img-wrapper">
           <div class="doc-placeholder">
             <span class="material-icons">person</span>

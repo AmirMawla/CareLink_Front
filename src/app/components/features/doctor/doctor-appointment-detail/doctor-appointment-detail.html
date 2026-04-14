@@ -160,18 +160,12 @@
               <button
                 type="button"
                 class="detail-action-btn"
-                [disabled]="actionBusy() || !canUnconfirmDetail(a.status)"
-                [title]="canUnconfirmDetail(a.status) ? '' : 'Only when status is Confirmed'"
-                (click)="updateStatus('REQUESTED', 'Moved back to requested')"
-              >
-                Back to requested
-              </button>
-              <button
+                type="button"
                 type="button"
                 class="detail-action-btn detail-action-btn--risk"
                 [disabled]="actionBusy() || !canDeclineDetail(a.status)"
-                [title]="canDeclineDetail(a.status) ? '' : 'Only when status is Requested'"
-                (click)="updateStatus('CANCELLED', 'Appointment declined')"
+                [title]="canDeclineDetail(a.status) ? 'Cancels the appointment and frees the time slot' : 'Not available when completed or already cancelled'"
+                (click)="updateStatus('CANCELLED', 'Appointment cancelled — slot is available again')"
               >
                 Reject / decline
               </button>
@@ -194,7 +188,7 @@
                 type="button"
                 class="detail-action-btn"
                 [disabled]="actionBusy() || !canRevertToCheckedInDetail(a.status)"
-                [title]="canRevertToCheckedInDetail(a.status) ? '' : 'Only when completed or no-show (correction)'"
+                [title]="canRevertToCheckedInDetail(a.status) ? 'Marks appointment as CHECKED_IN' : 'Not available for requested/cancelled/already checked in'"
                 (click)="updateStatus('CHECKED_IN', 'Status set to checked in')"
               >
                 Mark checked in

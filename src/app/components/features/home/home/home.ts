@@ -42,8 +42,11 @@ export class Home implements OnInit {
     this.homeService.fetchHomeData();
   }
 
-  navigateToDoctor(id: number) {
-    // Redirecting to your friend's doctor details page
-    this.router.navigate(['/doctors', id]);
+  navigateToDoctor(doc: { doctor_profile_id?: number | null }) {
+    const pid = doc.doctor_profile_id;
+    if (pid == null) {
+      return;
+    }
+    void this.router.navigate(['/doctors', pid]);
   }
 }

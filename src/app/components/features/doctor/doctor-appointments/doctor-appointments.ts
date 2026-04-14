@@ -367,8 +367,12 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     this.patchRowStatus(id, 'CONFIRMED', 'Appointment confirmed');
   }
 
-  reject(id: number): void {
-    this.patchRowStatus(id, 'CANCELLED', 'Appointment declined');
+  reject(row: DoctorAppointmentListRow): void {
+    const id = row?.id;
+    if (!id) return;
+    if (!this.canRejectStatus(row.status)) return;
+
+    this.patchRowStatus(id, 'CANCELLED', 'Appointment cancelled — slot is available again');
   }
 
   completeAppointment(id: number): void {
@@ -398,10 +402,6 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     this.patchRowStatus(id, 'NO_SHOW', 'Marked as no-show');
   }
 
-  unconfirm(id: number): void {
-    this.patchRowStatus(id, 'REQUESTED', 'Moved back to requested');
-  }
-
   revertToCheckedIn(id: number): void {
     this.patchRowStatus(id, 'CHECKED_IN', 'Status set to checked in');
   }
@@ -410,24 +410,20 @@ export class DoctorAppointments implements OnInit, OnDestroy {
     return status === 'REQUESTED';
   }
 
-  canUnconfirmStatus(status: string): boolean {
-    return status === 'CONFIRMED';
-  }
-
   canRejectStatus(status: string): boolean {
-    return status === 'REQUESTED';
+    return status !== 'COMPLETED' && status !== 'CANCELLED';
   }
 
   canNoShowStatus(status: string): boolean {
-    return status === 'CONFIRMED' || status === 'CHECKED_IN' || status === 'COMPLETED';
+    return status !== 'REQUESTED' && status !== 'CANCELLED';
   }
 
   canCompleteStatus(status: string): boolean {
-    return status === 'CHECKED_IN' || status === 'NO_SHOW';
+    return status !== 'REQUESTED' && status !== 'CANCELLED' && status !== 'COMPLETED';
   }
 
   canRevertToCheckedInStatus(status: string): boolean {
-    return status === 'COMPLETED' || status === 'NO_SHOW';
+    return status !== 'REQUESTED' && status !== 'CANCELLED' && status !== 'CHECKED_IN';
   }
 
   canConsultationAction(row: DoctorAppointmentListRow): boolean {
@@ -466,13 +462,9 @@ export class DoctorAppointments implements OnInit, OnDestroy {
   }
 
   tooltipReject(status: string): string {
-    if (status === 'REQUESTED') return '';
-    return 'Only when status is Requested.';
-  }
-
-  tooltipUnconfirm(status: string): string {
-    if (status === 'CONFIRMED') return '';
-    return 'Only when status is Confirmed.';
+    if (status === 'COMPLETED') return 'Completed appointments cannot be rejected.';
+    if (status === 'CANCELLED') return 'Already cancelled.';
+    return 'Cancels the appointment and frees the time slot.';
   }
 
   tooltipConsultation(row: DoctorAppointmentListRow): string {
@@ -481,20 +473,24 @@ export class DoctorAppointments implements OnInit, OnDestroy {
   }
 
   tooltipRevertCheckedIn(status: string): string {
-    if (status === 'COMPLETED' || status === 'NO_SHOW') return '';
-    return 'Only when completed or no-show (correction). Initial check-in is at reception.';
+    if (status === 'REQUESTED') return 'Confirm first.';
+    if (status === 'CANCELLED') return 'Cannot check in a cancelled appointment.';
+    if (status === 'CHECKED_IN') return 'Already checked in.';
+    return 'Marks appointment as CHECKED_IN.';
   }
 
   tooltipComplete(status: string): string {
-    if (status === 'CHECKED_IN' || status === 'NO_SHOW') return '';
     if (status === 'COMPLETED') return 'Already completed.';
-    return 'Only when Checked in or No-show (needs consultation notes on the server).';
+    if (status === 'REQUESTED') return 'Confirm first.';
+    if (status === 'CANCELLED') return 'Cannot complete a cancelled appointment.';
+    return 'Marks appointment as completed (requires consultation notes on the server).';
   }
 
   tooltipNoShow(status: string): string {
-    if (status === 'CONFIRMED' || status === 'CHECKED_IN' || status === 'COMPLETED') return '';
     if (status === 'NO_SHOW') return 'Already no-show.';
-    return 'Available when Confirmed, Checked in, or Completed.';
+    if (status === 'REQUESTED') return 'Confirm first.';
+    if (status === 'CANCELLED') return 'Cannot set no-show on a cancelled appointment.';
+    return 'Marks appointment as no-show.';
   }
 
   private isCompleteBlockedByConsultation(err: unknown): boolean {

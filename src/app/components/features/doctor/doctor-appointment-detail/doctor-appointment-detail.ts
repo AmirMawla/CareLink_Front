@@ -122,6 +122,9 @@ export class DoctorAppointmentDetail implements OnInit, OnDestroy {
     });
   }
 
+
+
+
   onMarkCompleteClick(): void {
     this.formError.set(null);
     const a = this.appointment();
@@ -142,7 +145,7 @@ export class DoctorAppointmentDetail implements OnInit, OnDestroy {
   }
 
   canDeclineDetail(st: string): boolean {
-    return st === 'REQUESTED';
+    return st !== 'COMPLETED' && st !== 'CANCELLED';
   }
 
   canConsultationDetail(a: DoctorAppointmentDetailData | null): boolean {
@@ -165,20 +168,18 @@ export class DoctorAppointmentDetail implements OnInit, OnDestroy {
   }
 
   canCompleteDetail(st: string): boolean {
-    return st === 'CHECKED_IN' || st === 'NO_SHOW';
+    return st !== 'REQUESTED' && st !== 'CANCELLED' && st !== 'COMPLETED';
   }
 
   canNoShowDetail(st: string): boolean {
-    return st === 'CONFIRMED' || st === 'CHECKED_IN' || st === 'COMPLETED';
+    return st !== 'REQUESTED' && st !== 'CANCELLED';
   }
 
   canRevertToCheckedInDetail(st: string): boolean {
-    return st === 'COMPLETED' || st === 'NO_SHOW';
+    return st !== 'REQUESTED' && st !== 'CANCELLED' && st !== 'CHECKED_IN';
   }
 
-  canUnconfirmDetail(st: string): boolean {
-    return st === 'CONFIRMED';
-  }
+  // No "back to requested" in the new workflow.
 
   markCompleteTooltip(status: string): string {
     if (status !== 'CHECKED_IN' && status !== 'NO_SHOW') {
