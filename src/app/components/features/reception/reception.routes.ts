@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { QueueComponent } from './queue/queue';
 import { AppointmentListComponent } from './appointment-list/appointment-list';
-import { BookAppointment } from './book-appointment/book-appointment';
 import { AvailableSlots } from '../doctor/available-slots/available-slots';
 import { WeeklySchedule } from '../doctor/weekly-schedule/weekly-schedule';
 import { ScheduleExceptions } from '../doctor/schedule-exceptions/schedule-exceptions';
+import { DashboardComponent } from './dashboard/dashboard';
+import { CheckedInComponent } from './checked-in/checked-in';
+import { WaitingListComponent } from './waiting-list/waiting-list';
 
 export const RECEPTION_ROUTES: Routes = [
   {
@@ -38,9 +40,19 @@ export const RECEPTION_ROUTES: Routes = [
     title: 'Available Slots',
   },
   {
-      path: 'appointments/book',
-      component: BookAppointment,
-      title: 'Book New Appointment',
+    path: 'dashboard',
+    component: DashboardComponent,
+    title: 'Reception Dashboard'
+  },
+  {
+  path:'check-in',
+  component:CheckedInComponent,
+  title:'Checked-In Patients'
+  },
+  {
+  path:'waiting-list',
+  component:WaitingListComponent,
+  title:'Waiting List'
   },
   // {
   //   path: 'appointments/reschedule',
