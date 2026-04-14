@@ -1,0 +1,57 @@
+<div class="stats-container mt-4">
+
+    <div class="stat-card">
+      <div class="stat-icon bookings">
+        <span>📅</span>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">Today's Total</span>
+        <h2 class="stat-value">{{ totalAppointments }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon waiting">
+        <span>⏳</span>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">Expected Soon</span>
+        <h2 class="stat-value text-yellow">{{ waitingCount }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon in-progress">
+        <span>📍</span> </div>
+      <div class="stat-details">
+        <span class="stat-label">In Lobby</span>
+        <h2 class="stat-value text-green">{{ checkedInCount }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon completed">
+        <span>✅</span>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">Finished</span>
+        <h2 class="stat-value text-blue">{{ completedCount }}</h2>
+      </div>
+    </div>
+<div class="stat-card border-red">
+      <div class="stat-icon cancelled"><span>✖️</span></div>
+      <div class="stat-details">
+        <span class="stat-label">Cancelled</span>
+        <h2 class="stat-value text-red">{{ cancelledCount }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card border-gray">
+      <div class="stat-icon noshow"><span>🚫</span></div>
+      <div class="stat-details">
+        <span class="stat-label">No Show</span>
+        <h2 class="stat-value text-gray">{{ noShowCount }}</h2>
+      </div>
+    </div>
+
+</div>
