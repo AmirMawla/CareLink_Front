@@ -48,7 +48,7 @@ export class ChangePassword {
       .subscribe({
         next: (response) => {
           console.log(' Password changed successfully:', response);
-          this.router.navigate(['/auth/profile']);
+          this.router.navigate(['/profile']);
         },
         error: (err) => {console.error(' Error changing password:', err)
         this.errorAPI = err.error.message || 'An error occurred while changing the password.';

@@ -1,0 +1,54 @@
+<div class="queue-container">
+  <div class="header-section">
+    <h1>Today's Live Queue</h1>
+    <div class="live-indicator">
+      <span class="dot"></span> Live Updates Every 60s
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="luxury-table">
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Time</th>
+          <th>Wait Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appt of queue">
+          <td><strong>{{ appt.patient.full_name }}</strong></td>
+          <td>{{ appt.doctor.full_name }}</td>
+          <td>{{ appt.scheduled_datetime | date:'shortTime' }}</td>
+          <td>
+            <span class="wait-text" *ngIf="appt.waiting_time_minutes !== null">
+              {{ appt.waiting_time_minutes }}m
+            </span>
+            <span *ngIf="appt.waiting_time_minutes === null">--</span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="appt.status.toLowerCase()">
+              {{ appt.status.replace('_', ' ') }}
+            </span>
+          </td>
+          <td class="action-cells">
+            <button *ngIf="appt.status === 'CONFIRMED'" (click)="updateStatus(appt.id, 'CHECKED_IN')"
+              class="btn-primary">Check In</button>
+
+            <button *ngIf="['CONFIRMED', 'CHECKED_IN'].includes(appt.status)" (click)="updateStatus(appt.id, 'NO_SHOW')"
+              class="btn-outline-danger">No Show</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="queue.length === 0 && !loading" class="luxury-empty-state">
+      <div class="icon">📅</div>
+      <h3>No patients in queue</h3>
+      <p>All caught up! There are no appointments scheduled for the current time slots.</p>
+    </div>
+  </div>
+</div>

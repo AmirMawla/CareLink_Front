@@ -1,0 +1,43 @@
+<div class="book-container">
+  <header class="page-header">
+    <h2>Book New Appointment</h2>
+    <p>Select doctor and available time slot for the patient.</p>
+  </header>
+
+  <div class="booking-card">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Select Doctor</label>
+        <select [(ngModel)]="selectedDoctorId" (change)="onDoctorOrDateChange()">
+          <option value="">-- Choose Doctor --</option>
+          <option *ngFor="let doc of doctors" [value]="doc.id">Dr. {{ doc.user.first_name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Patient ID / Name</label>
+        <input type="text" [(ngModel)]="selectedPatientId" placeholder="Enter Patient ID">
+      </div>
+
+      <div class="form-group">
+        <label>Appointment Date</label>
+        <input type="date" [(ngModel)]="selectedDate" (change)="onDoctorOrDateChange()">
+      </div>
+    </div>
+
+    <div class="slots-section" *ngIf="availableSlots.length > 0">
+      <h3>Available Time Slots</h3>
+      <div class="slots-grid">
+        <button *ngFor="let slot of availableSlots"
+                class="slot-btn"
+                (click)="confirmBooking(slot)">
+          {{ slot | date:'shortTime' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="no-slots" *ngIf="selectedDate && availableSlots.length === 0">
+      No available slots for this date.
+    </div>
+  </div>
+</div>
