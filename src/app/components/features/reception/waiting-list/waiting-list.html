@@ -1,0 +1,31 @@
+<div class="view-only-container">
+  <div class="header-section">
+    <h3><span class="dot pending"></span> Waiting List</h3>
+    <p class="subtitle">Upcoming appointments for today.</p>
+  </div>
+
+  <div class="table-container luxury-shadow">
+    <table class="view-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Patient Name</th>
+          <th>Doctor</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of waitingList">
+          <td class="bold-time">{{ item.scheduled_datetime | date:'shortTime' }}</td>
+          <td>{{ item.patient.full_name }}</td>
+          <td>Dr. {{ item.doctor.full_name }}</td>
+          <td><span class="badge-pending">Comming Soon</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="waitingList.length === 0" class="empty-state">
+    <p>No more expected patients for today.</p>
+  </div>
+</div>
