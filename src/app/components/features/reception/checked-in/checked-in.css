@@ -1,0 +1,147 @@
+/* الحاوية الأساسية */
+.view-only-container {
+  padding: 25px;
+  background-color: #f8fafc; /* خلفية هادية تبرز الكروت */
+  min-height: 100vh;
+}
+
+/* العناوين */
+.header-section {
+  margin-bottom: 30px;
+}
+
+.header-section h3 {
+  font-size: 1.8rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* النقطة المضيئة (Status Dot) */
+.dot {
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.online {
+  background-color: #2ecc71;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+}
+
+.pending {
+  background-color: #f1c40f;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.6);
+}
+
+/* ستايل الكروت (خاص بـ Checked-In) */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.patient-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 22px;
+  border-radius: 15px;
+  border-left: 6px solid #004a99; /* اللون الأزرق بتاع السايدبار */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.patient-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.card-info h4 {
+  margin: 10px 0 5px 0;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.doctor-name {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ستايل التايمر والتاجز */
+.time-tag {
+  background: #f1f5f9;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.wait-timer {
+  color: #e67e22; /* برتقالي لفت انتباه */
+  font-weight: 700;
+  font-size: 1rem;
+  background: rgba(230, 126, 34, 0.1);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* ستايل الجدول (خاص بـ Waiting List) */
+.table-container {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.view-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.view-table th {
+  background: #f8fafc;
+  padding: 18px;
+  color: #64748b;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.view-table td {
+  padding: 18px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.bold-time {
+  font-weight: 700;
+  color: #004a99;
+}
+
+.badge-pending {
+  background: #fef9c3;
+  color: #854d0e;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* حالة الصفحة فاضية */
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #94a3b8;
+  font-style: italic;
+}

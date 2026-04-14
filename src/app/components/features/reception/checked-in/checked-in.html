@@ -1,0 +1,23 @@
+<div class="view-only-container">
+  <div class="header-section">
+    <h3><span class="dot online"></span> Checked-In Patients</h3>
+    <p class="subtitle">Patients currently in the lobby waiting for the doctor.</p>
+  </div>
+
+  <div class="cards-grid">
+    <div class="patient-card luxury-shadow" *ngFor="let patient of checkedInList">
+      <div class="card-info">
+        <span class="time-tag"> {{ patient.scheduled_datetime | date:'shortTime' }}</span>
+        <h4>{{ patient.patient.full_name }}</h4>
+        <p class="doctor-name">With: {{ patient.doctor.full_name }}</p>
+      </div>
+      <div class="wait-status">
+        <span class="wait-timer">⏳ Waiting: {{ calculateWaitTime(patient.check_in_time) }} min</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="checkedInList.length === 0" class="empty-state">
+    <p>The lobby is currently empty.</p>
+  </div>
+</div>
