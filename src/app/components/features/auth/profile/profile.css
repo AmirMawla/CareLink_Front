@@ -376,3 +376,21 @@
   .btn { width: 100%; min-width: unset; }
   .actions { padding: 22px; }
 }
+
+
+.doc-profile-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid var(--surface-high);
+    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.doc-avatar-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}

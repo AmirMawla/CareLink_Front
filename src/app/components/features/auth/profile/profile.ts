@@ -1,5 +1,3 @@
-
-
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +27,7 @@ export class Profile implements OnInit {
   profiledata!: ProfileResponse;
   isEditMode = false;
   formData: any = {};
+  selectedFile: File | null = null;
   toastMsg = '';
   toastType: 'success' | 'error' | 'info' = 'info';
   private toastTimer: any = null;
@@ -41,6 +40,13 @@ export class Profile implements OnInit {
       this.showToast(String(stateToast.message), (stateToast.type as any) || 'info');
     }
     this.getProfile();
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
 
   getProfile() {
@@ -71,6 +77,7 @@ export class Profile implements OnInit {
   cancelEdit() {
     this.isEditMode = false;
     this.formData = {};
+    this.selectedFile = null;
   }
 
   saveProfile() {
@@ -90,13 +97,17 @@ export class Profile implements OnInit {
   const role = this.profiledata.role;
   const allowedFields = [...allowedBase, ...(allowedByRole[role] || [])];
 
-  const payload: any = {};
+  const payload = new FormData(); 
   for (const field of allowedFields) {
-    if (this.formData[field] !== undefined) {
-      payload[field] = this.formData[field];
+    if (this.formData[field] !== undefined && this.formData[field] !== null) {
+      payload.append(field, this.formData[field]);
     }
   }
-
+  
+  if (this.selectedFile && this.isDoctor) {
+  payload.append('profile_picture', this.selectedFile); 
+}
+  
   this.httpClient.patch(`${this.apiurl}/api/accounts/profile/`, payload, { headers })
     .subscribe({
       next: (updated: any) => {
@@ -114,31 +125,7 @@ export class Profile implements OnInit {
       }
     });
 }
-/*
-  saveProfile() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
 
-    const headers = new HttpHeaders({ Authorization: `Token ${token}` });
-
-    this.httpClient.patch(`${this.apiurl}/api/accounts/profile/`, this.formData, { headers })
-      .subscribe({
-        next: (updated: any) => {
-          this.profiledata = updated;
-          this.isEditMode = false;
-          this.formData = {};
-          console.log('✅ Profile updated successfully');
-          this.cdr.detectChanges();
-          alert('تم حفظ التعديلات بنجاح');
-        },
-        error: (err) => {
-          console.error('❌ Update failed:', err);
-          this.cdr.detectChanges();
-          alert('حدث خطأ أثناء الحفظ');
-        }
-      });
-  }
-*/
   // ==================== Type-Safe Getters ====================
   get isDoctor() { return this.profiledata?.role === 'DOCTOR'; }
   get isPatient() { return this.profiledata?.role === 'PATIENT'; }

@@ -1,15 +1,19 @@
 <div class="profile-container">
-    <div *ngIf="toastMsg" class="toast" [class.toast--success]="toastType==='success'" [class.toast--error]="toastType==='error'" role="status">
+    <div *ngIf="toastMsg" class="toast" [class.toast--success]="toastType==='success'"
+        [class.toast--error]="toastType==='error'" role="status">
         {{ toastMsg }}
     </div>
     <div class="profile-card">
-
         <!-- Header -->
         <div class="profile-header">
-            <div class="avatar" aria-hidden="true">
+
+            <div class="avatar" aria-hidden="true" *ngIf="!isDoctor || !doctorData.profile_picture_url">
                 <span class="avatar-ring"></span>
                 <span class="avatar-text">{{ initials() }}</span>
             </div>
+            <img *ngIf="isDoctor && doctorData.profile_picture_url" [src]="apiurl + doctorData.profile_picture_url"
+                alt="Doctor Profile Picture" class="avatar doc-avatar-img">
+
             <h1 class="profile-name text-white">{{ profiledata.first_name }} {{ profiledata.last_name }}</h1>
             <p class="username text-white">{{ profiledata.username }}</p>
             <span class="role-badge" [ngClass]="profiledata.role">
@@ -80,6 +84,13 @@
                         <option [ngValue]="15">15</option>
                         <option [ngValue]="30">30</option>
                     </select>
+                </div>
+                <div class="info-item full-width" *ngIf="isEditMode">
+                    <span class="label">Profile Picture</span>
+                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="edit-input">
+                    <small style="display:block; margin-top:5px; color:#64748b;">
+                        Current image exists. Uploading a new one will replace it.
+                    </small>
                 </div>
                 <div class="info-item">
                     <span class="label">Buffer Time (min)</span>

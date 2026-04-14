@@ -39,6 +39,14 @@ export class Signup {
   specialty ="";
   session_duration = -1;
   buffer_time = -1;
+  profile_picture: File | null = null;
+
+  onFileSelected(event: any) {   
+    const file: File = event.target.files[0];
+    if (file) {
+      this.profile_picture = file;
+    }
+  }
 
   //Patient attributes
   date_of_birth="";
@@ -102,6 +110,12 @@ export class Signup {
         return false;
       }  
 
+      if (!this.profile_picture) {
+      this.messages.push("please upload a profile picture");
+      return false;
+      }
+
+
       this.payload =
       { first_name:this.first_name,
         last_name:this.last_name,
@@ -112,7 +126,8 @@ export class Signup {
         specialty:this.specialty,
         session_duration:(Number(this.session_duration)),
         buffer_time:this.buffer_time,
-        session_price : (Number(this.session_price))
+        session_price : (Number(this.session_price)),
+        //profile_picture : this.profile_picture
       }
       
       console.log(this.payload);
@@ -170,6 +185,42 @@ export class Signup {
   }
 
   signUp(){
+    let isValidated = this.validateData();
+    this.cdr.detectChanges();
+    if (isValidated) {
+
+      let requestPayload: any = this.payload;
+
+      if (this.role === 'DOCTOR' && this.profile_picture) {
+        const formData = new FormData();
+        for (const key in this.payload) {
+          formData.append(key, (this.payload as any)[key]);
+        }
+        formData.append('profile_picture', this.profile_picture);
+        requestPayload = formData;
+      }
+
+      this.httpClient.post<APISignUp>(`${this.apiurl}/api/accounts/signup/`, requestPayload).subscribe({
+        next: (response) => {
+          console.log("signedUp in successfully");
+          this.messages.push("signedUp in successfully");
+          this.cdr.detectChanges();
+          this.router.navigate(['/auth/login']);
+        },
+        error: (error) => {
+          let errorMessage = 'unexpected error'
+          if (error.error.message &&typeof error.error.message === 'string') {
+                errorMessage = error.error.message;
+          }
+          console.error(error);
+          this.messages.push(errorMessage);
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+  /*
+  signUp(){
     let isValidated = this.validateData()
     this.cdr.detectChanges();
     if(isValidated){
@@ -188,5 +239,5 @@ export class Signup {
     });
     }
   }
-
+*/
 }

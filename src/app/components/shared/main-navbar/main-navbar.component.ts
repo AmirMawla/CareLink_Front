@@ -33,7 +33,7 @@ export class MainNavbarComponent implements OnInit, OnDestroy {
   readonly userName = signal('');
   readonly userInitials = signal('—');
   readonly profileUrl = signal('/profile');
-
+  readonly authProfile = signal('/auth/profile');
   isMobileMenuOpen = false;
 
   get token(): string | null {

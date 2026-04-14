@@ -1,3 +1,4 @@
+
 export interface BaseProfile {
   id: number;
   first_name: string;
@@ -12,6 +13,7 @@ export interface DoctorProfile extends BaseProfile {
   session_duration: number;
   buffer_time: number;
   session_price: number;
+  profile_picture_url?: string;
 }
 
 export interface PatientProfile extends BaseProfile {
@@ -26,3 +28,4 @@ export interface ReceptionistProfile extends BaseProfile {
 }
 
 export interface AdminProfile extends BaseProfile {}
+

@@ -13,7 +13,7 @@
 
     <form (ngSubmit)="signUp()">
       <div class="form-group full-width">
-        <label for="role">Account type  *</label>
+        <label for="role">Account type *</label>
         <select id="role" name="role" [(ngModel)]="role" required class="role-select">
           <option value="" disabled selected>-- choose acoount type --</option>
           <option value="PATIENT"> Patient</option>
@@ -25,11 +25,11 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>first name  *</label>
+          <label>first name *</label>
           <input type="text" name="first_name" [(ngModel)]="first_name" placeholder="ex: mohamed ">
         </div>
         <div class="form-group">
-          <label>last name  *</label>
+          <label>last name *</label>
           <input type="text" name="last_name" [(ngModel)]="last_name" placeholder="ex: elazzazy">
         </div>
       </div>
@@ -40,24 +40,24 @@
           <input type="text" name="username" [(ngModel)]="username" placeholder="ex: ahmed_m">
         </div>
         <div class="form-group">
-          <label>email  *</label>
+          <label>email *</label>
           <input type="email" name="email" [(ngModel)]="email" placeholder="example@mail.com" dir="ltr">
         </div>
       </div>
 
       <div class="form-group full-width">
-        <label>password  *</label>
+        <label>password *</label>
         <input type="password" name="password" [(ngModel)]="password" placeholder="at least 8 characters">
       </div>
 
       <ng-container *ngIf="role === 'DOCTOR'">
         <div class="section-divider"><span>doctor data </span></div>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label>specialist *</label>
             <select name="specialty" [(ngModel)]="specialty">
-              <option value="" disabled selected>--  choose speciality --</option>
+              <option value="" disabled selected>-- choose speciality --</option>
               <option value="CARDIOLOGY"> Cardiology</option>
               <option value="DERMATOLOGY"> Dermatology</option>
               <option value="NEUROLOGY"> Neurology</option>
@@ -69,7 +69,7 @@
           <div class="form-group">
             <label>session duration *</label>
             <select name="session_duration" [(ngModel)]="session_duration">
-              <option value="-1" disabled selected>-- choose duration  --</option>
+              <option value="-1" disabled selected>-- choose duration --</option>
               <option [value]=15>15 minutes</option>
               <option [value]=30>30 minutes</option>
             </select>
@@ -83,6 +83,10 @@
           <label>Session price*</label>
           <input type="number" name="session_price" [(ngModel)]="session_price" placeholder="ex: 50">
         </div>
+        <div class="form-group full-width">
+          <label>Profile Picture *</label>
+          <input type="file" name="profile_picture" (change)="onFileSelected($event)" accept="image/*">
+        </div>
       </ng-container>
 
       <ng-container *ngIf="role === 'PATIENT'">
@@ -90,7 +94,7 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>birth date  *</label>
+            <label>birth date *</label>
             <input type="date" name="date_of_birth" [(ngModel)]="date_of_birth">
           </div>
           <div class="form-group">
@@ -115,9 +119,8 @@
 
       <button type="submit" class="btn-primary">sign up</button>
     </form>
-    <a 
-      href="/auth/login">
+    <a href="/auth/login">
       sign in
-    </a>  
+    </a>
   </div>
 </div>

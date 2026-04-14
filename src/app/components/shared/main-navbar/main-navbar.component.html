@@ -40,7 +40,7 @@
           </button>
           @if (menuOpen()) {
             <div class="cl-mainnav__dropdown" role="menu">
-              <a class="cl-mainnav__dropdown-item" role="menuitem" [routerLink]="profileUrl()" (click)="closeUserMenu()">
+              <a class="cl-mainnav__dropdown-item" role="menuitem" [routerLink]="authProfile()" (click)="closeUserMenu()">
                 <span class="cl-mainnav__dropdown-icon" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -97,7 +97,7 @@
               <span class="cl-mainnav__mobile-user-hint">Signed in</span>
             </div>
           </div>
-          <a class="btn btn-secondary w-full justify-center" [routerLink]="profileUrl()" (click)="closeMobileMenu()">Profile</a>
+          <a class="btn btn-secondary w-full justify-center" [routerLink]="authProfile()" (click)="closeMobileMenu()">Profile</a>
           <button type="button" class="btn btn-tertiary w-full justify-center cl-mainnav__mobile-logout" (click)="logout(); closeMobileMenu()">
             Log out
           </button>
