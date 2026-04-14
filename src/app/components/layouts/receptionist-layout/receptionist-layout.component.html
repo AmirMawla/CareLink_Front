@@ -36,7 +36,7 @@
           <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
         </svg>
       </span>
-      Check-In Patients
+      Checked-In Patients
     </a>
 
     <a class="cl-nav-item" routerLink="/receptionist/waiting-list" routerLinkActive="active">
@@ -62,14 +62,7 @@
       All Appointments
     </a>
 
-    <a class="cl-nav-item" routerLink="/receptionist/appointments/book" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </span>
-      New Appointment
-    </a>
+
 
     <a class="cl-nav-item" routerLink="/receptionist/appointments/reschedule" routerLinkActive="active">
       <span class="cl-nav-icon">
@@ -113,33 +106,12 @@
       Available Slots
     </a>
 
-    <div class="cl-nav-section">Patients</div>
 
-    <a class="cl-nav-item" routerLink="/receptionist/patients" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </span>
-      Patient Records
-    </a>
-
-    <a class="cl-nav-item" routerLink="/receptionist/patients/search" routerLinkActive="active">
-      <span class="cl-nav-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </span>
-      Search Patients
-    </a>
-
-  </app-sidebar>
-
+</app-sidebar>
   <div class="main-content">
     <div class="page-wrapper">
       <router-outlet />
     </div>
-  </div>
+    </div>
 
 </div>
