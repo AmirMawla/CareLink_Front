@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { Login } from "./login/login";
 import { Signup } from "./signup/signup";
 import { ResetPassword } from "./reset-password/reset-password";
+import { Profile } from "./profile/profile"
 
 export const AUTH_ROUTES: Routes =[
 {
@@ -16,5 +17,9 @@ export const AUTH_ROUTES: Routes =[
     path: 'reset-password',
      component: ResetPassword 
   },
-
+  /*{ 
+    path: 'profile',
+     component: Profile 
+  },
+*/
 ]

@@ -34,11 +34,11 @@ export const HOME_ROUTES: Routes = [
     title: 'Appointment summary | CareLink',
   },
   {
-    path : 'ChangePassword',
+    path : 'auth/ChangePassword',
     component : ChangePassword
   },
   {
-    path : 'profile',
+    path : 'auth/profile',
     component : Profile
   },
 ];
