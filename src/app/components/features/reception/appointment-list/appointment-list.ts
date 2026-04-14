@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Reception } from '../../../../services/reception';
@@ -13,6 +13,8 @@ import { Appointment } from '../../../../models/appointment.model';
 })
 export class AppointmentListComponent implements OnInit {
   private readonly receptionService = inject(Reception);
+private cdr = inject(ChangeDetectorRef);
+
 
   appointments: Appointment[] = [];
   loading: boolean = false;
@@ -31,17 +33,22 @@ export class AppointmentListComponent implements OnInit {
     this.loading = true;
     this.receptionService.getAppointments(this.filters).subscribe({
       next: (data) => {
+
         this.appointments = data;
         this.loading = false;
+        this.cdr.detectChanges();
+
       },
       error: (err) => {
         console.error('Search failed', err);
         this.loading = false;
+          this.cdr.detectChanges();
       }
     });
   }
 
   onFilterChange(): void {
     this.loadAppointments();
+this.cdr.detectChanges();
   }
 }

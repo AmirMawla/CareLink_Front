@@ -90,10 +90,11 @@
   font-weight: 700;
 }
 
-.confirmed { background-color: #dcfce7; color: #166534; }
-.completed { background-color: #f1f5f9; color: #475569; }
+.confirmed { background-color: #ddf18a; color: #6c850b; }
+.completed { background-color: #8dbded; color: #08397e; }
 .cancelled { background-color: #fee2e2; color: #991b1b; }
 .no_show { background-color: #fef3c7; color: #92400e; }
+.checked_in { background-color: #7df0a9; color: #14671c; }
 
 .empty-msg {
   padding: 3rem;
