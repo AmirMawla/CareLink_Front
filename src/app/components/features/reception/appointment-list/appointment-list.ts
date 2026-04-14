@@ -30,25 +30,40 @@ private cdr = inject(ChangeDetectorRef);
   }
 
   loadAppointments(): void {
-    this.loading = true;
-    this.receptionService.getAppointments(this.filters).subscribe({
-      next: (data) => {
+  this.loading = true;
 
-        this.appointments = data;
-        this.loading = false;
-        this.cdr.detectChanges();
+  const activeParams: any = {};
 
-      },
-      error: (err) => {
-        console.error('Search failed', err);
-        this.loading = false;
-          this.cdr.detectChanges();
-      }
-    });
+  if (this.filters.search.trim()) {
+    activeParams.search = this.filters.search;
   }
+
+
+  if (this.filters.date) {
+    activeParams.date = this.filters.date;
+  }
+
+
+  if (this.filters.status) {
+    activeParams.status = this.filters.status;
+  }
+
+  this.receptionService.getAppointments(activeParams).subscribe({
+    next: (data) => {
+      this.appointments = data;
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Search failed', err);
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   onFilterChange(): void {
     this.loadAppointments();
-this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 }
