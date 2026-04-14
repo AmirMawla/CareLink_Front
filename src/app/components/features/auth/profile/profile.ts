@@ -29,10 +29,17 @@ export class Profile implements OnInit {
   profiledata!: ProfileResponse;
   isEditMode = false;
   formData: any = {};
+  toastMsg = '';
+  toastType: 'success' | 'error' | 'info' = 'info';
+  private toastTimer: any = null;
 
   apiurl = environment.apiUrl;
 
   ngOnInit(): void {
+    const stateToast = (history.state && history.state.toast) ? history.state.toast : null;
+    if (stateToast?.message) {
+      this.showToast(String(stateToast.message), (stateToast.type as any) || 'info');
+    }
     this.getProfile();
   }
 
@@ -98,12 +105,12 @@ export class Profile implements OnInit {
         this.formData = {};
         console.log(' Profile updated successfully');
         this.cdr.detectChanges();
-        alert('تم حفظ التعديلات بنجاح');
+        this.showToast('Profile updated successfully.', 'success');
       },
       error: (err) => {
         console.error(' Update failed:', err);
         this.cdr.detectChanges();
-        alert('حدث خطأ أثناء الحفظ');
+        this.showToast(err?.error?.message || 'Could not update profile. Please try again.', 'error');
       }
     });
 }
@@ -148,5 +155,26 @@ export class Profile implements OnInit {
 
   get receptionistData(): ReceptionistProfile {
     return this.profiledata as ReceptionistProfile;
+  }
+
+  initials(): string {
+    const fn = String((this.profiledata as any)?.first_name || '').trim();
+    const ln = String((this.profiledata as any)?.last_name || '').trim();
+    const un = String((this.profiledata as any)?.username || '').trim();
+    if (fn && ln) return (fn[0] + ln[0]).toUpperCase();
+    if (fn) return fn.slice(0, 2).toUpperCase();
+    if (ln) return ln.slice(0, 2).toUpperCase();
+    return (un.slice(0, 2) || 'U').toUpperCase();
+  }
+
+  showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+    this.toastMsg = message;
+    this.toastType = type;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      this.toastMsg = '';
+      this.cdr.detectChanges();
+    }, 3200);
+    this.cdr.detectChanges();
   }
 }

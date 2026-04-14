@@ -1,0 +1,128 @@
+<!-- <p>patient-appointments works!</p> -->
+<div class="appointments-page">
+
+  <div *ngIf="toast" class="toast" role="status">{{ toast }}</div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading appointments...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-row">
+        <div>
+          <h1>My Appointments</h1>
+          <p class="hero-sub">
+            {{ count }} total · {{ totalOnPage() }} on this page
+          </p>
+        </div>
+        <div class="hero-stats" aria-label="Quick stats">
+          <div class="hero-stat">
+            <span class="hero-stat__label">Upcoming</span>
+            <span class="hero-stat__value">{{ upcomingOnPage() }}</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat__label">Completed</span>
+            <span class="hero-stat__value">{{ completedOnPage() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="search">
+          <span class="material-icons" aria-hidden="true">search</span>
+          <input
+            type="text"
+            placeholder="Search doctor name or appointment #ID"
+            [(ngModel)]="searchQuery"
+          />
+        </div>
+        <div class="filter-bar">
+          <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()">
+          <option value="">All Statuses</option>
+          <option value="REQUESTED">Requested</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="CHECKED_IN">Checked In</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="NO_SHOW">No Show</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Appointments List -->
+      <div *ngIf="filteredAppointments().length === 0" class="empty-state">
+        <div class="icon">📅</div>
+        <h3>No matches</h3>
+        <p>Try clearing search or changing the status filter.</p>
+      </div>
+
+      <div *ngFor="let appointment of filteredAppointments(); trackBy: trackByAppointmentId" class="appointment-card">
+        <div class="card-left">
+          <div class="doctor-avatar">
+            <span class="avatar avatar-md avatar-primary">{{ doctorInitials(appointment) }}</span>
+          </div>
+          <div class="doctor-info">
+            <div class="doctor-name">
+              {{ doctorName(appointment) }}
+            </div>
+            <div class="specialty">{{ appointment.doctor.specialty }}</div>
+            <div class="meta">
+              <span class="meta-pill">#{{ appointment.id }}</span>
+              <span class="meta-dot" aria-hidden="true"></span>
+              <span class="meta-time">📅 {{ appointment.scheduled_datetime | date:'EEE, MMM d · h:mm a' }}</span>
+            </div>
+          </div>
+          <div *ngIf="appointment.is_telemedicine" class="telemedicine-badge">
+            🎥 Telemedicine
+          </div>
+        </div>
+
+        <div class="card-right">
+          <span class="status-badge" [style.background]="getStatusColor(appointment.status) + '20'"
+                [style.color]="getStatusColor(appointment.status)">
+            {{ statusLabel(appointment.status) }}
+          </span>
+
+          <button
+            *ngIf="canCancel(appointment.status)"
+            class="btn-cancel"
+            type="button"
+            [disabled]="cancelBusyId === appointment.id"
+            (click)="cancelAppointment(appointment)"
+          >
+            {{ cancelBusyId === appointment.id ? 'Cancelling…' : 'Cancel' }}
+          </button>
+
+          <a *ngIf="hasSummary(appointment)"
+             [routerLink]="['/patient/history', appointment.id]"
+             class="btn-view">
+             Summary
+          </a>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="count > 10">
+        <button (click)="goToPrev()" [disabled]="!prevPage">← Previous</button>
+        <button (click)="goToNext()" [disabled]="!nextPage">Next →</button>
+      </div>
+
+    </div>
+  </div>
+</div>

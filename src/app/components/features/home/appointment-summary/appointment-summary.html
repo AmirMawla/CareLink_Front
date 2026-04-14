@@ -1,0 +1,154 @@
+<div class="summary-page">
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading summary…</p>
+  </div>
+
+  <div *ngIf="!loading && error" class="error-state">
+    <div class="error-card">
+      <div class="error-title">Couldn’t open summary</div>
+      <div class="error-text">{{ error }}</div>
+      <a class="btn-back" routerLink="/my-appointments">Back to My Appointments</a>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && data" class="content">
+    <div class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-dots" aria-hidden="true"></div>
+      <a class="hero-back" routerLink="/my-appointments">← My appointments</a>
+
+      <div class="hero-main">
+        <div class="doc">
+          <div class="avatar">
+            <span class="avatar-ring" aria-hidden="true"></span>
+            <span class="avatar-text">{{ doctorInitials() }}</span>
+          </div>
+          <div class="doc-info">
+            <div class="doc-name">{{ doctorName() }}</div>
+            <div class="doc-sub">{{ data.appointment.doctor.specialty }}</div>
+          </div>
+        </div>
+
+        <div class="hero-meta">
+          <div class="meta-pill">
+            <span class="mi" aria-hidden="true">tag</span>
+            Appointment #{{ data.appointment.id }}
+          </div>
+          <div class="meta-pill">
+            <span class="mi" aria-hidden="true">event</span>
+            {{ data.appointment.scheduled_datetime | date:'EEEE, MMM d, y · h:mm a' }}
+          </div>
+          <div class="meta-pill">
+            <span class="mi" aria-hidden="true">verified</span>
+            {{ statusLabel(data.appointment.status) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel panel-visit">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="panel-ico" aria-hidden="true">assignment</span>
+            Visit details
+          </div>
+        </div>
+
+        <div class="kv">
+          <div class="k">Telemedicine</div>
+          <div class="v">
+            <span class="badge" [class.badge-on]="data.appointment.is_telemedicine">
+              {{ data.appointment.is_telemedicine ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="kv" *ngIf="data.appointment.check_in_time">
+          <div class="k">Check-in time</div>
+          <div class="v">{{ data.appointment.check_in_time | date:'medium' }}</div>
+        </div>
+
+        <div class="kv" *ngIf="data.appointment.is_telemedicine && data.appointment.meeting_link">
+          <div class="k">Meeting link</div>
+          <div class="v">
+            <a class="btn-link" [href]="data.appointment.meeting_link" target="_blank" rel="noopener">
+              <span class="mi" aria-hidden="true">videocam</span>
+              Open meeting
+            </a>
+          </div>
+        </div>
+
+        <div class="panel-foot">
+          <div class="small">
+            <span class="mi" aria-hidden="true">schedule</span>
+            Summary created {{ data.created_at | date:'mediumDate' }}.
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-notes">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="panel-ico" aria-hidden="true">note_alt</span>
+            Doctor notes
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="block-title">Diagnosis</div>
+          <div class="block-text" [class.muted]="!data.diagnosis">
+            {{ data.diagnosis || 'No diagnosis was recorded.' }}
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="block-title">Clinical notes</div>
+          <div class="block-text" [class.muted]="!data.clinical_notes">
+            {{ data.clinical_notes || 'No clinical notes were recorded.' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-rx">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="panel-ico" aria-hidden="true">medication</span>
+            Prescriptions
+          </div>
+        </div>
+
+        <div *ngIf="data.prescriptions.length === 0" class="empty">
+          No prescriptions.
+        </div>
+
+        <div *ngFor="let rx of data.prescriptions" class="item">
+          <div class="item-main">
+            <div class="item-title">{{ rx.drug_name }}</div>
+            <div class="item-sub">{{ rx.dose }}</div>
+          </div>
+          <div class="item-pill">{{ rx.duration_days }} day{{ rx.duration_days !== 1 ? 's' : '' }}</div>
+        </div>
+      </div>
+
+      <div class="panel panel-tests">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="panel-ico" aria-hidden="true">science</span>
+            Tests
+          </div>
+        </div>
+
+        <div *ngIf="data.tests.length === 0" class="empty">
+          No tests requested.
+        </div>
+
+        <div *ngFor="let t of data.tests" class="chip">
+          {{ t.test_name }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

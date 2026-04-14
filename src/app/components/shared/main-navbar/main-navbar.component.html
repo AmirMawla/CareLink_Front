@@ -17,7 +17,7 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
       <a routerLink="/doctors" routerLinkActive="active">Doctors</a>
       <a routerLink="/services" routerLinkActive="active">Services</a>
-      <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a routerLink="/my-appointments" routerLinkActive="active">My Appointments</a>
       <a routerLink="/contact" routerLinkActive="active">Contact</a>
     </nav>
 
@@ -85,7 +85,7 @@
       <a routerLink="/" (click)="closeMobileMenu()">Home</a>
       <a routerLink="/doctors" (click)="closeMobileMenu()">Doctors</a>
       <a routerLink="/services" (click)="closeMobileMenu()">Services</a>
-      <a routerLink="/appointments" (click)="closeMobileMenu()">Appointments</a>
+      <a routerLink="/my-appointments" (click)="closeMobileMenu()">My Appointments</a>
       <a routerLink="/contact" (click)="closeMobileMenu()">Contact</a>
 
       @if (token) {

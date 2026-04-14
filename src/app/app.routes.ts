@@ -17,7 +17,6 @@ import {DoctorAppointments} from './components/features/doctor/doctor-appointmen
 import { HOME_ROUTES } from './components/features/home/home.routes';
 import { UserLayout } from './components/layouts/user-layout/user-layout';
 
-import { PatientAppointments} from './components/features/patient/patient-appointments/patient-appointments';
 import {AUTH_ROUTES} from './components/features/auth/auth.routes'
 
 

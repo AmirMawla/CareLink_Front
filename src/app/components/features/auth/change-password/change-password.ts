@@ -22,6 +22,8 @@ export class ChangePassword {
   private cdr = inject(ChangeDetectorRef);
   apiurl = environment.apiUrl;
   errorAPI: string = '';
+  toastMsg: string = '';
+  busy = false;
   
   
   formData: any = {
@@ -33,13 +35,18 @@ export class ChangePassword {
   changePassword() {
      const token = localStorage.getItem('token');
     if (!token) return;
+    this.toastMsg = '';
+    this.errorAPI = '';
+    this.busy = true;
     if(this.formData.newPassword.length < 8){
       this.errorAPI = 'New password must be at least 8 characters long.';
+      this.busy = false;
       this.cdr.detectChanges();
       return;
     }
     if(this.formData.newPassword !== this.formData.repeatNewPssword){
       this.errorAPI = 'New password and confirm new password do not match.';
+      this.busy = false;
       this.cdr.detectChanges();
       return;
     }
@@ -48,10 +55,18 @@ export class ChangePassword {
       .subscribe({
         next: (response) => {
           console.log(' Password changed successfully:', response);
-          this.router.navigate(['/profile']);
+          this.toastMsg = 'Password updated successfully.';
+          this.busy = false;
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.router.navigate(['/profile'], {
+              state: { toast: { type: 'success', message: 'Password updated successfully.' } },
+            });
+          }, 650);
         },
         error: (err) => {console.error(' Error changing password:', err)
         this.errorAPI = err.error.message || 'An error occurred while changing the password.';
+        this.busy = false;
         this.cdr.detectChanges();
       }});
   } 
