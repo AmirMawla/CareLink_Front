@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subject, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { BaseProfile } from '../../../models/users';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf,RouterLink],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })

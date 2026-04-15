@@ -33,6 +33,7 @@ export const HOME_ROUTES: Routes = [
     component: AppointmentSummaryComponent,
     title: 'Appointment summary | CareLink',
   },
+  /*
   {
     path : 'auth/ChangePassword',
     component : ChangePassword
@@ -41,4 +42,5 @@ export const HOME_ROUTES: Routes = [
     path : 'auth/profile',
     component : Profile
   },
+  */
 ];

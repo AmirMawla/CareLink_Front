@@ -26,6 +26,7 @@
 /* ====================== Profile Component ====================== */
 .profile-container {
   padding: 24px 16px;
+  padding-top: 90px;
   max-width: 820px;
   margin: 0 auto;
   background-color: var(--surface);
