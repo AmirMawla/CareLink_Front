@@ -12,50 +12,33 @@
     <form (ngSubmit)="login()">
       <div class="form-group">
         <label for="username">username</label>
-        <input 
-          type="text" 
-          id="username" 
-          name="username" 
-          [(ngModel)]="username" 
-          placeholder="enter username"
-          required
+        <input type="text" id="username" name="username" [(ngModel)]="username" placeholder="enter username" required
           [disabled]="isLoading">
       </div>
 
       <div class="form-group">
         <label for="password">password </label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          [(ngModel)]="password" 
-          placeholder="enter your password  "
-          required
-          [disabled]="isLoading">
+        <input type="password" id="password" name="password" [(ngModel)]="password" placeholder="enter your password  "
+          required [disabled]="isLoading">
+        <div>
+          <a [class.disabled]="isLoading" [style.pointer-events]="isLoading ? 'none' : 'auto'"
+            [style.opacity]="isLoading ? '0.5' : '1'" href="/auth/reset-password">
+            forgot your password? click here
+          </a>
+        </div>
       </div>
+
 
       <button type="submit" class="btn-primary" [disabled]="isLoading">
         <span *ngIf="!isLoading">login </span>
         <span *ngIf="isLoading" class="loader-text">loading ...</span>
       </button>
     </form>
-    <div>
-    <a 
-      [class.disabled]="isLoading" 
-      [style.pointer-events]="isLoading ? 'none' : 'auto'"
-      [style.opacity]="isLoading ? '0.5' : '1'"
-      href="/auth/register">
-      Create user
-    </a> 
+    <div style="width: 100%;">
+      <button type="button" class="btn-secondary" [disabled]="isLoading" routerLink="/auth/register">
+        Create user
+      </button>
     </div>
-    <div>
-    <a 
-      [class.disabled]="isLoading" 
-      [style.pointer-events]="isLoading ? 'none' : 'auto'"
-      [style.opacity]="isLoading ? '0.5' : '1'"
-      href="/auth/reset-password">
-      forgot your password? click here
-    </a> 
-    </div>  
+
   </div>
 </div>
