@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router'; 
 import { environment } from '../../../../../environments/environment.development';
 import {BaseProfile,DoctorProfile,PatientProfile,ReceptionistProfile,AdminProfile} from '../../../../models/users'
+import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 
 export type ProfileResponse = 
   | DoctorProfile 
@@ -14,7 +15,7 @@ export type ProfileResponse =
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule,NavbarComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
