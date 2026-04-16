@@ -210,3 +210,7 @@
         transform: translateY(0);
     }
 }
+
+.red {
+    background-color: red;
+}
