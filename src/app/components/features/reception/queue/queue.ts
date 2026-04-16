@@ -43,18 +43,4 @@ private cdr = inject(ChangeDetectorRef);
     });
   }
 
-  updateStatus(id: number, status: 'CHECKED_IN' | 'NO_SHOW'): void {
-    this.receptionService.updateStatus(id, status).subscribe({
-      next: () => {
-      alert(`Status updated to ${status.replace('_', ' ')} successfully.`);
-      this.loadQueue();
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error('Update failed', err);
-      alert('Could not update status. Please try again.');
-      this.cdr.detectChanges();
-    }
-    });
-  }
 }
