@@ -344,3 +344,18 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-reschedule {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3B82F6;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.btn-reschedule:hover { background: rgba(59, 130, 246, 0.18); }
+.btn-reschedule:disabled { opacity: 0.6; cursor: not-allowed; }

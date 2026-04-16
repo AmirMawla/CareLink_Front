@@ -13,7 +13,9 @@ export class AdminService {
   // --- User Management ---
   getUsers(params: any): Observable<any> {
     let httpParams = new HttpParams();
-    Object.keys(params).forEach(key => { if (params[key]) httpParams = httpParams.set(key, params[key]); });
+    Object.keys(params).forEach((key) => {
+      if (params[key]) httpParams = httpParams.set(key, params[key]);
+    });
     return this.http.get(`${this.baseUrl}/users/`, { params: httpParams });
   }
 
@@ -27,33 +29,48 @@ export class AdminService {
   }
 
   // --- Analytics ---
-  getOverview(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/overview/`); }
-  getUserStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/users/`); }
+  getOverview(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/overview/`);
+  }
+  getUserStats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/users/`);
+  }
   getDoctorStats(params?: any): Observable<any> {
     let p = new HttpParams();
     if (params?.doctor_id) p = p.set('doctor_id', params.doctor_id);
     if (params?.specialty) p = p.set('specialty', params.specialty);
     return this.http.get(`${this.baseUrl}/analytics/doctors/`, { params: p });
   }
-  getPatientStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/patients/`); }
+  getPatientStats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/patients/`);
+  }
   getAppointmentStats(doctor_id?: number): Observable<any> {
     const params = doctor_id ? { params: new HttpParams().set('doctor_id', doctor_id) } : {};
     return this.http.get(`${this.baseUrl}/analytics/appointments/`, params);
   }
-  getConsultationStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/consultations/`); }
-  getSchedulingStats(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/scheduling/`); }
-  getAuditTrail(): Observable<any> { return this.http.get(`${this.baseUrl}/analytics/audit_trail/`); }
+  getConsultationStats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/consultations/`);
+  }
+  getSchedulingStats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/scheduling/`);
+  }
+  getAuditTrail(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/analytics/audit_trail/`);
+  }
 
+  getAppointmentAuditLogs(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/api/appointments/admin/audit-logs/`);
+  }
 
   downloadReport(endpoint: string, params: any): Observable<Blob> {
     let httpParams = new HttpParams();
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       if (params[key]) httpParams = httpParams.set(key, params[key]);
     });
 
     return this.http.get(`${this.baseUrl}/reports/${endpoint}/`, {
       params: httpParams,
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 }

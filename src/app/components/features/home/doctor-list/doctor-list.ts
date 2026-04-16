@@ -39,8 +39,9 @@ export class DoctorList implements OnInit {
     if (next > 0) this.currentPage.set(next);
   }
 
-  navigateToDoctor(doc: { doctor_profile_id?: number | null }) {
-    const pid = doc.doctor_profile_id;
+  navigateToDoctor(doc: any) {
+    // Uses the main ID from the new serializer format
+    const pid = doc.id;
     if (pid == null) {
       return;
     }
