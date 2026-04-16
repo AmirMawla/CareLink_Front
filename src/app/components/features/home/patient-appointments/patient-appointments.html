@@ -46,21 +46,17 @@
       <div class="controls">
         <div class="search">
           <span class="material-icons" aria-hidden="true">search</span>
-          <input
-            type="text"
-            placeholder="Search doctor name or appointment #ID"
-            [(ngModel)]="searchQuery"
-          />
+          <input type="text" placeholder="Search doctor name or appointment #ID" [(ngModel)]="searchQuery" />
         </div>
         <div class="filter-bar">
           <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()">
-          <option value="">All Statuses</option>
-          <option value="REQUESTED">Requested</option>
-          <option value="CONFIRMED">Confirmed</option>
-          <option value="CHECKED_IN">Checked In</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="CANCELLED">Cancelled</option>
-          <option value="NO_SHOW">No Show</option>
+            <option value="">All Statuses</option>
+            <option value="REQUESTED">Requested</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="CHECKED_IN">Checked In</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="NO_SHOW">No Show</option>
           </select>
         </div>
       </div>
@@ -95,24 +91,22 @@
 
         <div class="card-right">
           <span class="status-badge" [style.background]="getStatusColor(appointment.status) + '20'"
-                [style.color]="getStatusColor(appointment.status)">
+            [style.color]="getStatusColor(appointment.status)">
             {{ statusLabel(appointment.status) }}
           </span>
 
-          <button
-            *ngIf="canCancel(appointment.status)"
-            class="btn-cancel"
-            type="button"
-            [disabled]="cancelBusyId === appointment.id"
-            (click)="cancelAppointment(appointment)"
-          >
+          <button *ngIf="canCancel(appointment.status)" class="btn-cancel" type="button"
+            [disabled]="cancelBusyId === appointment.id" (click)="cancelAppointment(appointment)">
             {{ cancelBusyId === appointment.id ? 'Cancelling…' : 'Cancel' }}
           </button>
 
-          <a *ngIf="hasSummary(appointment)"
-             [routerLink]="['/patient/history', appointment.id]"
-             class="btn-view">
-             Summary
+          <button *ngIf="canCancel(appointment.status)" class="btn-reschedule" type="button"
+            [disabled]="rescheduleBusyId === appointment.id" (click)="rescheduleAppointment(appointment)">
+            {{ rescheduleBusyId === appointment.id ? 'Requesting...' : 'Reschedule' }}
+          </button>
+
+          <a *ngIf="hasSummary(appointment)" [routerLink]="['/patient/history', appointment.id]" class="btn-view">
+            Summary
           </a>
         </div>
       </div>

@@ -45,6 +45,7 @@ export class PatientAppointments implements OnInit {
   error = '';
   toast = '';
   cancelBusyId: number | null = null;
+  rescheduleBusyId: number | null = null;
   count = 0;
   nextPage: string | null = null;
   prevPage: string | null = null;
@@ -196,6 +197,39 @@ export class PatientAppointments implements OnInit {
       },
     });
   }
+
+  rescheduleAppointment(a: Appointment): void {
+  const newDate = prompt('Enter new date and time (YYYY-MM-DD HH:MM):');
+  if (!newDate) return;
+
+  const reason = prompt('Reason for rescheduling (optional):') || 'Patient requested via dashboard';
+  
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  this.rescheduleBusyId = a.id;
+  this.toast = '';
+  this.cdr.detectChanges();
+
+  const headers = new HttpHeaders({ 'Authorization': `Token ${token}` });
+  const url = `${environment.apiUrl}/api/appointments/appointment/${a.id}/reschedule/request/`;
+  
+  // Format the date to ISO for the backend
+  const isoDate = new Date(newDate).toISOString();
+
+  this.http.post(url, { proposed_datetime: isoDate, reason: reason }, { headers }).subscribe({
+    next: () => {
+      this.toast = 'Reschedule request sent to receptionist.';
+      this.rescheduleBusyId = null;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      this.toast = err?.error?.message || 'Could not request reschedule.';
+      this.rescheduleBusyId = null;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {

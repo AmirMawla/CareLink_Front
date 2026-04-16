@@ -8,19 +8,35 @@
         <div class="search-box">
             <span class="material-icons">search</span>
             <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearch($event)"
-                placeholder="Search by name...">
+                placeholder="Search by name or specialty...">
         </div>
     </header>
 
     <div class="grid-layout" *ngIf="homeService.doctorList().length > 0; else empty">
         <div class="doc-card" *ngFor="let doc of homeService.doctorList()" (click)="navigateToDoctor(doc)">
             <div class="doc-img-wrapper">
-                <div class="doc-placeholder"><span class="material-icons">person</span></div>
+                <img class="doc-img"
+                    [src]="doc.profile_picture ? doc.profile_picture : '/default-doctor.png'"
+                    alt="Dr. {{ doc.first_name }} {{ doc.last_name }}"
+                    onerror="this.src='/default-doctor.png'">
+
                 <div class="availability-tag">Available</div>
             </div>
             <div class="doc-content">
-                <h4>{{ doc.full_name }}</h4>
-                <span class="doc-role">{{ doc.role_display }}</span>
+                <h4>Dr. {{ doc.first_name }} {{ doc.last_name }}</h4>
+                <span class="doc-role">{{ doc.specialty_display }}</span>
+
+                <div class="doc-details">
+                    <div class="detail-item">
+                        <span class="material-icons">schedule</span>
+                        <span>{{ doc.session_duration }} Min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="material-icons">payments</span>
+                        <span>{{ doc.session_price }} EGP</span>
+                    </div>
+                </div>
+
                 <div class="doc-meta">
                     <span class="material-icons">verified_user</span>
                     <small>CareLink Verified</small>
@@ -43,7 +59,7 @@
             <span class="material-icons">west</span> Previous
         </button>
         <span class="page-info">Page {{ currentPage() }}</span>
-        <button class="btn-page" [disabled]="homeService.doctorList().length < 6" (click)="changePage(1)">
+        <button class="btn-page" [disabled]="homeService.doctorList().length < 9" (click)="changePage(1)">
             Next <span class="material-icons">east</span>
         </button>
     </footer>

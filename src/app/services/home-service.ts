@@ -14,7 +14,7 @@ export class HomeService {
   stats = signal<any>(null);
   doctorStats = signal<any>(null);
 
-  // 2. Home Carousel (Fixed: Dedicated signal)
+  // 2. Home Carousel
   homeDoctors = signal<any[]>([]);
 
   // 3. Search Page List
@@ -30,11 +30,11 @@ export class HomeService {
       .get(`${this.baseUrl}/analytics/doctors/`)
       .subscribe((data) => this.doctorStats.set(data));
 
-    // Homepage Carousel Fetch (Stays at Page 1, No Search)
-    const params = new HttpParams().set('role', 'DOCTOR').set('is_active', 'true').set('page', '1');
+    // Homepage Carousel Fetch (Updated to use the new /doctors/ endpoint)
+    const params = new HttpParams().set('page', '1');
 
     this.http
-      .get(`${this.baseUrl}/users/`, { params })
+      .get(`${this.baseUrl}/doctors/`, { params })
       .pipe(
         tap((res: any) => this.homeDoctors.set(res.results)),
         finalize(() => this.loading.set(false)),
@@ -42,17 +42,16 @@ export class HomeService {
       .subscribe();
   }
 
-  // Listing Page Fetch (Independent)
+  // Listing Page Fetch (Updated to use the new /doctors/ endpoint)
   fetchDoctors(page: number, search: string = '') {
     this.loading.set(true);
-    let params = new HttpParams()
-      .set('role', 'DOCTOR')
-      .set('is_active', 'true')
-      .set('page', page.toString());
+
+    // Removed role and is_active since the new viewset handles this automatically
+    let params = new HttpParams().set('page', page.toString());
 
     if (search) params = params.set('search', search);
 
-    return this.http.get(`${this.baseUrl}/users/`, { params }).pipe(
+    return this.http.get(`${this.baseUrl}/doctors/`, { params }).pipe(
       tap((res: any) => {
         this.doctorList.set(res.results);
         this.totalDoctors.set(res.count);

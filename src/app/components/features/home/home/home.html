@@ -12,7 +12,7 @@
         digital.
       </p>
       <div class="hero-btns">
-        <button class="btn-primary">Find a Doctor</button>
+        <button class="btn-primary" routerLink="/doctors">Find a Doctor</button>
         <button class="btn-outline">Watch Demo</button>
       </div>
     </div>
@@ -24,10 +24,7 @@
           <small>Online Sessions</small>
         </div>
       </div>
-      <!-- <div class="placeholder-img hero-img"> -->
-        <!-- <span class="material-icons">medical_services</span> -->
-         <img class="placeholder-img hero-img" src="/home/hero.png" alt="hero image">
-      <!-- </div> -->
+      <img class="placeholder-img hero-img" src="/home/hero.png" alt="hero image">
     </div>
   </section>
 
@@ -97,25 +94,35 @@
         <h2>Our Expert Doctors</h2>
         <p>Meet our highly qualified medical professionals ready to help you.</p>
       </div>
-      <button class="btn-outline-sm">View All Specialists</button>
+      <button class="btn-outline-sm" routerLink="/doctors">View All Specialists</button>
     </div>
 
-    <div class="doctor-carousel">
-      <div class="doc-card" *ngFor="let doc of homeService.homeDoctors()" (click)="navigateToDoctor(doc)">
-        <div class="doc-img-wrapper">
-          <div class="doc-placeholder">
-            <span class="material-icons">person</span>
+    <div class="doctor-carousel-wrapper">
+      <div class="doctor-carousel-content">
+        <div class="doc-card" *ngFor="let doc of [...homeService.homeDoctors(), ...homeService.homeDoctors()]">
+          <div class="doc-img-wrapper">
+            <img class="doc-img"
+              [src]="doc.profile_picture ? doc.profile_picture : '/default-doctor.png'"
+              alt="Dr. {{ doc.first_name }} {{ doc.last_name }}" onerror="this.src='/default-doctor.png'">
+            <div class="availability-tag">Available Now</div>
           </div>
-          <div class="availability-tag">Available Now</div>
-        </div>
-        <div class="doc-content">
-          <h4>{{ doc.full_name }}</h4>
-          <span class="doc-role">{{ doc.role_display }}</span>
-          <div class="doc-meta">
-            <span class="material-icons">event_available</span>
-            <small>Joined {{ doc.date_joined | date:'MMM yyyy' }}</small>
+          <div class="doc-content">
+            <h4>Dr. {{ doc.first_name }} {{ doc.last_name }}</h4>
+            <span class="doc-role">{{ doc.specialty_display }}</span>
+
+            <div class="doc-details">
+              <div class="detail-item">
+                <span class="material-icons">schedule</span>
+                <span>{{ doc.session_duration }} Min</span>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">payments</span>
+                <span>{{ doc.session_price }} EGP</span>
+              </div>
+            </div>
+
+            <button class="btn-book-sm" (click)="navigateToDoctor(doc)">Book Appointment</button>
           </div>
-          <button class="btn-book-sm">View Profile</button>
         </div>
       </div>
     </div>
@@ -140,7 +147,7 @@
     <div class="cta-box">
       <h2>Ready to take control of your health?</h2>
       <p>Join thousands of users who have simplified their medical journey.</p>
-      <button class="btn-white">Create Free Account</button>
+      <button class="btn-white" routerLink="/doctors">Find Your Doctor</button>
     </div>
   </section>
 </main>
