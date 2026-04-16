@@ -176,3 +176,30 @@
 .form-group label {
   text-align: left;
 }
+.btn-secondary {
+  display: block !important;       /* بيجبر الزرار ياخد سطر لوحده */
+  width: 100% !important;          /* بيفرد الزرار بعرض الكارت */
+  box-sizing: border-box;          /* بيمنع الزرار يخرج بره الكارت */
+  text-align: center !important;   /* بيسنتر الكلمة في النص */
+  padding: 14px;
+  background-color: var(--primary-light); 
+  color: var(--primary);                
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  text-decoration: none;           /* عشان يشيل الخط اللي تحت اللينك */
+}
+
+.btn-secondary:hover:not(.disabled) {
+  background-color: #cde4ff;
+  filter: brightness(0.95);
+}
+
+.btn-secondary.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

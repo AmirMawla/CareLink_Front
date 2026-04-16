@@ -102,3 +102,94 @@
   color: #94a3b8;
   font-style: italic;
 }
+/* حاوية الأزرار داخل الخلية */
+.luxury-table td:last-child {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* الزرار الأساسي (Check In) */
+.btn-checkin {
+  background-color: #0f172a; /* لون كحلي غامق فخم */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-checkin:hover {
+  background-color: #334155;
+  transform: translateY(-1px);
+}
+
+/* زرار الإلغاء أو No Show (Outline) */
+.btn-noshow, .btn-cancel {
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-noshow:hover, .btn-cancel:hover {
+  background-color: #fef2f2;
+}
+
+/* حالة الـ Loading أو الأزرار المعطلة */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* زرار التأكيد - Confirm */
+.btn-confirm {
+  background-color: #059669; /* أخضر زمردي فخم */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-confirm:hover {
+  background-color: #047857;
+  transform: translateY(-1px);
+}
+.requested {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+/* نص "في العيادة" أو "In Clinic" */
+.text-active {
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+/* نص الحالات المنتهية */
+.text-finished {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* إضافة أيقونة بسيطة قبل حالة النشاط (اختياري) */
+.text-active::before {
+  content: '●';
+  margin-right: 6px;
+  font-size: 10px;
+  color: #3b82f6;
+}

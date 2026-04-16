@@ -15,7 +15,6 @@
           <th>Time</th>
           <th>Wait Time</th>
           <th>Status</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -33,13 +32,6 @@
             <span class="status-badge" [ngClass]="appt.status.toLowerCase()">
               {{ appt.status.replace('_', ' ') }}
             </span>
-          </td>
-          <td class="action-cells">
-            <button *ngIf="appt.status === 'CONFIRMED'" (click)="updateStatus(appt.id, 'CHECKED_IN')"
-              class="btn-primary">Check In</button>
-
-            <button *ngIf="['CONFIRMED', 'CHECKED_IN'].includes(appt.status)" (click)="updateStatus(appt.id, 'NO_SHOW')"
-              class="btn-outline-danger">No Show</button>
           </td>
         </tr>
       </tbody>
