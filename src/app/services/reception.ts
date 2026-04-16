@@ -29,8 +29,8 @@ export class Reception {
     );
   }
 
-  updateStatus(id: number, status: AppointmentStatus): Observable<unknown> {
-    return this.http.post(
+  updateAppointmentStatus(id: number, status: string): Observable<any> {
+    return this.http.post<any>(
       this.api.resolve(`/api/appointments/reception/appointment/${id}/status/`),
       { status }
     );

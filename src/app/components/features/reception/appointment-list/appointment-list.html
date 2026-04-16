@@ -22,6 +22,7 @@
 
       <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="form-control">
         <option value="">All Statuses</option>
+        <option value="REQUESTED">Requested</option>
         <option value="CONFIRMED">Confirmed</option>
         <option value="COMPLETED">Completed</option>
         <option value="CHECKED_IN">Checked In</option>
@@ -40,6 +41,7 @@
           <th>Date</th>
           <th>Time</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -50,7 +52,34 @@
           <td>{{ appt.scheduled_datetime | date:'shortTime' }}</td>
           <td>
             <span class="status-badge" [ngClass]="appt.status.toLowerCase()">
-              {{ appt.status }}
+              {{ appt.status.replace('_', ' ') }}
+            </span>
+          </td>
+          <td class="action-cells">
+            <ng-container *ngIf="appt.status === 'REQUESTED'">
+              <button (click)="updateStatus(appt.id, 'CONFIRMED')" class="btn-confirm">
+                Confirm
+              </button>
+              <button (click)="updateStatus(appt.id, 'CANCELLED')" class="btn-cancel">
+                Cancel
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="appt.status === 'CONFIRMED'">
+              <button (click)="updateStatus(appt.id, 'CHECKED_IN')" class="btn-checkin">
+                Check In
+              </button>
+              <button (click)="updateStatus(appt.id, 'NO_SHOW')" class="btn-noshow">
+                No Show
+              </button>
+              <button (click)="updateStatus(appt.id, 'CANCELLED')" class="btn-cancel">
+                Cancel
+              </button>
+            </ng-container>
+
+            <span *ngIf="appt.status === 'CHECKED_IN'" class="text-active">In Clinic</span>
+            <span *ngIf="['COMPLETED', 'CANCELLED', 'NO_SHOW'].includes(appt.status)" class="text-finished">
+              Finalized
             </span>
           </td>
         </tr>

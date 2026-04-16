@@ -66,4 +66,21 @@ private cdr = inject(ChangeDetectorRef);
     this.loadAppointments();
     this.cdr.detectChanges();
   }
+
+updateStatus(appointmentId: number, newStatus: string): void {
+  if (!confirm(`Are you sure you want to change status to ${newStatus}?`)) return;
+
+  this.loading = true;
+  this.receptionService.updateAppointmentStatus(appointmentId, newStatus).subscribe({
+    next: (response) => {
+      this.loadAppointments();
+      alert(response.message);
+    },
+    error: (err) => {
+      console.error('Update failed', err);
+      alert('Failed to update status: ' + (err.error?.message || 'Unknown error'));
+      this.loading = false;
+    }
+  });
+}
 }
