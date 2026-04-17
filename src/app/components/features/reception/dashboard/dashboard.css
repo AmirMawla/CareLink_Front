@@ -1,7 +1,6 @@
-.dashboard-wrapper {
+/* .dashboard-wrapper {
   padding: 40px;
   background-color: #f0f4f8;
-  /* خلفية أغمق شوية عشان الكروت البيضاء تنطق */
   min-height: 100vh;
 }
 
@@ -9,40 +8,32 @@
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
-  /* كبرنا المسافة بين الكروت */
   width: 100%;
 }
 
 .stat-card {
   flex: 1;
   min-width: 300px;
-  /* كبرنا أقل عرض للكارت */
   height: 160px;
-  /* ثبتنا طول الكارت عشان يبقى فخم */
   background: #ffffff;
   padding: 25px;
   border-radius: 24px;
-  /* زوايا دائرية أكتر */
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  /* عشان الحركة تكون ناعمة */
   cursor: pointer;
   position: relative;
   overflow: hidden;
   border: none;
 }
 
-/* تأثير عند الوقوف بالماوس */
 .stat-card:hover {
   transform: translateY(-10px);
-  /* الكارت يترفع لفوق */
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-/* خلفية ملونة خفيفة ورا كل كارت عشان الشكل */
 .stat-card::after {
   content: '';
   position: absolute;
@@ -56,7 +47,6 @@
 
 .stat-icon {
   width: 70px;
-  /* كبرنا الأيقونة */
   height: 70px;
   border-radius: 20px;
   display: flex;
@@ -66,7 +56,6 @@
   z-index: 1;
 }
 
-/* ألوان استايلات الـ Luxury */
 .bookings {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -84,7 +73,6 @@
 
 .stat-details {
   text-align: right;
-  /* عشان المحتوى العربي أو التنسيق يظبط */
   z-index: 1;
 }
 
@@ -99,7 +87,6 @@
 .stat-value {
   margin: 0;
   font-size: 2.5rem;
-  /* كبرنا الرقم جداً */
   color: #1a202c;
   font-weight: 800;
   letter-spacing: -1px;
@@ -142,4 +129,68 @@
 .completed {
   background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
   color: white;
+} */
+.stats-container {
+  display: grid;
+  /* تقسيم الصف لـ 3 أعمدة متساوية */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px; /* مسافة أكبر قليلاً لشكل أنظف */
+  width: 100%;
+}
+
+/* للموبايل: نخليهم تحت بعض */
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0; /* حدود أرقّ */
+  border-radius: 16px; /* زوايا أنعم */
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  /* ظل خفيف جداً يخلي الكارت "طاير" */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px); /* رفعة بسيطة عند الهوفر */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b; /* لون Slate هادئ */
+  letter-spacing: 0.025em;
+  text-transform: capitalize; /* شكل احترافي أكتر من Upper */
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700; /* خط أسمك للرقم الأساسي */
+  letter-spacing: -0.02em;
+  margin: 4px 0;
+}
+
+.progress-track {
+  height: 6px; /* أتخن شوية عشان تبان */
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.prog-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
 }
