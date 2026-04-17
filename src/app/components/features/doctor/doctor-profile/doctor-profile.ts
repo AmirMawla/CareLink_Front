@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
@@ -12,10 +12,12 @@ function safeInt(value: string, fallback: number): number {
   return n;
 }
 
+type SpecialtyValue = 'CARDIOLOGY' | 'DERMATOLOGY' | 'NEUROLOGY' | 'PEDIATRICS' | 'ORTHOPEDICS' | 'GENERAL';
+
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, NgFor],
   templateUrl: './doctor-profile.html',
   styleUrls: ['./doctor-profile.css', '../doctor-appointment-detail/doctor-appointment-detail.css'],
 })
@@ -23,6 +25,18 @@ export class DoctorProfile implements OnInit, OnDestroy {
   private readonly service = inject(DoctorDashboardService);
   private readonly destroy$ = new Subject<void>();
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Keep these in sync with backend `accounts/models.py` SPECIALTY_CHOICES and SESSION_CHOICES
+  readonly specialtyOptions: ReadonlyArray<{ value: SpecialtyValue; label: string }> = [
+    { value: 'CARDIOLOGY', label: 'Cardiology' },
+    { value: 'DERMATOLOGY', label: 'Dermatology' },
+    { value: 'NEUROLOGY', label: 'Neurology' },
+    { value: 'PEDIATRICS', label: 'Pediatrics' },
+    { value: 'ORTHOPEDICS', label: 'Orthopedics' },
+    { value: 'GENERAL', label: 'General Practice' },
+  ] as const;
+
+  readonly sessionDurationOptions: ReadonlyArray<number> = [15, 30] as const;
 
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -82,7 +96,8 @@ export class DoctorProfile implements OnInit, OnDestroy {
   }
 
   onSessionDuration(value: string): void {
-    this.sessionDuration.set(Math.min(Math.max(5, safeInt(value, this.sessionDuration() || 30)), 240));
+    const n = safeInt(value, this.sessionDuration() || 30);
+    this.sessionDuration.set(n);
   }
 
   onBufferTime(value: string): void {
@@ -93,19 +108,27 @@ export class DoctorProfile implements OnInit, OnDestroy {
     this.formError.set(null);
     const session = this.sessionDuration();
     const buffer = this.bufferTime();
-    if (session < 5) {
-      this.formError.set('Session duration must be at least 5 minutes.');
-      return;
-    }
     if (buffer < 0) {
       this.formError.set('Buffer time must be 0 minutes or more.');
+      return;
+    }
+
+    const specialty = (this.specialty() || '').trim();
+    const allowedSpecialties = new Set(this.specialtyOptions.map((o) => o.value));
+    if (!allowedSpecialties.has(specialty as SpecialtyValue)) {
+      this.formError.set('Please choose a valid specialty.');
+      return;
+    }
+
+    if (!this.sessionDurationOptions.includes(session)) {
+      this.formError.set('Please choose a valid session duration.');
       return;
     }
 
     this.saving.set(true);
     this.service
       .updateLoggedInDoctor({
-        specialty: (this.specialty() || '').trim() || '',
+        specialty,
         session_duration: session,
         buffer_time: buffer,
       })

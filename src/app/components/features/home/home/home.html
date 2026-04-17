@@ -49,7 +49,16 @@
       <p>Quick access to specific medical departments</p>
     </div>
     <div class="category-grid">
-      <div class="cat-card" *ngFor="let cat of categories" [style.background]="cat.color">
+      <div
+        class="cat-card"
+        *ngFor="let cat of categories"
+        [style.background]="cat.color"
+        role="button"
+        tabindex="0"
+        (click)="browseSpecialty(cat.value)"
+        (keydown.enter)="browseSpecialty(cat.value)"
+        (keydown.space)="browseSpecialty(cat.value)"
+      >
         <span class="material-icons">{{ cat.icon }}</span>
         <h4>{{ cat.name }}</h4>
         <span class="count-tag">

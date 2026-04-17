@@ -35,6 +35,40 @@
     margin-left: 10px;
 }
 
+.active-filter {
+    margin-top: 10px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(33, 150, 243, 0.10);
+    color: var(--primary, #2196f3);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.chip-x {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(33, 150, 243, 0.15);
+    color: var(--primary, #2196f3);
+    cursor: pointer;
+    line-height: 1;
+    font-size: 16px;
+    display: grid;
+    place-items: center;
+}
+
+.chip-x:hover {
+    filter: brightness(1.05);
+}
+
 .grid-layout {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

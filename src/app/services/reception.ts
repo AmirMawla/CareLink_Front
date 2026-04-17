@@ -4,6 +4,19 @@ import { Observable } from 'rxjs';
 import { Appointment, AppointmentStatus } from '../models/appointment.model';
 import { ApiService } from './api.service';
 
+export type RescheduleRespondAction = 'APPROVE' | 'REJECT';
+
+export interface PendingRescheduleRequestRow {
+  id: number;
+  appointment: number;
+  patient_name: string;
+  current_datetime: string;
+  proposed_datetime: string;
+  reason: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | string;
+  created_at: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,6 +46,19 @@ export class Reception {
     return this.http.post(
       this.api.resolve(`/api/appointments/reception/appointment/${id}/status/`),
       { status }
+    );
+  }
+
+  getPendingRescheduleRequests(): Observable<PendingRescheduleRequestRow[]> {
+    return this.http.get<PendingRescheduleRequestRow[]>(
+      this.api.resolve('/api/appointments/reception/reschedule-requests/pending/'),
+    );
+  }
+
+  respondToRescheduleRequest(requestId: number, action: RescheduleRespondAction, note: string = ''): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      this.api.resolve(`/api/appointments/reschedule-request/${requestId}/respond/`),
+      { action, note },
     );
   }
 }

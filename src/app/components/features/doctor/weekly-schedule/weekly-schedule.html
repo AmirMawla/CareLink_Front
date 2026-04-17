@@ -32,10 +32,10 @@
 
       <div class="ws-bulk-actions d-flex align-center gap-2 flex-wrap">
         <button type="button" class="btn btn-primary" [disabled]="!canBulkApply()" (click)="bulkApplyExceptFriday()">
-          Apply Mon–Thu, Sat–Sun
+          Apply 
         </button>
         <button type="button" class="btn btn-tertiary" [disabled]="bulkBusy()" (click)="bulkDeleteExceptFriday()">
-          Clear Mon–Thu, Sat–Sun
+          Clear 
         </button>
       </div>
     </div>
@@ -63,7 +63,7 @@
             <span class="ws-range">{{ rangeLabel(d.key) }}</span>
           </div>
         </div>
-        <button type="button" class="btn btn-tertiary btn-sm" (click)="copyDayToBulk(d.key)">Copy to bulk</button>
+      
       </header>
 
       <div class="ws-day-body">

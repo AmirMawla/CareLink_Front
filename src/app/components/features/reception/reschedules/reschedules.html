@@ -1,0 +1,140 @@
+<div class="appointments-page">
+  <div class="page-hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-row">
+      <div>
+        <h1>Reschedule Requests</h1>
+        <p class="hero-sub">Pending requests for your assigned doctor.</p>
+      </div>
+      <div class="hero-stats" aria-label="Quick stats">
+        <div class="hero-stat">
+          <span class="hero-stat__label">Pending</span>
+          <span class="hero-stat__value">{{ items.length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="rs-toolbar">
+      <div class="rs-search" role="search">
+        <span class="material-icons rs-search-ic" aria-hidden="true">search</span>
+        <input
+          class="rs-search-input"
+          type="text"
+          placeholder="Search patient, appointment #, request #, reason…"
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <div class="rs-filters" aria-label="Filters">
+        <label class="rs-filter">
+          <span class="rs-filter-label">Proposed date</span>
+          <input class="rs-filter-input" type="date" [(ngModel)]="proposedDate" />
+        </label>
+        <label class="rs-filter">
+          <span class="rs-filter-label">Sort</span>
+          <select class="rs-filter-input" [(ngModel)]="sortBy">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="proposed_soonest">Proposed soonest</option>
+            <option value="proposed_latest">Proposed latest</option>
+          </select>
+        </label>
+      </div>
+      <button class="rs-btn rs-btn--ghost" type="button" (click)="load()" [disabled]="loading">
+        <span class="material-icons" aria-hidden="true">refresh</span>
+        Refresh
+      </button>
+    </div>
+
+    <div *ngIf="toast" class="toast" role="status">{{ toast }}</div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading reschedule requests...</p>
+    </div>
+
+    <div *ngIf="!loading && error" class="error-state" role="alert">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!loading && !error && filteredItems().length === 0" class="empty-state">
+      <div class="icon">📅</div>
+      <h3>No matches</h3>
+      <p>Try a different search or refresh.</p>
+    </div>
+
+    <div *ngFor="let r of filteredItems(); trackBy: trackByRequestId" class="rs-card">
+      <div class="rs-top">
+        <div class="rs-id">
+          <span class="rs-pill">Request #{{ r.id }}</span>
+          <span class="rs-muted">Created {{ formatLocal(r.created_at) }}</span>
+        </div>
+        <div class="rs-appt">Appointment #{{ r.appointment }}</div>
+      </div>
+
+      <div class="rs-main">
+        <div class="rs-left">
+          <div class="rs-avatar" aria-hidden="true">{{ initials(r.patient_name) }}</div>
+          <div>
+            <div class="rs-name">{{ r.patient_name }}</div>
+            <div class="rs-sub">Patient reschedule request</div>
+          </div>
+        </div>
+
+        <div class="rs-timeline" aria-label="Reschedule timeline">
+          <div class="rs-time">
+            <div class="rs-time-label">Current</div>
+            <div class="rs-time-value">{{ formatLocal(r.current_datetime) }}</div>
+          </div>
+          <div class="rs-arrow" aria-hidden="true">
+            <span class="material-icons">trending_flat</span>
+          </div>
+          <div class="rs-time rs-time--proposed">
+            <div class="rs-time-label">Proposed</div>
+            <div class="rs-time-value">{{ formatLocal(r.proposed_datetime) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rs-extra" *ngIf="r.reason">
+        <span class="rs-extra-label">Reason</span>
+        <span class="rs-extra-value">{{ r.reason }}</span>
+      </div>
+
+      <div class="rs-actions">
+        <label class="rs-note">
+          <span class="rs-note-label">Response note (optional)</span>
+          <textarea
+            rows="2"
+            class="rs-note-input"
+            [ngModel]="noteFor(r)"
+            (ngModelChange)="setNote(r, $event)"
+            placeholder="Optional note saved with approve/reject"
+          ></textarea>
+        </label>
+        <div class="rs-buttons">
+          <button
+            type="button"
+            class="rs-btn rs-btn--approve"
+            [disabled]="busyRequestId === r.id"
+            (click)="respond(r, 'APPROVE')"
+          >
+            <span class="material-icons" aria-hidden="true">check</span>
+            {{ busyRequestId === r.id ? 'Working…' : 'Approve' }}
+          </button>
+          <button
+            type="button"
+            class="rs-btn rs-btn--reject"
+            [disabled]="busyRequestId === r.id"
+            (click)="respond(r, 'REJECT')"
+          >
+            <span class="material-icons" aria-hidden="true">close</span>
+            {{ busyRequestId === r.id ? 'Working…' : 'Reject' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
