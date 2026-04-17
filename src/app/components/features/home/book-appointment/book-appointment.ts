@@ -95,6 +95,9 @@ export class BookAppointmentComponent implements OnInit {
   readonly error = signal('');
   readonly needsAuth = signal(false);
 
+  readonly rescheduleOfAppointmentId = signal<number | null>(null);
+  readonly rescheduleNotes = signal('');
+
   filterMode = signal<'range' | 'date'>('date');
   daysAhead = signal(3);
   singleDate = signal('');
@@ -121,6 +124,8 @@ export class BookAppointmentComponent implements OnInit {
     return doc.username ? `Dr. ${doc.username}` : 'Doctor';
   });
 
+  readonly isRescheduleMode = computed(() => this.rescheduleOfAppointmentId() != null);
+
   readonly initials = computed(() => {
     const doc = this.details()?.doctor;
     if (!doc) return '—';
@@ -145,6 +150,15 @@ export class BookAppointmentComponent implements OnInit {
     }
     this.doctorId.set(id);
     this.singleDate.set(this.minDateStr());
+
+    const rescheduleOfRaw = (this.route.snapshot.queryParamMap.get('rescheduleOf') || '').trim();
+    if (rescheduleOfRaw) {
+      const apptId = parseInt(rescheduleOfRaw, 10);
+      if (!Number.isNaN(apptId) && apptId > 0) {
+        this.rescheduleOfAppointmentId.set(apptId);
+      }
+    }
+
     const token = localStorage.getItem('token');
     if (!token) {
       this.needsAuth.set(true);
@@ -159,7 +173,8 @@ export class BookAppointmentComponent implements OnInit {
 
   formatTime(iso: string): string {
     const d = new Date(iso);
-    return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    if (!Number.isFinite(d.getTime())) return iso;
+    return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
   }
 
   formatDateTime(iso: string): string {
@@ -195,6 +210,31 @@ export class BookAppointmentComponent implements OnInit {
     this.booking.set(true);
     this.bookError.set('');
     const headers = new HttpHeaders({ Authorization: `Token ${token}` });
+
+    const rescheduleOf = this.rescheduleOfAppointmentId();
+    if (rescheduleOf != null) {
+      const url = this.api.resolve(`/api/appointments/appointment/${rescheduleOf}/reschedule/request/`);
+      const reason = (this.rescheduleNotes() || '').trim() || 'Patient requested reschedule';
+      this.http
+        .post<{ message?: string }>(url, {
+          proposed_datetime: slot,
+          reason,
+        }, { headers })
+        .subscribe({
+          next: () => {
+            this.booking.set(false);
+            this.bookSuccess.set(true);
+            this.confirmOpen.set(false);
+            this.loadDetails();
+          },
+          error: (err) => {
+            this.booking.set(false);
+            this.bookError.set(err?.error?.message || 'Could not request reschedule. Try another time.');
+          },
+        });
+      return;
+    }
+
     const url = this.api.resolve(`/api/appointments/book/${doctorId}`);
     this.http
       .post<{ message?: string; appointment?: { id: number } }>(url, {
@@ -280,6 +320,11 @@ export class BookAppointmentComponent implements OnInit {
       params = params.set('days', String(Math.max(1, Math.min(365, this.daysAhead()))));
     }
 
+    const ex = this.rescheduleOfAppointmentId();
+    if (ex != null) {
+      params = params.set('reschedule_appointment_id', String(ex));
+    }
+
     this.loading.set(true);
     this.error.set('');
     const url = this.api.resolve(`/api/appointments/doctor/${id}`);
@@ -303,18 +348,14 @@ export class BookAppointmentComponent implements OnInit {
   private groupSlotsByLocalDay(slots: string[]): SlotDayGroup[] {
     const map = new Map<string, { order: number; slots: string[] }>();
     for (const iso of slots) {
-      const d = new Date(iso);
-      const y = d.getFullYear();
-      const mo = String(d.getMonth() + 1).padStart(2, '0');
-      const da = String(d.getDate()).padStart(2, '0');
-      const key = `${y}-${mo}-${da}`;
-      const order = d.getTime();
+      const key = String(iso).slice(0, 10);
+      const order = key;
       if (!map.has(key)) {
-        map.set(key, { order, slots: [] });
+        map.set(key, { order: 0, slots: [] });
       }
       map.get(key)!.slots.push(iso);
     }
-    const entries = [...map.entries()].sort((a, b) => a[1].order - b[1].order);
+    const entries = [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
     return entries.map(([dateKey, v]) => ({
       dateKey,
       label: this.formatDayHeading(dateKey),
@@ -323,8 +364,7 @@ export class BookAppointmentComponent implements OnInit {
   }
 
   private formatDayHeading(dateKey: string): string {
-    const [y, m, d] = dateKey.split('-').map(Number);
-    const dt = new Date(y, m - 1, d);
+    const dt = new Date(dateKey + 'T00:00:00');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const cmp = new Date(dt);

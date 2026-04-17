@@ -42,14 +42,13 @@ export class HomeService {
       .subscribe();
   }
 
-  // Listing Page Fetch (Updated to use the new /doctors/ endpoint)
-  fetchDoctors(page: number, search: string = '') {
+  fetchDoctors(page: number, search: string = '', specialty: string = '') {
     this.loading.set(true);
 
-    // Removed role and is_active since the new viewset handles this automatically
     let params = new HttpParams().set('page', page.toString());
 
     if (search) params = params.set('search', search);
+    if (specialty) params = params.set('specialty', specialty);
 
     return this.http.get(`${this.baseUrl}/doctors/`, { params }).pipe(
       tap((res: any) => {

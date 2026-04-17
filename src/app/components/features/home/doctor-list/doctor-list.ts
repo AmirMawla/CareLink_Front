@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HomeService } from '../../../../services/home-service';
 
 @Component({
@@ -14,24 +14,40 @@ import { HomeService } from '../../../../services/home-service';
 export class DoctorList implements OnInit {
   homeService = inject(HomeService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   searchQuery = signal<string>('');
+  specialty = signal<string>('');
   currentPage = signal<number>(1);
 
   constructor() {
     effect(
       () => {
-        this.homeService.fetchDoctors(this.currentPage(), this.searchQuery()).subscribe();
+        this.homeService.fetchDoctors(this.currentPage(), this.searchQuery(), this.specialty()).subscribe();
       },
       { allowSignalWrites: true },
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.queryParamMap.subscribe((p) => {
+      const s = (p.get('specialty') || '').trim();
+      this.specialty.set(s);
+      this.currentPage.set(1);
+    });
+  }
 
   onSearch(query: string) {
     this.currentPage.set(1);
     this.searchQuery.set(query);
+  }
+
+  clearSpecialty(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { specialty: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   changePage(delta: number) {

@@ -13,9 +13,9 @@
     </section>
   } @else {
     <div class="book-back">
-      <a routerLink="/doctors" class="book-back-link">
+      <a routerLink="/my-appointments" class="book-back-link">
         <span class="material-icons" aria-hidden="true">arrow_back</span>
-        All specialists
+        My Appointments
       </a>
     </div>
 
@@ -27,8 +27,13 @@
       <div class="book-success card-flat" role="status">
         <span class="material-icons book-success-icon" aria-hidden="true">check_circle</span>
         <div>
-          <h2>Appointment requested</h2>
-          <p>Your visit is pending confirmation. You’ll get updates from your care team.</p>
+          @if (isRescheduleMode()) {
+            <h2>Reschedule requested</h2>
+            <p>Your request was sent to the receptionist for approval.</p>
+          } @else {
+            <h2>Appointment requested</h2>
+            <p>Your visit is pending confirmation. You’ll get updates from your care team.</p>
+          }
         </div>
         <button type="button" class="btn btn-primary btn-sm" (click)="bookSuccess.set(false)">Book another</button>
       </div>
@@ -51,7 +56,13 @@
             <div class="book-avatar-ring" aria-hidden="true"></div>
           </div>
           <div class="book-hero-text">
-            <p class="book-eyebrow">Book a visit</p>
+            <p class="book-eyebrow">
+              @if (isRescheduleMode()) {
+                Reschedule visit
+              } @else {
+                Book a visit
+              }
+            </p>
             <h1 class="book-title">{{ displayName() }}</h1>
             <p class="book-sub">{{ data.doctor.specialty_display || data.doctor.specialty }}</p>
             <div class="book-chips">
@@ -269,14 +280,36 @@
 @if (confirmOpen()) {
   <div class="modal-backdrop" (click)="closeConfirm()" role="presentation">
     <div class="modal-panel book-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <h2 id="confirm-title" class="modal-title">Confirm visit</h2>
+      <h2 id="confirm-title" class="modal-title">
+        @if (isRescheduleMode()) {
+          Confirm reschedule
+        } @else {
+          Confirm visit
+        }
+      </h2>
       <p class="book-modal-when">
         {{ selectedSlotIso() | date : 'fullDate' }} at {{ selectedSlotIso() | date : 'shortTime' }}
       </p>
-      <label class="book-check book-check--block">
-        <input type="checkbox" [ngModel]="telemedicine()" (ngModelChange)="telemedicine.set($event)" />
-        <span>Telemedicine (online visit)</span>
-      </label>
+
+      @if (!isRescheduleMode()) {
+        <label class="book-check book-check--block">
+          <input type="checkbox" [ngModel]="telemedicine()" (ngModelChange)="telemedicine.set($event)" />
+          <span>Telemedicine (online visit)</span>
+        </label>
+      }
+
+      @if (isRescheduleMode()) {
+        <label class="book-field book-field--grow">
+          <span class="book-field-label">Notes (optional)</span>
+          <textarea
+            rows="3"
+            class="form-control"
+            [ngModel]="rescheduleNotes()"
+            (ngModelChange)="rescheduleNotes.set($event)"
+            placeholder="Add a note for the receptionist (reason, preference, etc.)"
+          ></textarea>
+        </label>
+      }
       @if (bookError()) {
         <p class="form-error">{{ bookError() }}</p>
       }
@@ -284,9 +317,17 @@
         <button type="button" class="btn btn-secondary" (click)="closeConfirm()" [disabled]="booking()">Cancel</button>
         <button type="button" class="btn btn-primary" (click)="submitBooking()" [disabled]="booking()">
           @if (booking()) {
-            Booking…
+            @if (isRescheduleMode()) {
+              Sending…
+            } @else {
+              Booking…
+            }
           } @else {
-            Request appointment
+            @if (isRescheduleMode()) {
+              Send reschedule request
+            } @else {
+              Request appointment
+            }
           }
         </button>
       </div>

@@ -45,13 +45,10 @@
 
         <label class="pf-field">
           <span class="pf-label">Specialty</span>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="e.g. Cardiology"
-            [value]="specialty()"
-            (input)="onSpecialty($any($event.target).value)"
-          />
+          <select class="form-control" [value]="specialty()" (change)="onSpecialty($any($event.target).value)">
+            <option value="" disabled>Select specialty</option>
+            <option *ngFor="let opt of specialtyOptions" [value]="opt.value">{{ opt.label }}</option>
+          </select>
         </label>
 
         <p class="text-muted pf-hint mb-0">This helps patients understand your focus area.</p>
@@ -65,14 +62,9 @@
         <div class="pf-2col">
           <label class="pf-field">
             <span class="pf-label">Session duration (min)</span>
-            <input
-              type="number"
-              min="5"
-              max="240"
-              class="form-control"
-              [value]="sessionDuration()"
-              (input)="onSessionDuration($any($event.target).value)"
-            />
+            <select class="form-control" [value]="sessionDuration()" (change)="onSessionDuration($any($event.target).value)">
+              <option *ngFor="let v of sessionDurationOptions" [value]="v">{{ v }}</option>
+            </select>
           </label>
 
           <label class="pf-field">

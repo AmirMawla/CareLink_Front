@@ -15,12 +15,12 @@ export class Home implements OnInit {
   private router = inject(Router);
 
   categories = [
-    { name: 'Cardiology', icon: 'favorite', color: '#ffebee' },
-    { name: 'Neurology', icon: 'psychology', color: '#f3e5f5' },
-    { name: 'Pediatrics', icon: 'child_care', color: '#e0f7fa' },
-    { name: 'Orthopedics', icon: 'fitness_center', color: '#e8f5e9' },
-    { name: 'Dermatology', icon: 'healing', color: '#fff3e0' },
-    { name: 'General', icon: 'medical_services', color: '#e3f2fd' },
+    { name: 'Cardiology', value: 'CARDIOLOGY', icon: 'favorite', color: '#ffebee' },
+    { name: 'Neurology', value: 'NEUROLOGY', icon: 'psychology', color: '#f3e5f5' },
+    { name: 'Pediatrics', value: 'PEDIATRICS', icon: 'child_care', color: '#e0f7fa' },
+    { name: 'Orthopedics', value: 'ORTHOPEDICS', icon: 'fitness_center', color: '#e8f5e9' },
+    { name: 'Dermatology', value: 'DERMATOLOGY', icon: 'healing', color: '#fff3e0' },
+    { name: 'General', value: 'GENERAL', icon: 'medical_services', color: '#e3f2fd' },
   ];
 
   testimonials = [
@@ -52,5 +52,10 @@ export class Home implements OnInit {
       return;
     }
     void this.router.navigate(['/doctors', pid]);
+  }
+
+  browseSpecialty(value: string): void {
+    if (!value) return;
+    void this.router.navigate(['/doctors'], { queryParams: { specialty: value } });
   }
 }

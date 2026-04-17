@@ -51,7 +51,7 @@
 
     <div class="cl-nav-section">Appointments</div>
 
-    <a class="cl-nav-item" routerLink="/receptionist/appointments" routerLinkActive="active">
+    <a class="cl-nav-item" routerLink="/receptionist/appointments" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="cl-nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -64,7 +64,7 @@
 
 
 
-    <a class="cl-nav-item" routerLink="/receptionist/appointments/reschedule" routerLinkActive="active">
+    <a class="cl-nav-item" routerLink="/receptionist/appointments/reschedule" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span class="cl-nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="1 4 1 10 7 10"/>

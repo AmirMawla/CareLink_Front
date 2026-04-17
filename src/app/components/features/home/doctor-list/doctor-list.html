@@ -3,6 +3,12 @@
         <div class="header-text">
             <h1>Find Your Specialist</h1>
             <p>Consult with our {{ homeService.totalDoctors() }} verified doctors</p>
+            <div *ngIf="specialty()" class="active-filter">
+                <span class="filter-chip">
+                    Specialty: <strong>{{ specialty() }}</strong>
+                    <button type="button" class="chip-x" (click)="clearSpecialty()" aria-label="Clear specialty filter">×</button>
+                </span>
+            </div>
         </div>
 
         <div class="search-box">

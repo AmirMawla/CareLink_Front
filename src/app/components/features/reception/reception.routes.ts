@@ -7,6 +7,7 @@ import { ScheduleExceptions } from '../doctor/schedule-exceptions/schedule-excep
 import { DashboardComponent } from './dashboard/dashboard';
 import { CheckedInComponent } from './checked-in/checked-in';
 import { WaitingListComponent } from './waiting-list/waiting-list';
+import { ReschedulesComponent } from './reschedules/reschedules';
 
 export const RECEPTION_ROUTES: Routes = [
   {
@@ -54,10 +55,10 @@ export const RECEPTION_ROUTES: Routes = [
   component:WaitingListComponent,
   title:'Waiting List'
   },
-  // {
-  //   path: 'appointments/reschedule',
-  //   component: RescheduleComponent,
-  //   title: 'Reschedule Appointment',
-  // }
+  {
+    path: 'appointments/reschedule',
+    component: ReschedulesComponent,
+    title: 'Reschedule Requests',
+  },
 ];
 
