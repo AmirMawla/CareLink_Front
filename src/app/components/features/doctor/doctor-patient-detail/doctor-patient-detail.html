@@ -38,15 +38,15 @@
           <div class="meta-block">
             <span class="meta-label">Last visit</span>
             <span *ngIf="p.last_appointment_at" [class.text-muted]="isPast(p.last_appointment_at)" class="meta-value">
-              {{ p.last_appointment_at | date : 'EEE, MMM d, y' }} · {{ p.last_appointment_at | date : 'hh:mm a' }}
+              {{ p.last_appointment_at | date : 'EEE, MMM d, y':'UTC' }} · {{ p.last_appointment_at | date : 'hh:mm a':'UTC' }}
             </span>
             <span *ngIf="!p.last_appointment_at" class="meta-value text-muted">—</span>
           </div>
           <div class="meta-block">
             <span class="meta-label">Next visit</span>
             <span *ngIf="p.next_appointment_at" [class.text-muted]="isPast(p.next_appointment_at)" class="meta-value">
-              {{ p.next_appointment_at | date : 'EEE, MMM d, y' }} ·
-              {{ p.next_appointment_at | date : 'hh:mm a' }}
+              {{ p.next_appointment_at | date : 'EEE, MMM d, y':'UTC' }} ·
+              {{ p.next_appointment_at | date : 'hh:mm a':'UTC' }}
             </span>
             <span *ngIf="!p.next_appointment_at" class="meta-value text-muted">—</span>
           </div>
@@ -100,8 +100,8 @@
               <tr *ngFor="let ap of p.appointments; trackBy: trackByAppt" class="patient-appts-row">
                 <td>
                   <span [class.text-muted]="isPast(ap.scheduled_datetime)">
-                    {{ ap.scheduled_datetime | date : 'EEE, MMM d, y' }} ·
-                    {{ ap.scheduled_datetime | date : 'hh:mm a' }}
+                    {{ ap.scheduled_datetime | date : 'EEE, MMM d, y':'UTC' }} ·
+                    {{ ap.scheduled_datetime | date : 'hh:mm a':'UTC' }}
                   </span>
                 </td>
                 <td>

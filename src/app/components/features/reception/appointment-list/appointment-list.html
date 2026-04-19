@@ -48,8 +48,8 @@
         <tr *ngFor="let appt of appointments">
           <td><strong>{{ appt.patient.full_name }}</strong></td>
           <td>{{ appt.doctor.full_name }}</td>
-          <td>{{ appt.scheduled_datetime | date:'mediumDate' }}</td>
-          <td>{{ appt.scheduled_datetime | date:'shortTime' }}</td>
+          <td>{{ appt.scheduled_datetime | date:'mediumDate':'UTC' }}</td>
+          <td>{{ appt.scheduled_datetime | date:'shortTime':'UTC' }}</td>
           <td>
             <span class="status-badge" [ngClass]="appt.status.toLowerCase()">
               {{ appt.status.replace('_', ' ') }}

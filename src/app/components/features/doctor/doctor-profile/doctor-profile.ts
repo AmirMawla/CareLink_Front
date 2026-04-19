@@ -1,6 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Subject, of } from 'rxjs';
 import { catchError, finalize, takeUntil } from 'rxjs/operators';
 import { DoctorProfileMe } from '../../../../models/doctor-dashboard.model';
@@ -17,7 +18,7 @@ type SpecialtyValue = 'CARDIOLOGY' | 'DERMATOLOGY' | 'NEUROLOGY' | 'PEDIATRICS' 
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [NgIf, NgFor],
+  imports: [NgIf, NgFor, FormsModule],
   templateUrl: './doctor-profile.html',
   styleUrls: ['./doctor-profile.css', '../doctor-appointment-detail/doctor-appointment-detail.css'],
 })
@@ -85,23 +86,43 @@ export class DoctorProfile implements OnInit, OnDestroy {
       .subscribe((doc) => {
         if (!doc) return;
         this.doctor.set(doc);
-        this.specialty.set((doc.specialty || '').trim());
-        this.sessionDuration.set(Number.isFinite(doc.session_duration as number) ? (doc.session_duration as number) : 30);
-        this.bufferTime.set(Number.isFinite(doc.buffer_time as number) ? (doc.buffer_time as number) : 0);
+        this.applyDoctorFormFromApi(doc);
       });
+  }
+
+  /** API may send ints as numbers or strings; normalize so selects show the real saved values. */
+  private readInt(value: unknown, fallback: number): number {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.trunc(value);
+    }
+    const n = parseInt(String(value ?? '').trim(), 10);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  private normalizeSessionDuration(value: number): number {
+    if (this.sessionDurationOptions.includes(value)) return value;
+    return 30;
+  }
+
+  private applyDoctorFormFromApi(doc: DoctorProfileMe): void {
+    this.specialty.set((doc.specialty || '').trim());
+    const session = this.normalizeSessionDuration(this.readInt(doc.session_duration, 30));
+    const buffer = this.readInt(doc.buffer_time, 0);
+    this.sessionDuration.set(session);
+    this.bufferTime.set(buffer);
   }
 
   onSpecialty(value: string): void {
     this.specialty.set(value);
   }
 
-  onSessionDuration(value: string): void {
-    const n = safeInt(value, this.sessionDuration() || 30);
+  onSessionDuration(value: string | number): void {
+    const n = safeInt(String(value), this.sessionDuration() || 30);
     this.sessionDuration.set(n);
   }
 
-  onBufferTime(value: string): void {
-    this.bufferTime.set(Math.min(Math.max(0, safeInt(value, this.bufferTime() || 0)), 120));
+  onBufferTime(value: string | number): void {
+    this.bufferTime.set(Math.min(Math.max(0, safeInt(String(value), this.bufferTime() || 0)), 120));
   }
 
   save(): void {
@@ -143,6 +164,7 @@ export class DoctorProfile implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (!res?.doctor) return;
         this.doctor.set(res.doctor);
+        this.applyDoctorFormFromApi(res.doctor);
         this.showToast('Profile updated');
       });
   }
@@ -151,9 +173,7 @@ export class DoctorProfile implements OnInit, OnDestroy {
     const doc = this.doctor();
     if (!doc) return;
     this.formError.set(null);
-    this.specialty.set((doc.specialty || '').trim());
-    this.sessionDuration.set(Number.isFinite(doc.session_duration as number) ? (doc.session_duration as number) : 30);
-    this.bufferTime.set(Number.isFinite(doc.buffer_time as number) ? (doc.buffer_time as number) : 0);
+    this.applyDoctorFormFromApi(doc);
   }
 
   private showToast(msg: string): void {

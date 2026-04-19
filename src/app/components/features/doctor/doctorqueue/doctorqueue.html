@@ -34,7 +34,7 @@
       <div class="dq-stat dq-stat--wide">
         <div class="dq-stat__label">Next scheduled</div>
         <div class="dq-stat__value dq-stat__value--small" *ngIf="stats().next; else noNext">
-          {{ stats().next?.patient_name }} · {{ stats().next?.scheduled_datetime | date : 'shortTime' }}
+          {{ stats().next?.patient_name }} · {{ stats().next?.scheduled_datetime | date : 'shortTime':'UTC' }}
         </div>
         <ng-template #noNext>
           <div class="dq-stat__value dq-stat__value--small dq-subtle">—</div>
@@ -97,7 +97,7 @@
               {{ item.patient_name }}
             </div>
             <div class="dq-meta">
-              Scheduled {{ item.scheduled_datetime | date : 'shortTime' }}
+              Scheduled {{ item.scheduled_datetime | date : 'shortTime':'UTC' }}
               <span class="dq-dot">•</span>
               Waiting <strong>{{ waitLabel(item.wait_minutes) }}</strong>
             </div>

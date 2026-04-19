@@ -45,9 +45,14 @@
 
         <label class="pf-field">
           <span class="pf-label">Specialty</span>
-          <select class="form-control" [value]="specialty()" (change)="onSpecialty($any($event.target).value)">
+          <select
+            class="form-control"
+            name="doctorSpecialty"
+            [ngModel]="specialty()"
+            (ngModelChange)="onSpecialty($event)"
+          >
             <option value="" disabled>Select specialty</option>
-            <option *ngFor="let opt of specialtyOptions" [value]="opt.value">{{ opt.label }}</option>
+            <option *ngFor="let opt of specialtyOptions" [ngValue]="opt.value">{{ opt.label }}</option>
           </select>
         </label>
 
@@ -62,8 +67,13 @@
         <div class="pf-2col">
           <label class="pf-field">
             <span class="pf-label">Session duration (min)</span>
-            <select class="form-control" [value]="sessionDuration()" (change)="onSessionDuration($any($event.target).value)">
-              <option *ngFor="let v of sessionDurationOptions" [value]="v">{{ v }}</option>
+            <select
+              class="form-control"
+              name="doctorSessionDuration"
+              [ngModel]="sessionDuration()"
+              (ngModelChange)="onSessionDuration($event)"
+            >
+              <option *ngFor="let v of sessionDurationOptions" [ngValue]="v">{{ v }}</option>
             </select>
           </label>
 
@@ -71,11 +81,12 @@
             <span class="pf-label">Buffer time (min)</span>
             <input
               type="number"
+              name="doctorBufferTime"
               min="0"
               max="120"
               class="form-control"
-              [value]="bufferTime()"
-              (input)="onBufferTime($any($event.target).value)"
+              [ngModel]="bufferTime()"
+              (ngModelChange)="onBufferTime($event)"
             />
           </label>
         </div>

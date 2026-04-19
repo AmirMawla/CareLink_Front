@@ -7,7 +7,7 @@
   <div class="cards-grid">
     <div class="patient-card luxury-shadow" *ngFor="let patient of checkedInList">
       <div class="card-info">
-        <span class="time-tag"> {{ patient.scheduled_datetime | date:'shortTime' }}</span>
+        <span class="time-tag"> {{ patient.scheduled_datetime | date:'shortTime':'UTC' }}</span>
         <h4>{{ patient.patient.full_name }}</h4>
         <p class="doctor-name">With: {{ patient.doctor.full_name }}</p>
       </div>

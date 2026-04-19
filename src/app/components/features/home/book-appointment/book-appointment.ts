@@ -185,6 +185,7 @@ export class BookAppointmentComponent implements OnInit {
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
+      timeZone: 'UTC',
     });
   }
 

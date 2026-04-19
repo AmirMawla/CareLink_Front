@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'; 
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, RouterModule } from '@angular/router'; 
 import { environment } from '../../../../../environments/environment.development';
 
 @Component({
@@ -13,7 +13,6 @@ import { environment } from '../../../../../environments/environment.development
 })
 export class ResetPassword {
   private httpClient = inject(HttpClient);
-  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
 
@@ -24,6 +23,8 @@ export class ResetPassword {
   uid = '';
   token = '';
   step = 1;
+  loading = false;
+  errorMessage = '';
 
   ngOnInit() {
     this.uid = this.route.snapshot.queryParams['uid'];
@@ -35,26 +36,39 @@ export class ResetPassword {
   }
 //api/accounts/
   requestReset() {
+    this.loading = true;
+    this.errorMessage = '';
+
     this.httpClient.post(`${this.apiurl}/api/accounts/reset-password/`, { email: this.email })
       .subscribe({
         next: ()=> {
-          alert('reset password link has been sent to your email');
+          this.step = 3;
+          this.loading = false;
           this.cdr.detectChanges();
         },
-        error: (err) => alert(err.error.message)
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Failed to send reset link. Please try again.';
+          this.loading = false;
+        }
       });
   }
 
   confirmReset() {
     const body = { uid: this.uid, token: this.token, new_password: this.newPassword };
 
+    this.loading = true;
+    this.errorMessage = '';
+
     this.httpClient.post(`${this.apiurl}/api/accounts/reset-password/confirm/`, body)
       .subscribe({
         next: () => {
-          alert('password reset successfully');
-          this.router.navigate(['/auth/login']);
+          this.step = 4;
+          this.loading = false;
         },
-        error: (err) => alert(err.error.message)
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Failed to reset password. Please try again.';
+          this.loading = false;
+        }
       });
   }
 

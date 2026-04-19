@@ -53,7 +53,7 @@
           <div class="ch-head__left min-w-0">
             <div class="ch-title truncate">{{ patientName(c) }}</div>
             <div class="ch-sub text-muted">
-              {{ c.appointment.scheduled_datetime | date : 'medium' }}
+              {{ c.appointment.scheduled_datetime | date : 'medium':'UTC' }}
               <span class="ch-dot">•</span>
               {{ rxSummary(c) }}
               <span class="ch-dot">•</span>

@@ -37,7 +37,7 @@
           </div>
           <div class="meta-pill">
             <span class="mi" aria-hidden="true">event</span>
-            {{ data.appointment.scheduled_datetime | date:'EEEE, MMM d, y · h:mm a' }}
+            {{ data.appointment.scheduled_datetime | date:'EEEE, MMM d, y · h:mm a':'UTC' }}
           </div>
           <div class="meta-pill">
             <span class="mi" aria-hidden="true">verified</span>
@@ -67,7 +67,7 @@
 
         <div class="kv" *ngIf="data.appointment.check_in_time">
           <div class="k">Check-in time</div>
-          <div class="v">{{ data.appointment.check_in_time | date:'medium' }}</div>
+          <div class="v">{{ data.appointment.check_in_time | date:'medium':'UTC' }}</div>
         </div>
 
         <div class="kv" *ngIf="data.appointment.is_telemedicine && data.appointment.meeting_link">
@@ -83,7 +83,7 @@
         <div class="panel-foot">
           <div class="small">
             <span class="mi" aria-hidden="true">schedule</span>
-            Summary created {{ data.created_at | date:'mediumDate' }}.
+            Summary created {{ data.created_at | date:'mediumDate':'UTC' }}.
           </div>
         </div>
       </div>

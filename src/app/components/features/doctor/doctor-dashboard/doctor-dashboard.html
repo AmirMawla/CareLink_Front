@@ -380,7 +380,7 @@
             <div class="avatar avatar-md avatar-primary">{{ patientInitials(row) }}</div>
             <div class="min-w-0">
               <div class="fw-600 truncate">{{ patientDisplayName(row) }}</div>
-              <div class="text-muted text-tiny">{{ row.scheduled_datetime | date: 'medium' }}</div>
+              <div class="text-muted text-tiny">{{ row.scheduled_datetime | date: 'medium':'UTC' }}</div>
               <span *ngIf="row.is_telemedicine" class="badge badge-info mt-1">Telemedicine</span>
             </div>
           </div>
@@ -432,7 +432,7 @@
             <div class="avatar avatar-md avatar-primary">{{ q.patient_initials }}</div>
             <div class="min-w-0">
               <div class="fw-600 truncate">{{ q.patient_name }}</div>
-              <div class="text-muted text-tiny">Scheduled {{ q.scheduled_datetime | date: 'shortTime' }}</div>
+              <div class="text-muted text-tiny">Scheduled {{ q.scheduled_datetime | date: 'shortTime':'UTC' }}</div>
             </div>
           </div>
           <span class="badge queue-wait" [ngClass]="waitClass(q.wait_minutes)">{{ formatWait(q.wait_minutes) }}</span>

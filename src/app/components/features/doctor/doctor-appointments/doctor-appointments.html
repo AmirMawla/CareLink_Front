@@ -244,7 +244,7 @@
             </td>
             <td>
               <span [class.text-muted]="isPast(row.scheduled_datetime)">
-                {{ row.scheduled_datetime | date : 'EEE, MMM d' }} · {{ row.scheduled_datetime | date : 'hh:mm a' }}
+                {{ row.scheduled_datetime | date : 'EEE, MMM d':'UTC' }} · {{ row.scheduled_datetime | date : 'hh:mm a':'UTC' }}
               </span>
             </td>
             <td>

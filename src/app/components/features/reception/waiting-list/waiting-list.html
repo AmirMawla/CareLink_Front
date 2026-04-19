@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of waitingList">
-          <td class="bold-time">{{ item.scheduled_datetime | date:'shortTime' }}</td>
+          <td class="bold-time">{{ item.scheduled_datetime | date:'shortTime':'UTC' }}</td>
           <td>{{ item.patient.full_name }}</td>
           <td>Dr. {{ item.doctor.full_name }}</td>
           <td><span class="badge-pending">Comming Soon</span></td>

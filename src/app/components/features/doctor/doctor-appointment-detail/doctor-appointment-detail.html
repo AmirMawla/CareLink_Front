@@ -41,7 +41,7 @@
           <div class="meta-block">
             <span class="meta-label">Scheduled</span>
             <span [class.text-muted]="isPast(a.scheduled_datetime)" class="meta-value">
-              {{ a.scheduled_datetime | date : 'EEE, MMM d, y' }} · {{ a.scheduled_datetime | date : 'hh:mm a' }}
+              {{ a.scheduled_datetime | date : 'EEE, MMM d, y':'UTC' }} · {{ a.scheduled_datetime | date : 'hh:mm a':'UTC' }}
             </span>
           </div>
           <div class="meta-block">
@@ -51,7 +51,7 @@
           </div>
           <div class="meta-block">
             <span class="meta-label">Checked in</span>
-            <span *ngIf="a.check_in_time" class="meta-value">{{ a.check_in_time | date : 'MMM d, hh:mm a' }}</span>
+            <span *ngIf="a.check_in_time" class="meta-value">{{ a.check_in_time | date : 'MMM d, hh:mm a':'UTC' }}</span>
             <span *ngIf="!a.check_in_time" class="meta-value text-muted">—</span>
           </div>
         </div>

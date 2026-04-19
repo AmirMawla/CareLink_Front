@@ -21,7 +21,7 @@
         <tr *ngFor="let appt of queue">
           <td><strong>{{ appt.patient.full_name }}</strong></td>
           <td>{{ appt.doctor.full_name }}</td>
-          <td>{{ appt.scheduled_datetime | date:'shortTime' }}</td>
+          <td>{{ appt.scheduled_datetime | date:'shortTime':'UTC' }}</td>
           <td>
             <span class="wait-text" *ngIf="appt.waiting_time_minutes !== null">
               {{ appt.waiting_time_minutes }}m
